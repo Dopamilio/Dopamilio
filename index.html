@@ -1755,7 +1755,7 @@ const NFT_TOKEN_IDS=[1,2,3,4,5,6,14,57,303,2314];
 /* ══════════════════════════════════════════════
    OPNET CONTRACT
 ══════════════════════════════════════════════ */
-const CONTRACT_ADDR  = 'opt1sqrurzx45lsdm62q0ejjhru55kukj253a7u60xmgx';
+const CONTRACT_ADDR = 'opt1sqqen3dq2r7fyaxe44v6tl69prtejg3mxxyuuluyq';
 const CONTRACT_P2TR  = 'opt1pv5z0n6gn0n8szljp7dewl52548zyvt48pt406cl607wen22amalqfpft8p';
 const MINT_PRICE_SATS = 6969n;
 const MAX_SUPPLY      = 3333;
@@ -1917,7 +1917,7 @@ function _buildActivityFromChain(mints){
 // ScanBlock: last block fully scanned
 const _CACHE_KEY   = 'dopa_mint_txids_v2_'+CONTRACT_ADDR.slice(-8);
 const _SCAN_KEY    = 'dopa_scan_block_v2_'+CONTRACT_ADDR.slice(-8);
-const _DEPLOY_BLOCK = 0x28e5; // block where contract was deployed
+const _DEPLOY_BLOCK = 0x2d45; // block where contract was deployed
 var _mintTxCache = {};
 var _scanRunning = false;
 try { _mintTxCache = JSON.parse(localStorage.getItem(_CACHE_KEY)||'{}'); } catch(e){}
