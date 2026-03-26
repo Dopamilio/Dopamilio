@@ -2249,6 +2249,7 @@ const STICKERS=[
 
 /* ── PAGE BG: matrix rain — deferred to after load ── */
 window.addEventListener('load',function(){(window.requestIdleCallback||function(cb){setTimeout(cb,1)})(function(){
+  if(window.innerWidth<=720)return; // skip on mobile — too heavy
   const c=document.getElementById('bg-canvas'),ctx=c.getContext('2d');
   const chars='01アイウエオカキクケコサシスセ0123456789ABCDEF@#$%&#^&*';
   const MLG=['BTC','MOON','NGMI','DEGEN','HODL','GG','420','MLG','NPC','BASED','COPE','OPNET','SATS','YOLO','GM','WAGMI','NOOB','REKT','DOPE','WEN'];
@@ -2385,9 +2386,9 @@ window.addEventListener('load',function(){(window.requestIdleCallback||function(
       p.el.style.transform=`translate(${p.x}px,${p.y}px) rotate(${p.rot}deg)`;
       p.el.style.opacity=p.opacity;
     });
-    requestAnimationFrame(animStickers);
+    if(window.innerWidth>720)requestAnimationFrame(animStickers);
   }
-  animStickers();
+  if(window.innerWidth>720)animStickers();
 })();
 });});
 
@@ -2516,6 +2517,22 @@ function _setSoldOut(flag){
 }
 
 function updateProg(n){const p=((n/SUPPLY)*100).toFixed(1);document.getElementById('sMinted').textContent=n.toLocaleString();document.getElementById('progPct').textContent=p+'%';document.getElementById('progFill').style.width=p+'%';if(n>=MAX_SUPPLY){_setSoldOut(true);}}
+/* Convert 0x<64hex> MLDSA identity → opt1... bech32m address */
+function _hexToOpnet(hex){
+  hex=hex.replace(/^0x/,'');
+  if(hex.length!==64)return hex;
+  var bytes=[];for(var i=0;i<64;i+=2)bytes.push(parseInt(hex.substr(i,2),16));
+  var A='qpzry9x8gf2tvdw0s3jn54khce6mua7l',M=0x2bc830a3;
+  function poly(v){var c=1;for(var i=0;i<v.length;i++){var d=c>>25;c=((c&0x1ffffff)<<5)^v[i];if(d&1)c^=0x3b6a57b2;if(d&2)c^=0x26508e6d;if(d&4)c^=0x1ea119fa;if(d&8)c^=0x3d4233dd;if(d&16)c^=0x2a1462b3;}return c;}
+  function hrpExp(s){var r=[];for(var i=0;i<s.length;i++)r.push(s.charCodeAt(i)>>5);r.push(0);for(var i=0;i<s.length;i++)r.push(s.charCodeAt(i)&31);return r;}
+  function conv(d,f,t,p){var a=0,b=0,r=[],m=(1<<t)-1;for(var i=0;i<d.length;i++){a=(a<<f)|d[i];b+=f;while(b>=t){b-=t;r.push((a>>b)&m);}}if(p&&b)r.push((a<<(t-b))&m);return r;}
+  var hrp='opt',data=[1].concat(conv(bytes,8,5,true));
+  var mod=poly(hrpExp(hrp).concat(data).concat([0,0,0,0,0,0]))^M;
+  var cs=[];for(var i=0;i<6;i++)cs.push((mod>>(5*(5-i)))&31);
+  var enc='';for(var i=0;i<data.length;i++)enc+=A[data[i]];
+  for(var i=0;i<6;i++)enc+=A[cs[i]];
+  return hrp+'1'+enc;
+}
 async function doConnect(){
   const btn=document.getElementById('walletBtn');
   btn.textContent='\u23F3 CONNECTING...';btn.disabled=true;
@@ -2530,7 +2547,7 @@ async function doConnect(){
     try{ walletPubKey = await window.opnet.getPublicKey(); }catch(_){}
     connected   = true;
     walletToast('connect');
-    const _addrDisp=walletAddr.startsWith('0x')?('opt1..'+walletAddr.slice(-6)):walletAddr;
+    const _addrDisp=walletAddr.startsWith('0x')?_hexToOpnet(walletAddr):walletAddr;
     const disp  = _addrDisp.slice(0,10)+'...'+_addrDisp.slice(-5);
     btn.innerHTML='\u2713 '+_safeText(disp);
     btn.classList.add('on');btn.disabled=false;
