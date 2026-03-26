@@ -2,6 +2,7 @@
 # Format: opt1p... (bech32m P2TR) OR 64-char hex (x-only pubkey)
 # Get deployer address: OPNET_MNEMONIC="..." npx tsx get-sender-address.ts
 # ADD DEPLOYER LINE HERE ↓
+898b4580ddadb00e370871d54618766268efa0fb32b0548b8b70b04aa41ae214
 
 opt1pgepwd4rt64t8z3qf3v8xywt37wu0p09ul98nnhr4p3ml0kssaxxs50d4t8
 opt1pa6h4h7hljed5medazjr7tnah7fr4900s9wxs9g8xtd2l8xdyrnwqvt30q3

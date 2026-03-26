@@ -22,15 +22,15 @@ const wallet      = mnemonicObj.deriveOPWallet(AddressTypes.P2WPKH, 0);
 
 // P2TR pubkey = 32-byte x-only tweaked pubkey (what Blockchain.tx.sender returns in-contract)
 const pubkey = wallet.keypair.publicKey as Uint8Array;
-// P2TR x-only pubkey: strip the 0x02/0x03 prefix byte → 32 bytes
-const xOnlyPubkey = pubkey.length === 33 ? pubkey.slice(1) : pubkey;
-const xOnlyHex = Buffer.from(xOnlyPubkey).toString('hex');
+// OPNet identity = wallet.address (32 bytes) — this is what Blockchain.tx.sender returns
+const opnetAddr = wallet.address.toString(); // "0x<64hex>"
+const addrHex = opnetAddr.replace(/^0x/, '');
 
 console.log('');
 console.log('Deployer P2TR (Bitcoin addr):', wallet.p2tr);
-console.log('Deployer OPNet address      :', wallet.address.toString());
+console.log('Deployer OPNet identity     :', opnetAddr);
 console.log('');
-console.log('32-byte x-only pubkey (hex) — ADD THIS LINE TO wl.txt:');
-console.log(xOnlyHex);
+console.log('ADD THIS LINE TO contracts/wl.txt:');
+console.log(addrHex);
 console.log('');
 console.log('Copy the hex line above and add it to contracts/wl.txt');
