@@ -10,7 +10,10 @@
 <link rel="preconnect" href="https://testnet.opnet.org">
 <link rel="preconnect" href="https://chocolate-decisive-silverfish-606.mypinata.cloud">
 <link rel="dns-prefetch" href="https://chocolate-decisive-silverfish-606.mypinata.cloud">
-<link rel="stylesheet" href="/fonts/fonts.css">
+<link rel="preload" href="/fonts/fonts.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="/fonts/fonts.css"></noscript>
+<link rel="preload" as="font" href="/fonts/f19.woff2" type="font/woff2" crossorigin>
+<link rel="preload" as="font" href="/fonts/f14.woff2" type="font/woff2" crossorigin>
 <link rel="preload" as="image" href="nft_preview/1.webp" fetchpriority="high">
 <style>
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
@@ -62,12 +65,13 @@ body{
   border:2px solid rgba(0,0,0,.2);
 }
 .loader-bar{
-  height:100%;width:0%;border-radius:999px;
+  height:100%;width:100%;border-radius:999px;
+  transform:scaleX(0);transform-origin:left center;will-change:transform;
   background:linear-gradient(90deg,#f00,#ff8800,#ffff00,#00ff00,#00ffff,#0088ff,#3b82f6,#f00);
   background-size:400%;
   animation:lbfill 4.5s ease 1.1s forwards,lbshine .9s 1.1s linear infinite;
 }
-@keyframes lbfill{0%{width:0%;}100%{width:100%;}}
+@keyframes lbfill{0%{transform:scaleX(0);}100%{transform:scaleX(1);}}
 @keyframes lbshine{to{background-position:400%;}}
 .loader-txt{
   font-family:'Press Start 2P',monospace;font-size:10px;
@@ -3736,8 +3740,8 @@ document.addEventListener('copy',function(e){
   btn.addEventListener('touchend',_toggle,{passive:false});
 })();
 </script>
-<script src="gallery-lore.js"></script>
-<script src="gallery-card.js"></script>
+<script src="gallery-lore.js" defer></script>
+<script src="gallery-card.js" defer></script>
 <script>
 (function(){
   var rg=document.getElementById('rektGif');
