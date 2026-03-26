@@ -1849,32 +1849,39 @@ async function _scanMintsForTxids(fromBlock, toBlock){
     for(let i=0;i<results.length;i++){
       const txs = results[i]?.result?.transactions || [];
       for(const tx of txs){
-        if(tx.contractAddress !== CONTRACT_ADDR) continue;
         if(tx.OPNetType !== 'Interaction') continue;
-        // Find which tokenId this mint corresponds to via events
-        if(tx.events && tx.events.length){
-          for(const ev of tx.events){
-            if(ev.type === 'Mint'){
-              // data layout: operator(32) + from(32) + to(32) + tokenId(32) = 128 bytes
-              // tokenId is the last 32 bytes big-endian
-              try{
-                var bin = atob(ev.data);
-                // MintEvent: to(32) + firstTokenId(32) + amount(8) + totalPaid(8) = 80 bytes
-                if(bin.length >= 64){
-                  var tokenIdHex = '';
-                  for(var bi = 32; bi < 64; bi++){
-                    var byt = bin.charCodeAt(bi)&0xff;
-                    tokenIdHex += (byt<16?'0':'')+byt.toString(16);
-                  }
-                  var tokenId = String(parseInt(tokenIdHex,16));
-                  var _txh = tx.transactionId || tx.hash || tx.txid || '';
-                  if(!_mintTxCache[tokenId] && _txh){
-                    _mintTxCache[tokenId] = _txh;
-                    changed = true;
-                  }
+        if(tx.contractAddress !== CONTRACT_ADDR) continue;
+        // Normalize events: can be {[addr]:evArr} or flat array
+        var _evList = [];
+        if(tx.events){
+          if(Array.isArray(tx.events)){
+            _evList = tx.events;
+          } else {
+            // keyed by contract address
+            var _evArr = tx.events[CONTRACT_ADDR] || tx.events[CONTRACT_ADDR.toLowerCase()] || [];
+            if(Array.isArray(_evArr)) _evList = _evArr;
+            else Object.values(tx.events).forEach(function(a){if(Array.isArray(a))_evList=_evList.concat(a);});
+          }
+        }
+        var _txh = tx.hash || tx.id || tx.txid || '';
+        for(const ev of _evList){
+          if(ev.type === 'Mint' || ev.type === 'mint'){
+            // MintEvent: to(32) + firstTokenId(32) + amount(8) + totalPaid(8) = 80 bytes
+            try{
+              var bin = atob(ev.data);
+              if(bin.length >= 64){
+                var tokenIdHex = '';
+                for(var bi = 32; bi < 64; bi++){
+                  var byt = bin.charCodeAt(bi)&0xff;
+                  tokenIdHex += (byt<16?'0':'')+byt.toString(16);
                 }
-              }catch(err){}
-            }
+                var tokenId = String(parseInt(tokenIdHex,16));
+                if(!_mintTxCache[tokenId] && _txh){
+                  _mintTxCache[tokenId] = _txh;
+                  changed = true;
+                }
+              }
+            }catch(err){}
           }
         }
       }
@@ -2464,7 +2471,7 @@ let curPhase=0,connected=false,mintedC=0,_rawChainPhase=0;
 const SUPPLY=MAX_SUPPLY;
 let phaseTimers=[0,0,0];
 let _chainStartTime=0,_isTestnet=false,_teamDur=0,_wlDur=604800000; // _wlDur updated from chain
-function fmt(s){const h=Math.floor(s/3600),m=Math.floor((s%3600)/60),ss=s%60;return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(ss).padStart(2,'0')}`;}
+function fmt(s){const d=Math.floor(s/86400),h=Math.floor((s%86400)/3600),m=Math.floor((s%3600)/60),ss=s%60;return d>0?`${d}d ${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(ss).padStart(2,'0')}`:`${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(ss).padStart(2,'0')}`;}
 function tickTimers(){
   if(_isTestnet){['t0','t1','t2'].forEach(function(id){var e=document.getElementById(id);if(e)e.textContent='TESTNET';});return;}
   if(_chainStartTime===0){['t0','t1','t2'].forEach(function(id){var e=document.getElementById(id);if(e)e.textContent='SOON';});return;}
@@ -3293,8 +3300,9 @@ async function tickerUpdate() {
   if (!track) return;
 
   function _setTrack(html){
-    var c='<span class="tick-clone">'+html+'</span>';
-    track.innerHTML=c+c+c+c+c;
+    var dbl=html+html;
+    var c='<span class="tick-clone">'+dbl+'</span>';
+    track.innerHTML=c+c+c;
     _tickerLastRender=Date.now();
   }
 
@@ -3812,7 +3820,8 @@ function mktRenderDetailView(nft) {
   var detailImg = imgUrl && imgUrl !== DOPA_IMG_PLACEHOLDER
     ? '<img src="'+imgUrl+'" alt="DOPAMILIO #'+nft.id+'" style="width:100%;height:100%;object-fit:cover;display:block" loading="lazy" onerror="this.parentNode.innerHTML=\''+mktMakePlaceholder(nft,480,true).replace(/'/g,"\\'")+'\'">'
     : '<div style="width:100%;height:100%">'+mktMakePlaceholder(nft,480,true)+'</div>';
-  return '<div class="mkt-detail-wrap">'
+  return '<div style="padding:8px 0 4px 0"><button onclick="mktCloseDetail()" style="background:none;border:1px solid #4a6a4a;color:#4a6a4a;font-family:monospace;font-size:11px;cursor:pointer;padding:4px 12px;letter-spacing:1px">&#8592; BACK</button></div>'
+    +'<div class="mkt-detail-wrap">'
     +'<div class="mkt-detail-left">'
     +'<div style="height:480px;position:relative;overflow:hidden;border:1px solid '+(mktGetRarityColor(nft.rarity))+'40">'
     +detailImg
@@ -3870,7 +3879,8 @@ function mktRenderDetailView(nft) {
 }
 
 function mktRenderCollectionView() {
-  var nftsHtml = _mktViewMode === 'grid' ? mktRenderGrid(MKT_NFTS) : mktRenderList(MKT_NFTS);
+  var _sorted = MKT_NFTS.slice().sort(function(a,b){return parseFloat(a.price)-parseFloat(b.price);});
+  var nftsHtml = _mktViewMode === 'grid' ? mktRenderGrid(_sorted) : mktRenderList(_sorted);
   var nftAreaClass = _mktViewMode === 'grid' ? 'mkt-grid' : '';
   var mainH = 'calc(100vh - 280px)';
   var gridGold = _mktViewMode==='grid' ? ' gold' : '';
