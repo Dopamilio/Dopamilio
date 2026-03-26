@@ -15,7 +15,10 @@
 #   - OPSCAN_QUERY    → empty string (no ?network=op_testnet)
 #   - _DEPLOY_BLOCK   → deploy block from receipt
 #
-# After running: git add index.html && git commit -m "feat: mainnet config" && git push
+# What this script changes in vercel.json:
+#   - CSP connect-src: replaces testnet.opnet.org with mainnet.opnet.org
+#
+# After running: git add index.html vercel.json && git commit -m "feat: mainnet config" && git push
 
 set -euo pipefail
 
@@ -58,16 +61,27 @@ sed -i "s|\.\.\.networks\.opnetTestnet,|...networks.bitcoin,|" "$INDEX"
 sed -i "s|bech32:'opt'|bech32:'bc'|" "$INDEX"
 sed -i "s|isTestnet:true|isTestnet:false|" "$INDEX"
 
+# 7. vercel.json — switch CSP connect-src to mainnet RPC
+VERCEL="vercel.json"
+if [ -f "$VERCEL" ]; then
+  cp "$VERCEL" "${VERCEL}.mainnet-backup"
+  sed -i "s|https://testnet\.opnet\.org|https://mainnet.opnet.org|g" "$VERCEL"
+  echo "vercel.json: testnet.opnet.org → mainnet.opnet.org"
+else
+  echo "WARNING: $VERCEL not found — CSP not updated" >&2
+fi
+
 # Verify key replacements
 echo ""
 echo "Verifying replacements..."
 grep -n "CONTRACT_ADDR\|CONTRACT_P2TR\|RPC_URL\|OPSCAN_QUERY\|_DEPLOY_BLOCK\|isTestnet" "$INDEX" | grep "const " | head -20
+grep "opnet\.org" "$VERCEL" 2>/dev/null || true
 
 echo ""
-echo "Done. Review the diff with: git diff index.html"
-echo "Backup saved to: ${INDEX}.mainnet-backup"
+echo "Done. Review the diffs with: git diff index.html vercel.json"
+echo "Backups: ${INDEX}.mainnet-backup  ${VERCEL}.mainnet-backup"
 echo ""
 echo "Next steps:"
-echo "  git add index.html"
+echo "  git add index.html vercel.json"
 echo "  git commit -m \"feat: switch to mainnet — $CONTRACT_ADDR\""
 echo "  git push"
