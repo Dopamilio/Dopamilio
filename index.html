@@ -1023,6 +1023,14 @@ input,textarea{-webkit-user-select:text;-moz-user-select:text;user-select:text;}
   .gallery-grid{grid-template-columns:repeat(auto-fill,minmax(140px,1fr));}
   .lore-terminal{font-size:10px;padding:12px;}
   .lore-page-title{font-size:24px;letter-spacing:4px;padding:12px 12px 0;}
+  /* Performance: disable heavy visual effects on mobile */
+  .scanlines,.crt-overlay,#bg-canvas{display:none !important;}
+  /* Sniper overlay centered on mobile */
+  #sniper-overlay{width:min(90vw,380px);right:50%;transform:translateX(50%);}
+  /* Touch-friendly buttons */
+  button{touch-action:manipulation;}
+  /* Marketplace: ensure detail scrolls above ticker */
+  .mkt-nft-area{padding-bottom:calc(var(--ticker-h,33px) + 80px);}
 }
 @media(max-width:480px){
   .gallery-grid{grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:6px;}
@@ -1338,7 +1346,7 @@ input,textarea{-webkit-user-select:text;-moz-user-select:text;user-select:text;}
 .mkt-btn-buy-sm{background:transparent;border:1px solid #00ff41;color:#00ff41;font-family:'Courier New',monospace;font-size:10px;padding:3px 8px;cursor:pointer;}
 .mkt-btn-buy-sm:hover{background:rgba(0,255,65,0.1);}
 .mkt-act-item{display:flex;gap:8px;padding:8px 0;border-bottom:1px solid #0f1f0f;}
-.mkt-bottom-bar{position:fixed;bottom:0;left:0;right:0;height:56px;background:#060d06;border-top:1px solid #1a2a1a;z-index:200;display:none;align-items:center;justify-content:space-between;padding:0 24px;font-family:'Courier New',monospace;}
+.mkt-bottom-bar{position:fixed;bottom:var(--ticker-h,33px);left:0;right:0;height:56px;background:#060d06;border-top:1px solid #1a2a1a;z-index:200;display:none;align-items:center;justify-content:space-between;padding:0 24px;font-family:'Courier New',monospace;}
 .mkt-bottom-bar.mkt-bar-visible{display:flex;}
 .mkt-btn-colbid{background:#00ff41;color:#060d06;font-weight:bold;border:none;padding:8px 16px;font-family:'Courier New',monospace;font-size:12px;cursor:pointer;}
 .mkt-btn-colbid:hover{background:#00cc33;}
@@ -1483,9 +1491,9 @@ input,textarea{-webkit-user-select:text;-moz-user-select:text;user-select:text;}
     </div>
     <div class="card" id="mint-card" style="flex:1;min-height:0;">
       <div class="phases">
-        <button class="ph active" onclick="setPhase(0)"><span class="phn">TEAM <span style="opacity:.55;font-size:.8em">×10</span></span><span class="phs">&#9679; ACTIVE</span></button>
-        <button class="ph locked" onclick="setPhase(1)"><span class="phn">WL <span style="opacity:.55;font-size:.8em">×3</span></span><span class="phs">&#128274; SOON</span></button>
-        <button class="ph locked" onclick="setPhase(2)"><span class="phn">PUBLIC <span style="opacity:.55;font-size:.8em">×5</span></span><span class="phs">&#128274; SOON</span></button>
+        <button class="ph active" style="cursor:default;pointer-events:none"><span class="phn">TEAM <span style="opacity:.55;font-size:.8em">×10</span></span><span class="phs">&#9679; ACTIVE</span></button>
+        <button class="ph locked" style="cursor:default;pointer-events:none"><span class="phn">WL <span style="opacity:.55;font-size:.8em">×3</span></span><span class="phs">&#128274; SOON</span></button>
+        <button class="ph locked" style="cursor:default;pointer-events:none"><span class="phn">PUBLIC <span style="opacity:.55;font-size:.8em">×5</span></span><span class="phs">&#128274; SOON</span></button>
       </div>
       <div class="stats">
         <div class="sb sbb"><span class="sv" id="sSupply">3333</span><span class="sl">SUPPLY</span></div>
@@ -1632,7 +1640,7 @@ input,textarea{-webkit-user-select:text;-moz-user-select:text;user-select:text;}
 <!-- Sniper overlay — shown on mint confirm -->
 <div id="sniper-overlay">
   <div class="sniper-drag-handle"></div>
-  <img id="sniper-gif" src="./memes_mlg/sniper/sniper.webp" alt="" loading="lazy" width="500" height="354">
+  <img id="sniper-gif" src="./memes_mlg/quickscope.png" alt="" loading="lazy" width="500" height="354">
 </div>
 <audio id="sniper-audio" src="./memes_mlg/sniper/sniperaudio.mp3" preload="none"></audio>
 <script>
@@ -2522,7 +2530,8 @@ async function doConnect(){
     try{ walletPubKey = await window.opnet.getPublicKey(); }catch(_){}
     connected   = true;
     walletToast('connect');
-    const disp  = walletAddr.slice(0,5)+'...'+walletAddr.slice(-5);
+    const _addrDisp=walletAddr.startsWith('0x')?('opt1..'+walletAddr.slice(-6)):walletAddr;
+    const disp  = _addrDisp.slice(0,10)+'...'+_addrDisp.slice(-5);
     btn.innerHTML='\u2713 '+_safeText(disp);
     btn.classList.add('on');btn.disabled=false;
     const ws=document.getElementById('wSt');
@@ -2547,7 +2556,7 @@ function _playSniperEffect(cb) {
   if (!overlay) { cb && cb(); return; }
   overlay.classList.add('show');
   if(!overlay._ocb){overlay._ocb=true;overlay.addEventListener('click',function(e){if(e.target===overlay)closeNftDetail();});}
-  if (audio) { audio.currentTime=0; audio.play().catch(function(){}); }
+  if (audio) { audio.currentTime=0; audio.playbackRate=2.5; audio.play().catch(function(){}); }
   setTimeout(function(){
     overlay.classList.remove('show');
     cb && cb();
@@ -2644,7 +2653,7 @@ async function doMint(){
       maximumAllowedSatToSpend:totalCost+50000n,
       extraOutputs:[{address:CONTRACT_P2TR,value:mintCost}],
     });
-    const txid = receipt.transactionId;
+    const txid = receipt?.transactionId || receipt?.hash || receipt?.txid || '';
 
     // 7. Optimistic UI update
     mintedC = currentTotal + quantity;
@@ -3249,6 +3258,9 @@ async function _fetchEquityLive(equityData){
   }catch(e){/* keep seed */}
 }
 
+var _tickerLastRender=0;
+var _TICKER_CYCLE=28000; /* must match CSS animation duration */
+
 async function tickerUpdate() {
   var track = document.querySelector('.tick-track');
   if (!track) return;
@@ -3256,9 +3268,9 @@ async function tickerUpdate() {
   function _setTrack(html){
     var c='<span class="tick-clone">'+html+'</span>';
     track.innerHTML=c+c+c+c+c;
+    _tickerLastRender=Date.now();
   }
 
-  /* Working copy of equity data — updated in-place by live fetch */
   var equityData=_EQUITY_SEED.map(function(e){return Object.assign({},e);});
 
   /* Render seed immediately so livebar is never blank */
@@ -3267,29 +3279,30 @@ async function tickerUpdate() {
     window._tickerReady=true;
   }
 
-  /* Fetch live equity (Twelve Data) and BTC (Binance) in parallel */
+  /* Fetch live data in background */
   await _fetchEquityLive(equityData);
   var equityHtml=equityData.map(function(e){return _tickItem(e.sym,e.price,e.chg);}).join('');
 
-  /* BTC — Binance public REST (CORS-friendly, no key) */
+  var btcHtml='';
   try{
     var br=await fetch('https://api.binance.com/api/v3/ticker/24hr?symbol=BTCUSDT',{signal:AbortSignal.timeout(6000)});
     if(br.ok){
       var bd=await br.json();
       var btcPrice=parseFloat(bd.lastPrice)||0;
       var btcChg=parseFloat(bd.priceChangePercent)||0;
-      if(btcPrice>0){
-        _setTrack(_tickItem('BTC',btcPrice,btcChg)+equityHtml);
-        return;
-      }
+      if(btcPrice>0) btcHtml=_tickItem('BTC',btcPrice,btcChg);
     }
-  }catch(e){/* keep current */}
+  }catch(e){}
 
-  /* BTC fallback: render latest equity data */
-  _setTrack(equityHtml);
+  /* Wait until full animation cycle completes — only update at DXY boundary */
+  var wait=_TICKER_CYCLE-(Date.now()-_tickerLastRender);
+  if(wait>0) await new Promise(function(r){setTimeout(r,wait);});
+
+  _setTrack((btcHtml||'')+equityHtml);
 }
-tickerUpdate();
-setInterval(tickerUpdate, 30000);
+
+/* Chain calls so no two updates ever race — next fires 30s after previous completes */
+(function _runTicker(){tickerUpdate().then(function(){setTimeout(_runTicker,30000);});})();
 
 
 document.getElementById('modal').addEventListener('click',e=>{if(e.target===document.getElementById('modal'))document.getElementById('modal').classList.remove('show');});

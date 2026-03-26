@@ -228,11 +228,11 @@ export class DopamilioNFT extends OP721 {
                 // Read and verify merkle proof
                 const proof = calldata.readU256Array();
                 if (!this._verifyMerkleProof(sender, proof)) {
-                    throw new Revert('DopamilioNFT: not in whitelist');
+                    throw new Revert('NGMI anon — ur not on the list, go touch grass');
                 }
                 const minted = this._mintedWlMap.get(sender).toU64();
                 if (SafeMath.add64(minted, amount) > MAX_MINT_WL)
-                    throw new Revert('DopamilioNFT: WL cap exceeded');
+                    throw new Revert('greedy anon — 3 is enough, u already minted ur bag');
             } else {
                 // PUBLIC — no proof needed
                 const minted = this._mintedPubMap.get(sender).toU64();
