@@ -7978,7 +7978,7 @@
   local.get $2
   i64.lt_u
   select
-  i64.const 604800
+  i64.const 604800000
   i64.lt_u
   if
    i32.const 2
@@ -15889,7 +15889,7 @@
         i32.const 8
         call $~lib/@btc-vision/btc-runtime/runtime/buffer/BytesWriter/BytesWriter#constructor
         local.tee $0
-        i64.const 604800
+        i64.const 604800000
         call $~lib/@btc-vision/btc-runtime/runtime/buffer/BytesWriter/BytesWriter#writeU64
         br $folding-inner3
        end

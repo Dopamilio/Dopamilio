@@ -48,7 +48,7 @@ import { keccak256, keccak256Concat } from '@btc-vision/btc-runtime/runtime';
 
 const IS_TESTNET:    bool = false;
 const TEAM_DURATION: u64 = 0;       // skip team phase → WL starts immediately
-const WL_DURATION:   u64 = 604800;  // 7 days in seconds
+const WL_DURATION:   u64 = 604_800_000;  // 7 days in milliseconds (medianTimestamp is ms)
 
 // ── Collection constants ─────────────────────────────────────────────────────
 
