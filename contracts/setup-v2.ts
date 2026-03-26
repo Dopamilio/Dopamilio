@@ -174,7 +174,7 @@ async function main(): Promise<void> {
     console.log(' Icon       :', ICON_URL);
     console.log(' Banner     :', BANNER_URL);
     console.log(' Phase      :', phaseSim.properties?.phase ?? '?', '(3=PUBLIC)');
-    console.log(' IsTestnet  :', NETWORK === networks.opnetTestnet ? 'true' : 'false');
+    console.log(' IsTestnet  :', testnetSim.properties?.isTestnet ?? testnetSim);
     console.log(' MintPrice  : 6969 sats');
     console.log('=================================================================');
 }
