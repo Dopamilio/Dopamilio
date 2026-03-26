@@ -12,13 +12,22 @@ export const DopamilioNFTAbi = [
     },
     {
         name: 'mint',
-        inputs: [{ name: 'amount', type: ABIDataTypes.UINT64 }],
+        inputs: [
+            { name: 'amount', type: ABIDataTypes.UINT64 },
+            { name: 'proof', type: ABIDataTypes.ARRAY_OF_UINT256 },
+        ],
         outputs: [{ name: 'firstTokenId', type: ABIDataTypes.UINT256 }],
         type: BitcoinAbiTypes.Function,
     },
     {
-        name: 'initMint',
-        inputs: [{ name: 'wlAddresses', type: ABIDataTypes.ARRAY_OF_UINT256 }],
+        name: 'setWLRoot',
+        inputs: [{ name: 'root', type: ABIDataTypes.UINT256 }],
+        outputs: [{ name: 'success', type: ABIDataTypes.BOOL }],
+        type: BitcoinAbiTypes.Function,
+    },
+    {
+        name: 'startMint',
+        inputs: [],
         outputs: [{ name: 'success', type: ABIDataTypes.BOOL }],
         type: BitcoinAbiTypes.Function,
     },
@@ -84,6 +93,13 @@ export const DopamilioNFTAbi = [
         type: BitcoinAbiTypes.Function,
     },
     {
+        name: 'getWLRoot',
+        constant: true,
+        inputs: [],
+        outputs: [{ name: 'root', type: ABIDataTypes.UINT256 }],
+        type: BitcoinAbiTypes.Function,
+    },
+    {
         name: 'getMintedCount',
         constant: true,
         inputs: [
@@ -91,13 +107,6 @@ export const DopamilioNFTAbi = [
             { name: 'phase', type: ABIDataTypes.UINT8 },
         ],
         outputs: [{ name: 'count', type: ABIDataTypes.UINT256 }],
-        type: BitcoinAbiTypes.Function,
-    },
-    {
-        name: 'isWhitelisted',
-        constant: true,
-        inputs: [{ name: 'addr', type: ABIDataTypes.ADDRESS }],
-        outputs: [{ name: 'isWL', type: ABIDataTypes.BOOL }],
         type: BitcoinAbiTypes.Function,
     },
     ...DopamilioNFTEvents,

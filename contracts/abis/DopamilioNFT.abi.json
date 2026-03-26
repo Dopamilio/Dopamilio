@@ -27,6 +27,10 @@
                 {
                     "name": "amount",
                     "type": "UINT64"
+                },
+                {
+                    "name": "proof",
+                    "type": "ARRAY_OF_UINT256"
                 }
             ],
             "outputs": [
@@ -37,16 +41,29 @@
             ]
         },
         {
-            "name": "initMint",
+            "name": "setWLRoot",
             "type": "Function",
             "payable": false,
             "onlyOwner": false,
             "inputs": [
                 {
-                    "name": "wlAddresses",
-                    "type": "ARRAY_OF_UINT256"
+                    "name": "root",
+                    "type": "UINT256"
                 }
             ],
+            "outputs": [
+                {
+                    "name": "success",
+                    "type": "BOOL"
+                }
+            ]
+        },
+        {
+            "name": "startMint",
+            "type": "Function",
+            "payable": false,
+            "onlyOwner": false,
+            "inputs": [],
             "outputs": [
                 {
                     "name": "success",
@@ -182,6 +199,19 @@
             ]
         },
         {
+            "name": "getWLRoot",
+            "type": "View",
+            "payable": false,
+            "onlyOwner": false,
+            "inputs": [],
+            "outputs": [
+                {
+                    "name": "root",
+                    "type": "UINT256"
+                }
+            ]
+        },
+        {
             "name": "getMintedCount",
             "type": "View",
             "payable": false,
@@ -200,24 +230,6 @@
                 {
                     "name": "count",
                     "type": "UINT256"
-                }
-            ]
-        },
-        {
-            "name": "isWhitelisted",
-            "type": "View",
-            "payable": false,
-            "onlyOwner": false,
-            "inputs": [
-                {
-                    "name": "addr",
-                    "type": "ADDRESS"
-                }
-            ],
-            "outputs": [
-                {
-                    "name": "isWL",
-                    "type": "BOOL"
                 }
             ]
         }

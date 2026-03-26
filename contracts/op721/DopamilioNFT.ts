@@ -6,21 +6,21 @@
  *
  * tokenURI: baseURI + '/' + tokenId + '.json'  (tokenIds are 1-based: 1 → 3333)
  *
- * Phases: TEAM (15 min, deployer only) → WL (1 day, on-chain map) → PUBLIC
- * WL set via initMint(wlAddresses: u256[]) — all addresses + startMint in one tx.
- * No Merkle proof required.
+ * Phases: TEAM (15 min, deployer only) → WL (1 hour, Merkle proof) → PUBLIC
+ * WL: setWLRoot(root) then startMint() — two separate admin transactions.
+ * WL proof: double-keccak256 leaf, sorted-pair nodes (Merkle tree).
+ *
+ * Deployer bypass: deployer can mint in ANY phase, only supply check applies.
  *
  * Custom storage pointers — allocated AFTER 16 base pointers
- * (14 OP721 internal + 2 ReentrancyGuard). Absolute slots 17–24.
+ * (14 OP721 internal + 2 ReentrancyGuard). Absolute slots 17–22.
  * Order is FIXED — never insert, only append:
  *   17  mintPrice      StoredU256  (lazy)
  *   18  startTime      StoredU256  (lazy)
  *   19  treasury       StoredString (lazy)
- *   20  teamMap        AddressMemoryMap (eager) — deployer added on deploy
- *   21  wlMap          AddressMemoryMap (eager) — set via initMint
- *   22  mintedWlMap    AddressMemoryMap (eager)
- *   23  mintedPubMap   AddressMemoryMap (eager)
- *   24  mintedTeamMap  AddressMemoryMap (eager)
+ *   20  wlMerkleRoot   StoredU256  (lazy)
+ *   21  mintedWlMap    AddressMemoryMap (eager)
+ *   22  mintedPubMap   AddressMemoryMap (eager)
  */
 
 import { u256 } from '@btc-vision/as-bignum/assembly';
@@ -43,14 +43,15 @@ import {
     U32_BYTE_LENGTH,
 } from '@btc-vision/btc-runtime/runtime';
 import { AddressMemoryMap } from '@btc-vision/btc-runtime/runtime/memory/AddressMemoryMap';
+import { keccak256 } from '@btc-vision/btc-runtime/runtime/hashing/keccak256';
 
-// ── Compile-time config ──────────────────────────────────────────────────────
+// Compile-time config
 
 const IS_TESTNET:    bool = false;
 const TEAM_DURATION: u64 = 900_000;      // 15 minutes in ms
-const WL_DURATION:   u64 = 86_400_000;   // 1 day in ms
+const WL_DURATION:   u64 = 3_600_000;   // 1 hour in ms
 
-// ── Collection constants ─────────────────────────────────────────────────────
+// Collection constants
 
 const BASE_URI:    string = 'https://dopamilio.xyz/api/metadata';
 const ICON_URL:    string = 'https://dopamilio.xyz/icon.png';
@@ -59,33 +60,30 @@ const WEBSITE_URL: string = 'https://dopamilio.xyz';
 const DESCRIPTION: string = '3,333 unique degenerates etched on Bitcoin. 100% on-chain. Pure dopamine.';
 const TREASURY:    string = 'opt1pv5z0n6gn0n8szljp7dewl52548zyvt48pt406cl607wen22amalqfpft8p';
 
-// ── Mint constants ────────────────────────────────────────────────────────────
+// Mint constants
 
 const DEFAULT_MINT_PRICE: u64  = 6969;
 const MAX_SUPPLY:         u256 = u256.fromU64(3333);
-const MAX_MINT_TEAM:      u64  = 10;
 const MAX_MINT_WL:        u64  = 3;
 const MAX_MINT_PUBLIC:    u64  = 5;
 
-// ── Phase IDs ─────────────────────────────────────────────────────────────────
+// Phase IDs
 
 const PHASE_NOT_STARTED: u8 = 0;
 const PHASE_TEAM:        u8 = 1;
 const PHASE_WL:          u8 = 2;
 const PHASE_PUBLIC:      u8 = 3;
 
-// ── Custom storage pointers (AFTER OP721 base's 16 internal pointers) ─────────
+// Custom storage pointers (AFTER OP721 base's 16 internal pointers)
 
-const mintPricePointer:   u16 = Blockchain.nextPointer;  // slot 17
-const startTimePointer:   u16 = Blockchain.nextPointer;  // slot 18
-const treasuryPointer:    u16 = Blockchain.nextPointer;  // slot 19
-const teamMapPointer:     u16 = Blockchain.nextPointer;  // slot 20
-const wlMapPointer:       u16 = Blockchain.nextPointer;  // slot 21
-const mintedWlPointer:    u16 = Blockchain.nextPointer;  // slot 22
-const mintedPubPointer:   u16 = Blockchain.nextPointer;  // slot 23
-const mintedTeamPointer:  u16 = Blockchain.nextPointer;  // slot 24
+const mintPricePointer:    u16 = Blockchain.nextPointer;  // slot 17
+const startTimePointer:    u16 = Blockchain.nextPointer;  // slot 18
+const treasuryPointer:     u16 = Blockchain.nextPointer;  // slot 19
+const wlMerkleRootPointer: u16 = Blockchain.nextPointer;  // slot 20
+const mintedWlPointer:     u16 = Blockchain.nextPointer;  // slot 21
+const mintedPubPointer:    u16 = Blockchain.nextPointer;  // slot 22
 
-// ── Events ────────────────────────────────────────────────────────────────────
+// Events
 
 @final
 class MintStartedEvent extends NetEvent {
@@ -105,44 +103,56 @@ class TreasuryUpdatedEvent extends NetEvent {
     }
 }
 
-// ── DopamilioNFT ─────────────────────────────────────────────────────────────
+@final
+class WLRootSetEvent extends NetEvent {
+    constructor(root: u256) {
+        const data = new BytesWriter(U256_BYTE_LENGTH);
+        data.writeU256(root);
+        super('WLRootSet', data);
+    }
+}
+
+// DopamilioNFT
 
 @final
 export class DopamilioNFT extends OP721 {
 
-    // ── Lazy getters for custom StoredU256 / StoredString ─────────────────────
+    // Lazy getters for custom StoredU256 / StoredString
 
     private __mintPrice: StoredU256 | null = null;
     private get _mintPrice(): StoredU256 {
         if (!this.__mintPrice) this.__mintPrice = new StoredU256(mintPricePointer, EMPTY_POINTER);
-        return this.__mintPrice!;
+        return this.__mintPrice as StoredU256;
     }
 
     private __startTime: StoredU256 | null = null;
     private get _startTime(): StoredU256 {
         if (!this.__startTime) this.__startTime = new StoredU256(startTimePointer, EMPTY_POINTER);
-        return this.__startTime!;
+        return this.__startTime as StoredU256;
     }
 
     private __treasury: StoredString | null = null;
     private get _treasury(): StoredString {
         if (!this.__treasury) this.__treasury = new StoredString(treasuryPointer, 0);
-        return this.__treasury!;
+        return this.__treasury as StoredString;
     }
 
-    // ── Eager AddressMemoryMaps ───────────────────────────────────────────────
+    private __wlMerkleRoot: StoredU256 | null = null;
+    private get _wlMerkleRoot(): StoredU256 {
+        if (!this.__wlMerkleRoot) this.__wlMerkleRoot = new StoredU256(wlMerkleRootPointer, EMPTY_POINTER);
+        return this.__wlMerkleRoot as StoredU256;
+    }
 
-    private readonly _teamMap:       AddressMemoryMap = new AddressMemoryMap(teamMapPointer);
-    private readonly _wlMap:         AddressMemoryMap = new AddressMemoryMap(wlMapPointer);
-    private readonly _mintedWlMap:   AddressMemoryMap = new AddressMemoryMap(mintedWlPointer);
-    private readonly _mintedPubMap:  AddressMemoryMap = new AddressMemoryMap(mintedPubPointer);
-    private readonly _mintedTeamMap: AddressMemoryMap = new AddressMemoryMap(mintedTeamPointer);
+    // Eager AddressMemoryMaps
+
+    private readonly _mintedWlMap:  AddressMemoryMap = new AddressMemoryMap(mintedWlPointer);
+    private readonly _mintedPubMap: AddressMemoryMap = new AddressMemoryMap(mintedPubPointer);
 
     public constructor() {
         super();
     }
 
-    // ── Deployment ────────────────────────────────────────────────────────────
+    // Deployment
 
     public override onDeployment(_calldata: Calldata): void {
         this.instantiate(
@@ -161,15 +171,11 @@ export class DopamilioNFT extends OP721 {
 
         this._mintPrice.value = u256.fromU64(DEFAULT_MINT_PRICE);
         this._treasury.value  = TREASURY;
-
-        // Add deployer to team list so they can mint in TEAM phase
-        const deployer = Blockchain.tx.sender;
-        this._teamMap.set(deployer, u256.One);
     }
 
     public onUpdate(_calldata: Calldata): void {}
 
-    // ── tokenURI override (append /id.json to base) ───────────────────────────
+    // tokenURI override (append /id.json to base)
 
     @view
     @method({ name: 'tokenId', type: ABIDataTypes.UINT256 })
@@ -183,9 +189,12 @@ export class DopamilioNFT extends OP721 {
         return w;
     }
 
-    // ── mint(amount) — no proof required, WL checked on-chain ────────────────
+    // mint(amount, proof) — proof is empty array for TEAM/PUBLIC phases
 
-    @method({ name: 'amount', type: ABIDataTypes.UINT64 })
+    @method(
+        { name: 'amount', type: ABIDataTypes.UINT64 },
+        { name: 'proof', type: ABIDataTypes.ARRAY_OF_UINT256 },
+    )
     @returns({ name: 'firstTokenId', type: ABIDataTypes.UINT256 })
     public mint(calldata: Calldata): BytesWriter {
         const sender = Blockchain.tx.sender;
@@ -199,52 +208,61 @@ export class DopamilioNFT extends OP721 {
         if (amount === 0) throw new Revert('DopamilioNFT: amount must be > 0');
         if (amount > 10)  throw new Revert('DopamilioNFT: max 10 per tx');
 
+        // Read proof array (may be empty for non-WL phases)
+        const proof = calldata.readU256Array();
+
         const phase = this._getPhase();
+        const isDeployer = sender.equals(Blockchain.contractDeployer);
 
-        // ── Phase + wallet cap checks ──────────────────────────────────────────
-        if (phase === PHASE_NOT_STARTED) throw new Revert('DopamilioNFT: mint not started');
+        // Deployer bypass: skip phase/cap checks, only supply is enforced
+        if (!isDeployer) {
+            // Phase + wallet cap checks for non-deployers
+            if (phase === PHASE_NOT_STARTED) throw new Revert('DopamilioNFT: mint not started');
 
-        if (phase === PHASE_TEAM) {
-            if (this._teamMap.get(sender).isZero())
-                throw new Revert('DopamilioNFT: not whitelisted');
-            const minted = this._mintedTeamMap.get(sender).toU64();
-            if (SafeMath.add64(minted, amount) > MAX_MINT_TEAM)
-                throw new Revert('DopamilioNFT: WL cap exceeded');
+            if (phase === PHASE_TEAM) {
+                throw new Revert('DopamilioNFT: team phase \u2014 not open yet');
 
-        } else if (phase === PHASE_WL) {
-            if (this._wlMap.get(sender).isZero())
-                throw new Revert('DopamilioNFT: not whitelisted');
-            const minted = this._mintedWlMap.get(sender).toU64();
-            if (SafeMath.add64(minted, amount) > MAX_MINT_WL)
-                throw new Revert('DopamilioNFT: WL cap exceeded');
+            } else if (phase === PHASE_WL) {
+                // Verify Merkle proof
+                if (!this._verifyMerkleProof(sender, proof)) {
+                    throw new Revert('DopamilioNFT: invalid WL proof');
+                }
+                const minted = this._mintedWlMap.get(sender).toU64();
+                if (SafeMath.add64(minted, amount) > MAX_MINT_WL) {
+                    throw new Revert('DopamilioNFT: WL cap exceeded');
+                }
 
-        } else {
-            // PUBLIC
-            const minted = this._mintedPubMap.get(sender).toU64();
-            if (SafeMath.add64(minted, amount) > MAX_MINT_PUBLIC)
-                throw new Revert('DopamilioNFT: max mint exceeded');
+            } else {
+                // PUBLIC
+                const minted = this._mintedPubMap.get(sender).toU64();
+                if (SafeMath.add64(minted, amount) > MAX_MINT_PUBLIC) {
+                    throw new Revert('DopamilioNFT: max mint exceeded');
+                }
+            }
         }
 
-        // ── Supply check ──────────────────────────────────────────────────────
+        // Supply check
         const firstTokenId = this._nextTokenId.value;
         if (SafeMath.add(firstTokenId, u256.fromU64(amount)) > SafeMath.add(MAX_SUPPLY, u256.One)) {
             throw new Revert('DopamilioNFT: MAX_SUPPLY reached');
         }
 
-        // ── Payment check ─────────────────────────────────────────────────────
-        if (!IS_TESTNET || Blockchain.tx.outputs.length > 0) {
-            if (!IS_TESTNET && Blockchain.tx.outputs.length === 0) {
-                throw new Revert('DopamilioNFT: missing outputs');
-            }
-            const treasury = this._treasury.value;
-            if (treasury.length === 0) throw new Revert('DopamilioNFT: treasury not set');
-            const required: u64 = SafeMath.mul64(this._mintPrice.value.toU64(), amount);
-            if (this._getPaymentToTreasury() < required) {
-                throw new Revert('DopamilioNFT: insufficient funds');
+        // Payment check — deployer bypass: skip payment (team allocation)
+        if (!isDeployer) {
+            if (!IS_TESTNET || Blockchain.tx.outputs.length > 0) {
+                if (!IS_TESTNET && Blockchain.tx.outputs.length === 0) {
+                    throw new Revert('DopamilioNFT: missing outputs');
+                }
+                const treasury = this._treasury.value;
+                if (treasury.length === 0) throw new Revert('DopamilioNFT: treasury not set');
+                const required: u64 = SafeMath.mul64(this._mintPrice.value.toU64(), amount);
+                if (this._getPaymentToTreasury() < required) {
+                    throw new Revert('DopamilioNFT: insufficient funds');
+                }
             }
         }
 
-        // ── Mint each token via OP721 base ────────────────────────────────────
+        // Mint each token via OP721 base
         for (let i: u64 = 0; i < amount; i++) {
             const tokenId = SafeMath.add(firstTokenId, u256.fromU64(i));
             this._mint(sender, tokenId);
@@ -252,16 +270,15 @@ export class DopamilioNFT extends OP721 {
 
         this._nextTokenId.value = SafeMath.add(firstTokenId, u256.fromU64(amount));
 
-        // ── Update per-phase minted counters ──────────────────────────────────
-        if (phase === PHASE_TEAM) {
-            const prev = this._mintedTeamMap.get(sender).toU64();
-            this._mintedTeamMap.set(sender, u256.fromU64(SafeMath.add64(prev, amount)));
-        } else if (phase === PHASE_WL) {
-            const prev = this._mintedWlMap.get(sender).toU64();
-            this._mintedWlMap.set(sender, u256.fromU64(SafeMath.add64(prev, amount)));
-        } else {
-            const prev = this._mintedPubMap.get(sender).toU64();
-            this._mintedPubMap.set(sender, u256.fromU64(SafeMath.add64(prev, amount)));
+        // Update per-phase minted counters (deployer doesn't track, no phase cap)
+        if (!isDeployer) {
+            if (phase === PHASE_WL) {
+                const prev = this._mintedWlMap.get(sender).toU64();
+                this._mintedWlMap.set(sender, u256.fromU64(SafeMath.add64(prev, amount)));
+            } else if (phase === PHASE_PUBLIC) {
+                const prev = this._mintedPubMap.get(sender).toU64();
+                this._mintedPubMap.set(sender, u256.fromU64(SafeMath.add64(prev, amount)));
+            }
         }
 
         const result = new BytesWriter(U256_BYTE_LENGTH);
@@ -269,32 +286,36 @@ export class DopamilioNFT extends OP721 {
         return result;
     }
 
-    // ── Admin: initMint — set WL addresses + start mint in one tx ────────────
+    // Admin: setWLRoot — store Merkle root for WL verification
 
-    @method({ name: 'wlAddresses', type: ABIDataTypes.ARRAY_OF_UINT256 })
+    @method({ name: 'root', type: ABIDataTypes.UINT256 })
     @returns({ name: 'success', type: ABIDataTypes.BOOL })
-    public initMint(calldata: Calldata): BytesWriter {
+    public setWLRoot(calldata: Calldata): BytesWriter {
         this.onlyDeployer(Blockchain.tx.sender);
-        if (!this._startTime.value.isZero()) throw new Revert('DopamilioNFT: already started');
-
-        // Read all WL addresses (each u256 = 32-byte address big-endian)
-        const addrs = calldata.readU256Array();
-        for (let i: i32 = 0; i < addrs.length; i++) {
-            const addr = this._u256ToAddress(addrs[i]);
-            this._wlMap.set(addr, u256.One);
-        }
-
-        // Start mint
-        const ts = u256.fromU64(Blockchain.block.medianTimestamp);
-        this._startTime.value = ts;
-        Blockchain.emit(new MintStartedEvent(ts));
-
+        const root = calldata.readU256();
+        this._wlMerkleRoot.value = root;
+        Blockchain.emit(new WLRootSetEvent(root));
         const result = new BytesWriter(1);
         result.writeBoolean(true);
         return result;
     }
 
-    // ── Admin: setMintPrice ───────────────────────────────────────────────────
+    // Admin: startMint — activate the phase clock
+
+    @method()
+    @returns({ name: 'success', type: ABIDataTypes.BOOL })
+    public startMint(_calldata: Calldata): BytesWriter {
+        this.onlyDeployer(Blockchain.tx.sender);
+        if (!this._startTime.value.isZero()) throw new Revert('DopamilioNFT: already started');
+        const ts = u256.fromU64(Blockchain.block.medianTimestamp);
+        this._startTime.value = ts;
+        Blockchain.emit(new MintStartedEvent(ts));
+        const result = new BytesWriter(1);
+        result.writeBoolean(true);
+        return result;
+    }
+
+    // Admin: setMintPrice
 
     @method({ name: 'priceSats', type: ABIDataTypes.UINT256 })
     @returns({ name: 'success', type: ABIDataTypes.BOOL })
@@ -308,7 +329,7 @@ export class DopamilioNFT extends OP721 {
         return result;
     }
 
-    // ── Admin: setTreasuryAddress ─────────────────────────────────────────────
+    // Admin: setTreasuryAddress
 
     @method({ name: 'addr', type: ABIDataTypes.STRING })
     @returns({ name: 'success', type: ABIDataTypes.BOOL })
@@ -323,7 +344,7 @@ export class DopamilioNFT extends OP721 {
         return result;
     }
 
-    // ── Views ─────────────────────────────────────────────────────────────────
+    // Views
 
     @view
     @returns({ name: 'priceSats', type: ABIDataTypes.UINT256 })
@@ -386,6 +407,14 @@ export class DopamilioNFT extends OP721 {
     }
 
     @view
+    @returns({ name: 'root', type: ABIDataTypes.UINT256 })
+    public getWLRoot(_calldata: Calldata): BytesWriter {
+        const result = new BytesWriter(U256_BYTE_LENGTH);
+        result.writeU256(this._wlMerkleRoot.value);
+        return result;
+    }
+
+    @view
     @method(
         { name: 'addr',  type: ABIDataTypes.ADDRESS },
         { name: 'phase', type: ABIDataTypes.UINT8 },
@@ -395,25 +424,14 @@ export class DopamilioNFT extends OP721 {
         const addr  = calldata.readAddress();
         const phase = calldata.readU8();
         let count = u256.Zero;
-        if (phase === 1)      count = this._mintedTeamMap.get(addr);
-        else if (phase === 2) count = this._mintedWlMap.get(addr);
+        if (phase === 2)      count = this._mintedWlMap.get(addr);
         else if (phase === 3) count = this._mintedPubMap.get(addr);
         const result = new BytesWriter(U256_BYTE_LENGTH);
         result.writeU256(count);
         return result;
     }
 
-    @view
-    @method({ name: 'addr', type: ABIDataTypes.ADDRESS })
-    @returns({ name: 'isWL', type: ABIDataTypes.BOOL })
-    public isWhitelisted(calldata: Calldata): BytesWriter {
-        const addr = calldata.readAddress();
-        const result = new BytesWriter(1);
-        result.writeBoolean(!this._wlMap.get(addr).isZero());
-        return result;
-    }
-
-    // ── Internal: current phase ───────────────────────────────────────────────
+    // Internal: current phase
 
     private _getPhase(): u8 {
         if (IS_TESTNET) return PHASE_PUBLIC;
@@ -426,7 +444,7 @@ export class DopamilioNFT extends OP721 {
         return PHASE_PUBLIC;
     }
 
-    // ── Internal: sum of BTC sent to treasury in tx outputs ──────────────────
+    // Internal: sum of BTC sent to treasury in tx outputs
 
     private _getPaymentToTreasury(): u64 {
         const outputs  = Blockchain.tx.outputs;
@@ -440,16 +458,63 @@ export class DopamilioNFT extends OP721 {
         return total;
     }
 
-    // ── Internal: convert u256 big-endian to Address (32 bytes) ──────────────
+    // Internal: verify Merkle proof for WL
+    // Leaf = keccak256(keccak256(senderAddr_32bytes)) — double hash
+    // Node = sorted-pair: if proof[i] <= current: keccak256(concat(proof[i], current))
+    //                     else keccak256(concat(current, proof[i]))
 
-    private _u256ToAddress(v: u256): Address {
-        const w = new BytesWriter(U256_BYTE_LENGTH);
-        w.writeU256(v);
-        const buf = w.getBuffer();
-        const bytes = new Array<u8>(32);
-        for (let i: i32 = 0; i < 32; i++) {
-            bytes[i] = buf[i];
+    private _verifyMerkleProof(sender: Address, proof: u256[]): bool {
+        const root = this._wlMerkleRoot.value;
+        if (root.isZero()) return false;
+
+        // Serialize sender address to 32 bytes
+        const addrWriter = new BytesWriter(U256_BYTE_LENGTH);
+        addrWriter.writeAddress(sender);
+        const addrBytes = addrWriter.getBuffer();
+
+        // Compute leaf = keccak256(keccak256(addrBytes))
+        const innerHash = keccak256(addrBytes);
+        const leafHash  = keccak256(innerHash);
+
+        // Load leaf hash into u256 (big-endian from 32-byte hash)
+        let current = u256.fromBytes(leafHash, true);
+
+        // Walk the proof path
+        for (let i: i32 = 0; i < proof.length; i++) {
+            const proofNode = proof[i];
+            let combined = new Uint8Array(64);
+
+            if (u256.le(proofNode, current)) {
+                // proof[i] <= current: keccak256(concat(proof[i], current))
+                const nodeWriter = new BytesWriter(U256_BYTE_LENGTH);
+                nodeWriter.writeU256(proofNode);
+                const nodeBytes = nodeWriter.getBuffer();
+
+                const currWriter = new BytesWriter(U256_BYTE_LENGTH);
+                currWriter.writeU256(current);
+                const currBytes = currWriter.getBuffer();
+
+                combined.set(nodeBytes, 0);
+                combined.set(currBytes, 32);
+            } else {
+                // current < proof[i]: keccak256(concat(current, proof[i]))
+                const currWriter = new BytesWriter(U256_BYTE_LENGTH);
+                currWriter.writeU256(current);
+                const currBytes = currWriter.getBuffer();
+
+                const nodeWriter = new BytesWriter(U256_BYTE_LENGTH);
+                nodeWriter.writeU256(proofNode);
+                const nodeBytes = nodeWriter.getBuffer();
+
+                combined.set(currBytes, 0);
+                combined.set(nodeBytes, 32);
+            }
+
+            const hashResult = keccak256(combined);
+            current = u256.fromBytes(hashResult, true);
         }
-        return new Address(bytes);
+
+        return u256.eq(current, root);
     }
+
 }

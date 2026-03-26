@@ -1777,7 +1777,7 @@ function _getDopamilioAbi(sdk){
   if(_DOPAMILIO_ABI) return _DOPAMILIO_ABI;
   const B=sdk.BitcoinAbiTypes, A=sdk.ABIDataTypes;
   _DOPAMILIO_ABI = [
-    {name:'mint',           type:B.Function,payable:true,  inputs:[{name:'amount',type:A.UINT64}], outputs:[{name:'firstTokenId',type:A.UINT256}]},
+    {name:'mint',           type:B.Function,payable:true,  inputs:[{name:'amount',type:A.UINT64},{name:'proof',type:A.ARRAY_OF_UINT256}], outputs:[{name:'firstTokenId',type:A.UINT256}]},
     {name:'getMintPrice',   type:B.Function,payable:false, inputs:[],                                  outputs:[{name:'price',type:A.UINT256}]},
     {name:'totalSupply',    type:B.Function,payable:false, inputs:[],                                  outputs:[{name:'total',type:A.UINT256}]},
     {name:'tokenURI',       type:B.Function,payable:false, inputs:[{name:'tokenId',type:A.UINT256}],   outputs:[{name:'uri',type:A.STRING}]},
@@ -1857,13 +1857,14 @@ async function _loadContractInfo(){
     const contract = getContract(CONTRACT_ADDR,_getDopamilioAbi(sdk),provider,NETWORK_OBJ);
 
     // Fetch supply + price + phase in parallel
-    const [totalRes, priceRes, phaseRes, startRes, isTestRes, wlDurRes] = await Promise.all([
+    const [totalRes, priceRes, phaseRes, startRes, isTestRes, wlDurRes, teamDurRes] = await Promise.all([
       contract.totalSupply(),
       contract.getMintPrice(),
       contract.getPhase().catch(()=>null),
       contract.getStartTime().catch(()=>null),
       contract.getIsTestnet().catch(()=>null),
       contract.getWlDuration().catch(()=>null),
+      contract.getTeamDuration().catch(()=>null),
     ]);
 
     const totalMinted = Number(totalRes?.properties?.total ?? 0n);
@@ -1876,6 +1877,8 @@ async function _loadContractInfo(){
     // Update durations from chain (in ms, same as medianTimestamp)
     const wlDurMs = Number(wlDurRes?.properties?.dur ?? 0n);
     if(wlDurMs > 0) _wlDur = wlDurMs;
+    const teamDurMs = Number(teamDurRes?.properties?.dur ?? 0n);
+    if(teamDurMs > 0) _teamDur = teamDurMs;
 
     // Update phase display from onchain data
     const phase     = Number(phaseRes?.properties?.phase ?? 0n);
@@ -2567,7 +2570,7 @@ function goNft(i,rst){
 let curPhase=0,connected=false,mintedC=0,_rawChainPhase=0;
 const SUPPLY=MAX_SUPPLY;
 let phaseTimers=[0,0,0];
-let _chainStartTime=0,_isTestnet=false,_teamDur=0,_wlDur=604800000; // _wlDur updated from chain
+let _chainStartTime=0,_isTestnet=false,_teamDur=900000,_wlDur=3600000; // updated from chain
 function fmt(s){s=Math.floor(s);const d=Math.floor(s/86400),h=Math.floor((s%86400)/3600),m=Math.floor((s%3600)/60),ss=s%60;return d>0?`${d}d ${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(ss).padStart(2,'0')}`:`${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(ss).padStart(2,'0')}`;}
 function tickTimers(){
   if(_isTestnet){['t0','t1','t2'].forEach(function(id){var e=document.getElementById(id);if(e)e.textContent='TESTNET';});return;}
@@ -2752,9 +2755,25 @@ async function doMint(){
       ],
     });
 
-    // 5. Simulate
+    // 5. Fetch WL proof if in WL phase (chain phase 2)
+    let wlProof = [];
+    if(_rawChainPhase===2){
+      const isNonZero=mldsaBytes.some(function(b){return b!==0;});
+      const identityHex=isNonZero
+        ?Array.from(mldsaBytes).map(function(x){return x.toString(16).padStart(2,'0');}).join('')
+        :walletAddr.replace(/^0x/,'').toLowerCase();
+      try{
+        const pr=await fetch('/api/proof?addr='+encodeURIComponent(identityHex));
+        if(pr.ok){const pd=await pr.json();wlProof=pd.proof||[];}
+        else throw new Error('WL proof not found — wallet not in whitelist');
+      }catch(fe){throw new Error('Not in whitelist: '+fe.message);}
+      if(!wlProof.length)throw new Error('WL proof empty — wallet not whitelisted');
+      wlProof=wlProof.map(function(h){return BigInt(h);});
+    }
+
+    // 6. Simulate
     btn.textContent='\u23F3 SIMULATING...';
-    const sim = await contract.mint(BigInt(quantity));
+    const sim = await contract.mint(BigInt(quantity),wlProof);
     if(sim.revert) throw new Error(sim.revert);
 
     // 7. Send — wallet signs, never a keypair

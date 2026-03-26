@@ -30,9 +30,19 @@ export type Mint = CallResult<
 >;
 
 /**
- * @description Represents the result of the initMint function call.
+ * @description Represents the result of the setWLRoot function call.
  */
-export type InitMint = CallResult<
+export type SetWLRoot = CallResult<
+    {
+        success: boolean;
+    },
+    OPNetEvent<never>[]
+>;
+
+/**
+ * @description Represents the result of the startMint function call.
+ */
+export type StartMint = CallResult<
     {
         success: boolean;
     },
@@ -130,6 +140,16 @@ export type GetTreasuryAddress = CallResult<
 >;
 
 /**
+ * @description Represents the result of the getWLRoot function call.
+ */
+export type GetWLRoot = CallResult<
+    {
+        root: bigint;
+    },
+    OPNetEvent<never>[]
+>;
+
+/**
  * @description Represents the result of the getMintedCount function call.
  */
 export type GetMintedCount = CallResult<
@@ -139,23 +159,14 @@ export type GetMintedCount = CallResult<
     OPNetEvent<never>[]
 >;
 
-/**
- * @description Represents the result of the isWhitelisted function call.
- */
-export type IsWhitelisted = CallResult<
-    {
-        isWL: boolean;
-    },
-    OPNetEvent<never>[]
->;
-
 // ------------------------------------------------------------------
 // IDopamilioNFT
 // ------------------------------------------------------------------
 export interface IDopamilioNFT extends IOP_NETContract {
     tokenURI(tokenId: bigint): Promise<TokenURI>;
-    mint(amount: bigint): Promise<Mint>;
-    initMint(wlAddresses: bigint[]): Promise<InitMint>;
+    mint(amount: bigint, proof: bigint[]): Promise<Mint>;
+    setWLRoot(root: bigint): Promise<SetWLRoot>;
+    startMint(): Promise<StartMint>;
     setMintPrice(priceSats: bigint): Promise<SetMintPrice>;
     setTreasuryAddress(addr: string): Promise<SetTreasuryAddress>;
     getMintPrice(): Promise<GetMintPrice>;
@@ -165,6 +176,6 @@ export interface IDopamilioNFT extends IOP_NETContract {
     getWlDuration(): Promise<GetWlDuration>;
     getIsTestnet(): Promise<GetIsTestnet>;
     getTreasuryAddress(): Promise<GetTreasuryAddress>;
+    getWLRoot(): Promise<GetWLRoot>;
     getMintedCount(addr: Address, phase: number): Promise<GetMintedCount>;
-    isWhitelisted(addr: Address): Promise<IsWhitelisted>;
 }
