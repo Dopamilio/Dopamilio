@@ -26,8 +26,8 @@ test-apis.js
 
 # Internal session files
 prompt.md
+PENDING_TASKS.md
 collection_meta.json
-scripts/
 
 # Secrets
 .env

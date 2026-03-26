@@ -42,7 +42,7 @@ module.exports = function handler(req, res) {
     res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
     res.setHeader('Access-Control-Allow-Origin', '*');
     return res.status(200).json({
-      name:        'NFT #' + id,
+      name:        'Dopamilio #' + id,
       description: DESCRIPTION,
       symbol:      'DOPAMILIO',
       image:       PINATA + cid,

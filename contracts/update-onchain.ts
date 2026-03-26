@@ -24,9 +24,9 @@ import { BitcoinAbiTypes, BitcoinInterfaceAbi, getContract, JSONRpcProvider } fr
 const TESTNET_RPC = 'https://testnet.opnet.org';
 const NETWORK     = networks.opnetTestnet;
 
-const ICON_URL    = 'https://dopamilio-mint.vercel.app/icon.png';
-const BANNER_URL  = 'https://dopamilio-mint.vercel.app/banner.png';
-const BASE_URI    = 'https://dopamilio-mint.vercel.app/api/metadata';
+const ICON_URL    = 'https://dopamilio.xyz/icon.png';
+const BANNER_URL  = 'https://dopamilio.xyz/banner.png';
+const BASE_URI    = 'https://dopamilio.xyz/api/metadata';
 const DESCRIPTION = '3,333 unique degenerates etched on Bitcoin. 100% on-chain. Pure dopamine.';
 const WEBSITE_URL = 'https://dopamilio.xyz';
 

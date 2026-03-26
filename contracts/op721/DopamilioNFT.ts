@@ -6,7 +6,7 @@
  *
  * tokenURI: baseURI + '/' + tokenId + '.json'  (tokenIds are 1-based: 1 → 3333)
  *
- * Phases (mainnet): owner calls startMint() → TEAM (0s) → WL (7d) → PUBLIC
+ * Phases (mainnet): owner calls startMint() → TEAM (1d) → WL (1.5h) → PUBLIC
  * WL uses Merkle tree proof. Owner calls setWLRoot(root) before startMint().
  *
  * Custom storage pointers — allocated AFTER 16 base pointers
@@ -47,14 +47,14 @@ import { keccak256, keccak256Concat } from '@btc-vision/btc-runtime/runtime';
 // ── Compile-time config ──────────────────────────────────────────────────────
 
 const IS_TESTNET:    bool = false;
-const TEAM_DURATION: u64 = 600_000;      // TEST: 10 min — change to 0 for mainnet
-const WL_DURATION:   u64 = 600_000;      // TEST: 10 min — change to 604_800_000 (7d) for mainnet
+const TEAM_DURATION: u64 = 86_400_000;   // 1 day in ms
+const WL_DURATION:   u64 = 5_400_000;    // 1.5 hours in ms
 
 // ── Collection constants ─────────────────────────────────────────────────────
 
-const BASE_URI:    string = 'https://dopamilio.vercel.app/api/metadata';
-const ICON_URL:    string = 'https://dopamilio.vercel.app/icon.png';
-const BANNER_URL:  string = 'https://dopamilio.vercel.app/banner.png';
+const BASE_URI:    string = 'https://dopamilio.xyz/api/metadata';
+const ICON_URL:    string = 'https://dopamilio.xyz/icon.png';
+const BANNER_URL:  string = 'https://dopamilio.xyz/banner.png';
 const WEBSITE_URL: string = 'https://dopamilio.xyz';
 const DESCRIPTION: string = '3,333 unique degenerates etched on Bitcoin. 100% on-chain. Pure dopamine.';
 const TREASURY:    string = 'opt1pv5z0n6gn0n8szljp7dewl52548zyvt48pt406cl607wen22amalqfpft8p';
