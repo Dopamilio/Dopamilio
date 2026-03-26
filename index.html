@@ -1049,22 +1049,7 @@ body{font-family:'JetBrains Mono','SF Mono','Menlo','Courier New',monospace;}
   width:min(42vw,560px);
 }
 #sniper-overlay.show{display:block;}
-/* CSS quickscope crosshair — replaces quickscope.png */
-#sniper-gif{width:100%;aspect-ratio:500/354;display:block;border-radius:6px;
-  position:relative;overflow:hidden;background:rgba(0,0,0,.88);}
-#sniper-gif .sc-bg-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.18;pointer-events:none;}
-.sc-circle{position:absolute;border-radius:50%;border:2px solid rgba(0,255,0,.75);
-  top:50%;left:50%;transform:translate(-50%,-50%);}
-.sc-outer-ring{width:66%;padding-bottom:66%;}
-.sc-inner-ring{width:24%;padding-bottom:24%;border-color:rgba(0,255,0,.45);}
-.sc-hline,.sc-vline{position:absolute;background:rgba(0,255,0,.65);}
-.sc-hline{width:100%;height:2px;top:50%;transform:translateY(-50%);}
-.sc-vline{height:100%;width:2px;left:50%;transform:translateX(-50%);}
-.sc-dot{position:absolute;width:5px;height:5px;background:#00ff00;border-radius:50%;
-  top:50%;left:50%;transform:translate(-50%,-50%);}
-.sc-label{position:absolute;bottom:8%;right:5%;
-  font-family:'JetBrains Mono',monospace;font-size:min(2vw,11px);
-  color:rgba(0,255,0,.7);letter-spacing:3px;text-transform:uppercase;}
+#sniper-gif{width:100%;display:block;border-radius:6px;}
 #sniper-overlay .sniper-drag-handle{
   position:absolute;top:0;left:0;right:0;height:28px;
   cursor:move;background:rgba(0,0,0,0.01);
@@ -1744,15 +1729,7 @@ input,textarea{-webkit-user-select:text;-moz-user-select:text;user-select:text;}
 <!-- Sniper overlay — shown on mint confirm -->
 <div id="sniper-overlay">
   <div class="sniper-drag-handle"></div>
-  <div id="sniper-gif" class="sc-hw">
-    <div class="sc-circle sc-outer-ring"></div>
-    <div class="sc-circle sc-inner-ring"></div>
-    <div class="sc-hline"></div>
-    <div class="sc-vline"></div>
-    <div class="sc-dot"></div>
-    <img src="./memes_mlg/sniper/sniper.webp" alt="" class="sc-bg-img" loading="lazy">
-    <span class="sc-label">360 NOSCOPE</span>
-  </div>
+  <img id="sniper-gif" src="./memes_mlg/quickscope.png" alt="" width="500" height="354">
 </div>
 <audio id="sniper-audio" src="./memes_mlg/sniper/sniperaudio.mp3" preload="none"></audio>
 <button id="test-sniper-btn" onclick="_playSniperEffect()" style="display:none;position:fixed;bottom:80px;right:16px;z-index:99999;background:#0f0;color:#000;font-weight:700;font-size:12px;padding:8px 14px;border:none;border-radius:6px;cursor:pointer;">🎯 TEST SNIPER</button>
