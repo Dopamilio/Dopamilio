@@ -339,18 +339,37 @@ body{
 @keyframes badgelive{0%,100%{opacity:1;}50%{opacity:.4;}}
 @keyframes soldout-flash{0%,100%{opacity:1;}50%{opacity:0;}}
 @keyframes mkt-soon-blink{
-  0%,48%{opacity:1;text-shadow:0 0 20px #00ff41,0 0 50px #00ff41,0 0 90px #22c55e,0 0 140px #00cc33;}
-  50%,98%{opacity:0;text-shadow:none;}
-  100%{opacity:1;}
+  0%,45%{
+    color:#00ff41;
+    text-shadow:0 0 18px #00ff41,0 0 40px #00ff41,0 0 80px #22c55e,0 0 120px #00cc33;
+  }
+  50%,95%{
+    color:#0c2410;
+    text-shadow:0 0 6px #061408;
+  }
+  100%{
+    color:#00ff41;
+    text-shadow:0 0 18px #00ff41,0 0 40px #00ff41,0 0 80px #22c55e,0 0 120px #00cc33;
+  }
 }
 #mkt-soon-overlay{
   display:none;position:fixed;inset:0;z-index:450;
-  backdrop-filter:blur(6px) brightness(0.75);
-  -webkit-backdrop-filter:blur(6px) brightness(0.75);
+  backdrop-filter:blur(6px) brightness(0.72);
+  -webkit-backdrop-filter:blur(6px) brightness(0.72);
   pointer-events:all;
   align-items:center;justify-content:center;
 }
+#mkt-soon-overlay::before{
+  content:'';position:absolute;inset:0;
+  background:repeating-linear-gradient(
+    0deg,
+    transparent,transparent 3px,
+    rgba(0,8,0,0.18) 3px,rgba(0,8,0,0.18) 4px
+  );
+  pointer-events:none;z-index:1;
+}
 #mkt-soon-text{
+  position:relative;z-index:2;
   font-family:'Press Start 2P',monospace;
   font-size:clamp(56px,14vw,140px);
   color:#00ff41;
@@ -2500,7 +2519,7 @@ let curPhase=0,connected=false,mintedC=0,_rawChainPhase=0;
 const SUPPLY=MAX_SUPPLY;
 let phaseTimers=[0,0,0];
 let _chainStartTime=0,_isTestnet=false,_teamDur=0,_wlDur=604800000; // _wlDur updated from chain
-function fmt(s){const d=Math.floor(s/86400),h=Math.floor((s%86400)/3600),m=Math.floor((s%3600)/60),ss=s%60;return d>0?`${d}d ${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(ss).padStart(2,'0')}`:`${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(ss).padStart(2,'0')}`;}
+function fmt(s){s=Math.floor(s);const d=Math.floor(s/86400),h=Math.floor((s%86400)/3600),m=Math.floor((s%3600)/60),ss=s%60;return d>0?`${d}d ${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(ss).padStart(2,'0')}`:`${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(ss).padStart(2,'0')}`;}
 function tickTimers(){
   if(_isTestnet){['t0','t1','t2'].forEach(function(id){var e=document.getElementById(id);if(e)e.textContent='TESTNET';});return;}
   if(_chainStartTime===0){['t0','t1','t2'].forEach(function(id){var e=document.getElementById(id);if(e)e.textContent='SOON';});return;}
