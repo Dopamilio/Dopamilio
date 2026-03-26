@@ -148,7 +148,7 @@ body{
 @keyframes lb{0%,100%{background:#f00;}50%{background:#800;}}
 .tick-inner{overflow:hidden;flex:1;position:relative;}
 .tick-inner::before{content:'';position:absolute;left:0;top:0;bottom:0;width:60px;background:linear-gradient(to right,rgba(0,0,0,.95) 0%,transparent 100%);z-index:2;pointer-events:none;}
-.tick-track{display:flex;white-space:nowrap;animation:ts 56s linear infinite;}
+.tick-track{display:flex;white-space:nowrap;animation:ts 12s linear infinite;}
 .tick-track .tick-clone{display:inline-flex;flex-shrink:0;padding-right:60px;}
 .ti{padding:0 18px;font-family:'JetBrains Mono','SF Mono',monospace;font-size:11px;font-weight:400;letter-spacing:0.3px;}
 .ti-sym{color:rgba(255,255,255,0.7);margin-right:6px;font-weight:500;}
@@ -1689,8 +1689,8 @@ function _getDopamilioAbi(sdk){
     {name:'tokenURI',       type:B.Function,payable:false, inputs:[{name:'tokenId',type:A.UINT256}],   outputs:[{name:'uri',type:A.STRING}]},
     {name:'getStartTime',   type:B.Function,payable:false, inputs:[],                                  outputs:[{name:'startTime',type:A.UINT256}]},
     {name:'getPhase',       type:B.Function,payable:false, inputs:[],                                  outputs:[{name:'phase',type:A.UINT8}]},
-    {name:'getTeamDuration',type:B.Function,payable:false, inputs:[],                                  outputs:[{name:'dur',type:A.UINT256}]},
-    {name:'getWlDuration',  type:B.Function,payable:false, inputs:[],                                  outputs:[{name:'dur',type:A.UINT256}]},
+    {name:'getTeamDuration',type:B.Function,payable:false, inputs:[],                                  outputs:[{name:'dur',type:A.UINT64}]},
+    {name:'getWlDuration',  type:B.Function,payable:false, inputs:[],                                  outputs:[{name:'dur',type:A.UINT64}]},
     {name:'getIsTestnet',   type:B.Function,payable:false, inputs:[],                                  outputs:[{name:'isTestnet',type:A.BOOL}]},
   ];
   return _DOPAMILIO_ABI;
@@ -1764,12 +1764,13 @@ async function _loadContractInfo(){
     const contract = getContract(CONTRACT_ADDR,_getDopamilioAbi(sdk),provider,NETWORK_OBJ);
 
     // Fetch supply + price + phase in parallel
-    const [totalRes, priceRes, phaseRes, startRes, isTestRes] = await Promise.all([
+    const [totalRes, priceRes, phaseRes, startRes, isTestRes, wlDurRes] = await Promise.all([
       contract.totalSupply(),
       contract.getMintPrice(),
       contract.getPhase().catch(()=>null),
       contract.getStartTime().catch(()=>null),
       contract.getIsTestnet().catch(()=>null),
+      contract.getWlDuration().catch(()=>null),
     ]);
 
     const totalMinted = Number(totalRes?.properties?.total ?? 0n);
@@ -1778,6 +1779,10 @@ async function _loadContractInfo(){
     mintedC = totalMinted;
     updateProg(totalMinted);
     _updatePriceDisplay(onChainPrice);
+
+    // Update durations from chain (in ms, same as medianTimestamp)
+    const wlDurMs = Number(wlDurRes?.properties?.dur ?? 0n);
+    if(wlDurMs > 0) _wlDur = wlDurMs;
 
     // Update phase display from onchain data
     const phase     = Number(phaseRes?.properties?.phase ?? 0n);
@@ -1862,8 +1867,9 @@ async function _scanMintsForTxids(fromBlock, toBlock){
                     tokenIdHex += (byt<16?'0':'')+byt.toString(16);
                   }
                   var tokenId = String(parseInt(tokenIdHex,16));
-                  if(!_mintTxCache[tokenId] && tx.hash){
-                    _mintTxCache[tokenId] = tx.hash;
+                  var _txh = tx.transactionId || tx.hash || tx.txid || '';
+                  if(!_mintTxCache[tokenId] && _txh){
+                    _mintTxCache[tokenId] = _txh;
                     changed = true;
                   }
                 }
@@ -2454,11 +2460,10 @@ function goNft(i,rst){
 /* ── ACTIVITY (real on-chain data via _fetchRecentMints) ── */
 
 /* ── PHASES ── */
-const PHASES=[{name:'GTD — GUARANTEED',max:5,price:10},{name:'WHITELIST',max:10,price:10},{name:'PUBLIC MINT',max:10,price:10}];
 let curPhase=0,connected=false,mintedC=0,_rawChainPhase=0;
-const SUPPLY=MAX_SUPPLY,PHASE_SECS=3600;
-let phaseTimers=[PHASE_SECS,PHASE_SECS,PHASE_SECS];
-let _chainStartTime=0,_isTestnet=false,_teamDur=3600,_wlDur=3600;
+const SUPPLY=MAX_SUPPLY;
+let phaseTimers=[0,0,0];
+let _chainStartTime=0,_isTestnet=false,_teamDur=0,_wlDur=604800000; // _wlDur updated from chain
 function fmt(s){const h=Math.floor(s/3600),m=Math.floor((s%3600)/60),ss=s%60;return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(ss).padStart(2,'0')}`;}
 function tickTimers(){
   if(_isTestnet){['t0','t1','t2'].forEach(function(id){var e=document.getElementById(id);if(e)e.textContent='TESTNET';});return;}
@@ -2469,12 +2474,18 @@ setInterval(tickTimers,1000);
 function _updatePhaseDisplay(phase,startTime,isTestnet){
   _isTestnet=isTestnet;_chainStartTime=startTime;_rawChainPhase=phase;
   if(isTestnet){setPhase(2);['t0','t1','t2'].forEach(function(id){var e=document.getElementById(id);if(e)e.textContent='TESTNET';});return;}
-  if(startTime===0){return;} // not started — keep default "SOON" display
-  const now=Math.floor(Date.now()/1000);const elapsed=Math.max(0,now-startTime);
-  if(phase===0){phaseTimers[0]=Math.max(0,_teamDur-elapsed);phaseTimers[1]=_wlDur;phaseTimers[2]=0;}
-  else if(phase===1){phaseTimers[0]=0;phaseTimers[1]=Math.max(0,_teamDur+_wlDur-elapsed);phaseTimers[2]=0;}
+  if(startTime===0||phase===0){return;} // not started — keep default "SOON" display
+  // startTime and _wlDur are in ms (medianTimestamp units); convert elapsed to seconds for timers
+  const nowMs=Date.now();
+  const elapsedSec=Math.max(0,(nowMs-startTime)/1000);
+  const wlDurSec=Math.max(1,_wlDur/1000);
+  const teamDurSec=Math.max(0,_teamDur/1000);
+  // Contract: 1=TEAM, 2=WL, 3=PUBLIC → Frontend: 0=TEAM, 1=WL, 2=PUBLIC
+  const frontendPhase=Math.min(phase-1,2);
+  if(phase===1){phaseTimers[0]=Math.max(0,teamDurSec-elapsedSec);phaseTimers[1]=wlDurSec;phaseTimers[2]=0;}
+  else if(phase===2){phaseTimers[0]=0;phaseTimers[1]=Math.max(0,wlDurSec-elapsedSec);phaseTimers[2]=0;}
   else{phaseTimers=[0,0,0];}
-  setPhase(Math.min(phase,2));
+  setPhase(frontendPhase);
 }
 function setPhase(i){curPhase=i;
   // Clamp mintQty to new phase max
@@ -2547,8 +2558,7 @@ async function doConnect(){
     try{ walletPubKey = await window.opnet.getPublicKey(); }catch(_){}
     connected   = true;
     walletToast('connect');
-    const _addrDisp=walletAddr.startsWith('0x')?_hexToOpnet(walletAddr):walletAddr;
-    const disp  = _addrDisp.slice(0,10)+'...'+_addrDisp.slice(-5);
+    const disp  = walletAddr.slice(0,10)+'...'+walletAddr.slice(-5);
     btn.innerHTML='\u2713 '+_safeText(disp);
     btn.classList.add('on');btn.disabled=false;
     const ws=document.getElementById('wSt');
@@ -3276,7 +3286,7 @@ async function _fetchEquityLive(equityData){
 }
 
 var _tickerLastRender=0;
-var _TICKER_CYCLE=56000; /* must match CSS animation duration */
+var _TICKER_CYCLE=12000; /* must match CSS animation duration */
 
 async function tickerUpdate() {
   var track = document.querySelector('.tick-track');

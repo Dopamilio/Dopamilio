@@ -47,8 +47,8 @@ import { keccak256, keccak256Concat } from '@btc-vision/btc-runtime/runtime';
 // ── Compile-time config ──────────────────────────────────────────────────────
 
 const IS_TESTNET:    bool = false;
-const TEAM_DURATION: u64 = 0;       // skip team phase → WL starts immediately
-const WL_DURATION:   u64 = 604_800_000;  // 7 days in milliseconds (medianTimestamp is ms)
+const TEAM_DURATION: u64 = 600_000;      // TEST: 10 min — change to 0 for mainnet
+const WL_DURATION:   u64 = 600_000;      // TEST: 10 min — change to 604_800_000 (7d) for mainnet
 
 // ── Collection constants ─────────────────────────────────────────────────────
 
