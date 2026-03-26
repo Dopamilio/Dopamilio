@@ -3137,7 +3137,16 @@ function closeNftDetail() {
   if (overlay) overlay.classList.remove('show');
   /* Clear search field */
   var srch = document.getElementById('gallerySearch');
-  if (srch) srch.value = '';
+  if (srch) { srch.value = ''; }
+  /* Restore gallery list if it was cleared while modal was open */
+  if (GAL_IDS.length === 0) {
+    for (var i = 1; i <= 3333; i++) { GAL_IDS.push(i); }
+    GAL_PAGE = 1;
+    galleryRender();
+  }
+  /* Hide search prompt */
+  var prompt = document.getElementById('search-typing-prompt');
+  if (prompt) prompt.style.display = 'none';
 }
 
 function galleryNextPage() {
@@ -3204,7 +3213,11 @@ function loadGalleryPage(){
     if (srch) {
       srch.addEventListener('blur', function() {
         var self = this;
-        setTimeout(function() { updateSearchPill(self, ''); }, 200);
+        setTimeout(function() {
+          var ov = document.getElementById('nft-detail-overlay');
+          if (ov && ov.classList.contains('show')) return;
+          updateSearchPill(self, '');
+        }, 200);
       });
       srch.addEventListener('focus', function() {
         updateSearchPill(this, this.value.replace('#','').trim());
@@ -3212,8 +3225,8 @@ function loadGalleryPage(){
       srch.addEventListener('input', function() {
         var val = this.value.replace('#','').trim();
         updateSearchPill(this, val);
-        GAL_IDS = [];
         if (!val) {
+          GAL_IDS = [];
           closeNftDetail();
           for (var i = 1; i <= 3333; i++) { GAL_IDS.push(i); }
           GAL_PAGE = 1;
