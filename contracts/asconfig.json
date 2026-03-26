@@ -1,0 +1,20 @@
+{
+  "targets": {
+    "dopamilioNft": {
+      "outFile": "build/DopamilioNFT.wasm",
+      "textFile": "build/DopamilioNFT.wat",
+      "sourceMap": true,
+      "optimizeLevel": 3,
+      "shrinkLevel": 2,
+      "converge": false,
+      "noAssert": false,
+      "use": ["abort=op721/index/abort"]
+    }
+  },
+  "options": {
+    "exportRuntime": false,
+    "runtime": "stub",
+    "exportStart": "start",
+    "transform": "@btc-vision/opnet-transform"
+  }
+}

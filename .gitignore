@@ -1,0 +1,34 @@
+# Vercel
+.vercel
+.env*.local
+
+# Dependencies
+node_modules
+contracts/node_modules
+
+# Local-only data (not needed in repo)
+metadata/
+metadata_v2/
+images/
+rarity.json
+dopa_data.js
+progress_metadata.json
+resumo_completo.json
+unpin_log.txt
+metadata_dir_cid*.txt
+scripts/blob_upload_results.json
+index.html.backup*
+
+# Scripts
+*.py
+convert-previews.js
+test-apis.js
+
+# Internal session files
+prompt.md
+collection_meta.json
+scripts/
+
+# Secrets
+.env
+.env.local

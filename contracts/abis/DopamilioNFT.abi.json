@@ -1,0 +1,256 @@
+{
+    "functions": [
+        {
+            "name": "tokenURI",
+            "type": "View",
+            "payable": false,
+            "onlyOwner": false,
+            "inputs": [
+                {
+                    "name": "tokenId",
+                    "type": "UINT256"
+                }
+            ],
+            "outputs": [
+                {
+                    "name": "uri",
+                    "type": "STRING"
+                }
+            ]
+        },
+        {
+            "name": "mint",
+            "type": "Function",
+            "payable": false,
+            "onlyOwner": false,
+            "inputs": [
+                {
+                    "name": "amount",
+                    "type": "UINT64"
+                },
+                {
+                    "name": "proof",
+                    "type": "ARRAY_OF_UINT256"
+                }
+            ],
+            "outputs": [
+                {
+                    "name": "firstTokenId",
+                    "type": "UINT256"
+                }
+            ]
+        },
+        {
+            "name": "startMint",
+            "type": "Function",
+            "payable": false,
+            "onlyOwner": false,
+            "inputs": [],
+            "outputs": [
+                {
+                    "name": "success",
+                    "type": "BOOL"
+                }
+            ]
+        },
+        {
+            "name": "setWLRoot",
+            "type": "Function",
+            "payable": false,
+            "onlyOwner": false,
+            "inputs": [
+                {
+                    "name": "root",
+                    "type": "UINT256"
+                }
+            ],
+            "outputs": [
+                {
+                    "name": "success",
+                    "type": "BOOL"
+                }
+            ]
+        },
+        {
+            "name": "addToTeamList",
+            "type": "Function",
+            "payable": false,
+            "onlyOwner": false,
+            "inputs": [
+                {
+                    "name": "addr",
+                    "type": "ADDRESS"
+                }
+            ],
+            "outputs": [
+                {
+                    "name": "success",
+                    "type": "BOOL"
+                }
+            ]
+        },
+        {
+            "name": "setMintPrice",
+            "type": "Function",
+            "payable": false,
+            "onlyOwner": false,
+            "inputs": [
+                {
+                    "name": "priceSats",
+                    "type": "UINT256"
+                }
+            ],
+            "outputs": [
+                {
+                    "name": "success",
+                    "type": "BOOL"
+                }
+            ]
+        },
+        {
+            "name": "setTreasuryAddress",
+            "type": "Function",
+            "payable": false,
+            "onlyOwner": false,
+            "inputs": [
+                {
+                    "name": "addr",
+                    "type": "STRING"
+                }
+            ],
+            "outputs": [
+                {
+                    "name": "success",
+                    "type": "BOOL"
+                }
+            ]
+        },
+        {
+            "name": "getMintPrice",
+            "type": "View",
+            "payable": false,
+            "onlyOwner": false,
+            "inputs": [],
+            "outputs": [
+                {
+                    "name": "priceSats",
+                    "type": "UINT256"
+                }
+            ]
+        },
+        {
+            "name": "getPhase",
+            "type": "View",
+            "payable": false,
+            "onlyOwner": false,
+            "inputs": [],
+            "outputs": [
+                {
+                    "name": "phase",
+                    "type": "UINT8"
+                }
+            ]
+        },
+        {
+            "name": "getStartTime",
+            "type": "View",
+            "payable": false,
+            "onlyOwner": false,
+            "inputs": [],
+            "outputs": [
+                {
+                    "name": "startTime",
+                    "type": "UINT256"
+                }
+            ]
+        },
+        {
+            "name": "getTeamDuration",
+            "type": "View",
+            "payable": false,
+            "onlyOwner": false,
+            "inputs": [],
+            "outputs": [
+                {
+                    "name": "teamDuration",
+                    "type": "UINT64"
+                }
+            ]
+        },
+        {
+            "name": "getWlDuration",
+            "type": "View",
+            "payable": false,
+            "onlyOwner": false,
+            "inputs": [],
+            "outputs": [
+                {
+                    "name": "wlDuration",
+                    "type": "UINT64"
+                }
+            ]
+        },
+        {
+            "name": "getIsTestnet",
+            "type": "View",
+            "payable": false,
+            "onlyOwner": false,
+            "inputs": [],
+            "outputs": [
+                {
+                    "name": "isTestnet",
+                    "type": "BOOL"
+                }
+            ]
+        },
+        {
+            "name": "getTreasuryAddress",
+            "type": "View",
+            "payable": false,
+            "onlyOwner": false,
+            "inputs": [],
+            "outputs": [
+                {
+                    "name": "addr",
+                    "type": "STRING"
+                }
+            ]
+        },
+        {
+            "name": "getWLRoot",
+            "type": "View",
+            "payable": false,
+            "onlyOwner": false,
+            "inputs": [],
+            "outputs": [
+                {
+                    "name": "wlRoot",
+                    "type": "UINT256"
+                }
+            ]
+        },
+        {
+            "name": "getMintedCount",
+            "type": "View",
+            "payable": false,
+            "onlyOwner": false,
+            "inputs": [
+                {
+                    "name": "addr",
+                    "type": "ADDRESS"
+                },
+                {
+                    "name": "phase",
+                    "type": "UINT8"
+                }
+            ],
+            "outputs": [
+                {
+                    "name": "count",
+                    "type": "UINT256"
+                }
+            ]
+        }
+    ],
+    "events": []
+}

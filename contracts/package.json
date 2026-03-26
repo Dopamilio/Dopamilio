@@ -1,0 +1,19 @@
+{
+  "name": "dopamilio-contracts",
+  "version": "2.0.0",
+  "description": "DopamilioNFT v2 — OP-721 NFT on OPNet Bitcoin",
+  "private": true,
+  "scripts": {
+    "build": "node node_modules/@btc-vision/assemblyscript/bin/asc.js op721/index.ts --target dopamilioNft --config asconfig.json --measure",
+    "verify": "node -e \"const b=require('fs').readFileSync('build/DopamilioNFT.wasm');const s=Buffer.from(b).toString('binary');console.log('schnorr_gone='+!s.includes('verifySchnorrSignature'),'chainErr_gone='+!s.includes('Unknown chain id'));\""
+  },
+  "dependencies": {
+    "@btc-vision/as-bignum": "latest",
+    "@btc-vision/btc-runtime": "^1.11.0",
+    "@btc-vision/opnet-transform": "^1.2.2"
+  },
+  "devDependencies": {
+    "assemblyscript": "latest",
+    "tsx": "^4.21.0"
+  }
+}
