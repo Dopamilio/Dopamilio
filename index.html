@@ -850,10 +850,15 @@ body{font-family:'JetBrains Mono','SF Mono','Menlo','Courier New',monospace;}
 /* DOPA-2: MOBILE */
 @media(max-width:768px){
   .mac-window{margin:8px;border-radius:8px;}
-  .center-nav{display:flex;gap:20px;position:static;transform:none;overflow-x:auto;}
-  .nav-link{font-size:11px;letter-spacing:2px;padding:4px 6px;white-space:nowrap;}
-  #nav{flex-wrap:wrap;height:auto;padding:8px 12px;gap:8px;}
   body{overflow-x:hidden;}
+  /* Nav: logo + buttons on row 1, links on row 2 */
+  #nav{flex-wrap:wrap;height:auto;padding:8px 12px;gap:4px;align-items:center;}
+  .nav-logo{height:36px;margin-top:2px;flex-shrink:0;}
+  .nav-right{margin-left:auto;gap:6px;}
+  .center-nav{order:3;flex-basis:100%;display:flex;gap:0;position:static;transform:none;
+    overflow-x:auto;scrollbar-width:none;-ms-overflow-style:none;padding:2px 0;}
+  .center-nav::-webkit-scrollbar{display:none;}
+  .nav-link{font-size:10px;letter-spacing:1.5px;padding:4px 10px;white-space:nowrap;}
 }
 
 /* DOPA-2: TXID COL */
@@ -3604,20 +3609,30 @@ document.addEventListener('copy',function(e){
 <audio id="bg-music" src="audio/darude.mp3" loop preload="none"></audio>
 <script>
 (function(){
-  const audio=document.getElementById('bg-music');
-  const btn=document.getElementById('soundBtn');
+  var audio=document.getElementById('bg-music');
+  var btn=document.getElementById('soundBtn');
   audio.volume=0.5;
-  function tryPlay(){audio.play().catch(()=>{});}
-  document.addEventListener('click',function f(e){
-    if(e.target===btn)return; /* soundBtn has its own handler */
-    tryPlay();document.removeEventListener('click',f);
-  },{once:true});
-  document.addEventListener('keydown',function f(){tryPlay();document.removeEventListener('keydown',f);},{once:true});
-  btn.addEventListener('click',function(e){
+  /* Auto-start on first user gesture (desktop + iOS mobile).
+     Using a flag instead of {once:true} so tapping the sound button
+     first doesn't silently consume the listener. */
+  var _started=false;
+  function _autoStart(e){
+    if(_started||!audio.paused||(e&&e.target===btn))return;
+    _started=true;
+    audio.play().catch(function(){});
+  }
+  document.addEventListener('click',_autoStart);
+  document.addEventListener('touchend',_autoStart,{passive:true});
+  document.addEventListener('keydown',_autoStart);
+  /* Sound button explicit toggle */
+  function _toggle(e){
     e.stopPropagation();
-    if(audio.paused){audio.play();btn.textContent='🔊';}
+    if(e.cancelable)e.preventDefault();
+    if(audio.paused){audio.play().catch(function(){});btn.textContent='🔊';}
     else{audio.pause();btn.textContent='🔇';}
-  });
+  }
+  btn.addEventListener('click',_toggle);
+  btn.addEventListener('touchend',_toggle,{passive:false});
 })();
 </script>
 <script src="gallery-lore.js"></script>
