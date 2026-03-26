@@ -27,10 +27,6 @@
                 {
                     "name": "amount",
                     "type": "UINT64"
-                },
-                {
-                    "name": "proof",
-                    "type": "ARRAY_OF_UINT256"
                 }
             ],
             "outputs": [
@@ -41,45 +37,14 @@
             ]
         },
         {
-            "name": "startMint",
-            "type": "Function",
-            "payable": false,
-            "onlyOwner": false,
-            "inputs": [],
-            "outputs": [
-                {
-                    "name": "success",
-                    "type": "BOOL"
-                }
-            ]
-        },
-        {
-            "name": "setWLRoot",
+            "name": "initMint",
             "type": "Function",
             "payable": false,
             "onlyOwner": false,
             "inputs": [
                 {
-                    "name": "root",
-                    "type": "UINT256"
-                }
-            ],
-            "outputs": [
-                {
-                    "name": "success",
-                    "type": "BOOL"
-                }
-            ]
-        },
-        {
-            "name": "addToTeamList",
-            "type": "Function",
-            "payable": false,
-            "onlyOwner": false,
-            "inputs": [
-                {
-                    "name": "addr",
-                    "type": "ADDRESS"
+                    "name": "wlAddresses",
+                    "type": "ARRAY_OF_UINT256"
                 }
             ],
             "outputs": [
@@ -217,19 +182,6 @@
             ]
         },
         {
-            "name": "getWLRoot",
-            "type": "View",
-            "payable": false,
-            "onlyOwner": false,
-            "inputs": [],
-            "outputs": [
-                {
-                    "name": "wlRoot",
-                    "type": "UINT256"
-                }
-            ]
-        },
-        {
             "name": "getMintedCount",
             "type": "View",
             "payable": false,
@@ -248,6 +200,24 @@
                 {
                     "name": "count",
                     "type": "UINT256"
+                }
+            ]
+        },
+        {
+            "name": "isWhitelisted",
+            "type": "View",
+            "payable": false,
+            "onlyOwner": false,
+            "inputs": [
+                {
+                    "name": "addr",
+                    "type": "ADDRESS"
+                }
+            ],
+            "outputs": [
+                {
+                    "name": "isWL",
+                    "type": "BOOL"
                 }
             ]
         }

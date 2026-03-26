@@ -1777,7 +1777,7 @@ function _getDopamilioAbi(sdk){
   if(_DOPAMILIO_ABI) return _DOPAMILIO_ABI;
   const B=sdk.BitcoinAbiTypes, A=sdk.ABIDataTypes;
   _DOPAMILIO_ABI = [
-    {name:'mint',           type:B.Function,payable:true,  inputs:[{name:'amount',type:A.UINT64},{name:'proof',type:A.ARRAY_OF_UINT256}], outputs:[{name:'firstTokenId',type:A.UINT256}]},
+    {name:'mint',           type:B.Function,payable:true,  inputs:[{name:'amount',type:A.UINT64}], outputs:[{name:'firstTokenId',type:A.UINT256}]},
     {name:'getMintPrice',   type:B.Function,payable:false, inputs:[],                                  outputs:[{name:'price',type:A.UINT256}]},
     {name:'totalSupply',    type:B.Function,payable:false, inputs:[],                                  outputs:[{name:'total',type:A.UINT256}]},
     {name:'tokenURI',       type:B.Function,payable:false, inputs:[{name:'tokenId',type:A.UINT256}],   outputs:[{name:'uri',type:A.STRING}]},
@@ -2752,26 +2752,9 @@ async function doMint(){
       ],
     });
 
-    // 5. Fetch WL proof if in WL phase (chain phase 2)
-    let wlProof = [];
-    if(_rawChainPhase===2){
-      // Blockchain.tx.sender = MLDSA identity (mldsaBytes, already computed above)
-      const isNonZero=mldsaBytes.some(function(b){return b!==0;});
-      const identityHex=isNonZero
-        ?Array.from(mldsaBytes).map(function(x){return x.toString(16).padStart(2,'0');}).join('')
-        :walletAddr.replace(/^0x/,'').toLowerCase();
-      try{
-        const pr=await fetch('/api/proof?addr='+encodeURIComponent(identityHex));
-        if(pr.ok){const pd=await pr.json();wlProof=pd.proof||[];}
-        else throw new Error('WL proof not found — wallet not in whitelist');
-      }catch(fe){throw new Error('Not in whitelist: '+fe.message);}
-      if(!wlProof.length)throw new Error('WL proof empty — wallet not whitelisted');
-      wlProof=wlProof.map(function(h){return BigInt(h);});
-    }
-
-    // 6. Simulate
+    // 5. Simulate
     btn.textContent='\u23F3 SIMULATING...';
-    const sim = await contract.mint(BigInt(quantity),wlProof);
+    const sim = await contract.mint(BigInt(quantity));
     if(sim.revert) throw new Error(sim.revert);
 
     // 7. Send — wallet signs, never a keypair
