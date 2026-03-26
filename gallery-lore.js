@@ -1,6 +1,7 @@
 'use strict';
-// Dopamilio Lore Engine v4 — Community character voice, confidence gradient by tier
+// Dopamilio Lore Engine v5 — rank-proportional sats, guaranteed unique phrases
 
+// ─── RARITY COLORS ────────────────────────────────────────────────────────────
 var RARITY_COLORS = {
   Common:    { hex: '#9CA3AF', rgb: '156,163,175' },
   Uncommon:  { hex: '#4ADE80', rgb: '74,222,128'  },
@@ -10,6 +11,7 @@ var RARITY_COLORS = {
   Mythic:    { hex: '#F43F5E', rgb: '244,63,94'   },
 };
 
+// ─── SEEDED RNG ────────────────────────────────────────────────────────────────
 function seededRandom(seed) {
   var s = seed | 0;
   return function() {
@@ -18,10 +20,82 @@ function seededRandom(seed) {
   };
 }
 
-// ─── PHRASE TEMPLATES — {t1} and {t2} are trait slots ─────────────────────────
-// Confidence gradient: Mythic = untouchable → Common = honest newcomer
+// ─── SATS BY RANK — monotone decreasing, all unique, golden ratio curve ────────
+// rank 1 = 21,000,000 sats (21M nod) | rank 3333 = 6,969 sats (mint price nod)
+// curve exponent φ=1.618 distributes wealth like BTC supply: steep at top, long tail
+function _satsByRank(rank) {
+  var MAX = 21000000, MIN = 6969, N = 3333;
+  var t = 1 - (rank - 1) / (N - 1);
+  return Math.round(MIN + (MAX - MIN) * Math.pow(t, 1.618));
+}
 
-// Ranks 1–10 (Mythic): They don't enter the culture. They ARE the culture.
+// ─── TWIN MAP — id → twin id (differ by exactly one trait) ───────────────────
+var TWIN_MAP = {
+  167:181, 181:167,
+  460:1655, 1655:460,
+  552:1306, 1306:552,
+  726:3328, 3328:726,
+  1538:2056, 2056:1538,
+  1615:2578, 2578:1615,
+  1857:2779, 2779:1857,
+  2097:3329, 3329:2097,
+  2187:3233, 3233:2187,
+  2542:3043, 3043:2542,
+  3161:3218, 3218:3161,
+};
+
+// ─── TWIN PHRASES — unique hardcoded for all 22 twins ────────────────────────
+// Each references its pair partner by ID. Tone matches their tier.
+var TWIN_PHRASES = {
+  // pair 01: 167 vs 181 — diff: Background
+  167: "there's a #181 out there built almost exactly like me. same bones, different world behind us. we don't share the background — that one detail is the whole separation.",
+  181: "I know about #167. we're the same structure, different context. the background shaped the story. mine put me here. theirs put them somewhere slightly better. I think about that.",
+
+  // pair 02: 460 vs 1655 — diff: Chain
+  460: "I heard there's a #1655 wearing my face with a different chain. I've got nothing against them. but the chain is a choice, and mine was intentional.",
+  1655: "#460 and I share everything except what's around our neck. in this space, the chain says something. we said different things. both showed up.",
+
+  // pair 03: 552 vs 1306 — diff: Mouth
+  552: "same build as #1306, different mouth. we say different things with the same foundation. that one detail turned two identical people into two separate stories.",
+  1306: "I've looked at #552. mirror image with a different mouth. means we speak differently. I used to wonder which of us says more. stopped wondering. we both say enough.",
+
+  // pair 04: 726 vs 3328 — diff: Eyes
+  726: "me and #3328 share everything but the eyes. we look at the same market and see it differently. I think that's why the ranks turned out the way they did.",
+  3328: "#726 and I are the same person except for how we see things. same everything, different eyes. the gap in our ranks came from that one difference playing out over time.",
+
+  // pair 05: 1538 vs 2056 — diff: Accessory
+  1538: "there's a #2056 in this collection that matches me on everything except what I carry. accessories are identity here. what I carry is mine alone.",
+  2056: "I look at #1538 and see myself with different hands. same soul, different accessory. in this space what you hold matters more than where you came from. I'm still figuring out if I picked right.",
+
+  // pair 06: 1615 vs 2578 — diff: Eyes
+  1615: "#2578 is my mirror that looked away. same foundation, different eyes. I don't know which of us sees more. I only know what I see, and I trust it.",
+  2578: "I know #1615 exists. we're the same except for the eyes. I look at the market and see something they don't. or maybe they see something I don't. we've never compared notes.",
+
+  // pair 07: 1857 vs 2779 — diff: Background
+  1857: "#2779 came up with my face but from a different place. the background is the context that shaped everything after it. mine put me on this path. different path, same destination.",
+  2779: "I found out about #1857. same everything except the origin. we ended up in the same collection with different histories. the background is where it all started. mine is mine.",
+
+  // pair 08: 2097 vs 3329 — diff: Accessory
+  2097: "somewhere in this collection, #3329 is carrying almost everything I carry. almost. one accessory different. one detail. and somehow that one thing put us on different trajectories.",
+  3329: "#2097 and I are nearly the same. I'd say twins but that feels like admitting something. the accessory is the difference. theirs is different. I live with mine.",
+
+  // pair 09: 2187 vs 3233 — diff: Head
+  2187: "#3233 has my body and my story but not my head. the headgear changed the whole read. what's on top determines how people see the rest. I like my read.",
+  3233: "I know #2187. same body, different headgear. I've thought about what mine says about me. still thinking. the head is where identity starts. we diverged there.",
+
+  // pair 10: 2542 vs 3043 — diff: Mouth
+  2542: "#3043 has my shape and my energy but a different mouth. we communicate differently. in the end the words are the difference between being heard and being ignored.",
+  3043: "there's a #2542 in this collection saying similar things with a different mouth. makes me wonder if the delivery matters or if the message is the same anyway. the mouth is the answer.",
+
+  // pair 11: 3161 vs 3218 — diff: Body
+  3161: "#3218 has my face but not my body. different frame, same origin. I move through this space differently than they do. the body is the vehicle. ours took different roads.",
+  3218: "I've thought about #3161. same everything from the neck up. different body. and in the end, how you carry yourself is the whole thing. we carry ourselves differently.",
+};
+
+// ─── #2736 SPECIAL LORE — deleted from gallery, came back ────────────────────
+var LORE_2736 = "look, I was just out for a walk. came back and the gallery was gone — no trace of me, like I never happened. spent three blocks assuming I was dead. turns out the code just forgot to count. glitch in the ledger, not in my soul. I'm back now. fully on-chain. don't make it weird.";
+
+// ─── MYTHIC TEMPLATES — ranks 1–10 (10 NFTs, 10 templates, 1:1) ───────────────
 var TPL_MYTHIC_TOP = [
   'my {t1} isn\'t rare. it\'s mine. there\'s a difference.',
   'everything built around {t1} started with someone like me.',
@@ -35,7 +109,7 @@ var TPL_MYTHIC_TOP = [
   'I don\'t chase. I wait. {t1} always finds its way back to me.',
 ];
 
-// Ranks 11–68 (Legendary): Veterans. Earned. Culture-shapers. Unshakeable.
+// ─── LEGENDARY TEMPLATES — ranks 11–68 (58 NFTs, 58 templates, 1:1) ───────────
 var TPL_LEGENDARY = [
   'two cycles in and my {t1} still turns heads. some things don\'t change.',
   'I was in {t1} before it was worth talking about. now everyone talks about it.',
@@ -97,7 +171,8 @@ var TPL_LEGENDARY = [
   'the {t2} moment was someone else\'s peak. {t1} is my home.',
 ];
 
-// Ranks 69–278 (Epic): Builders. Obsessed. High energy. Always moving.
+// ─── EPIC TEMPLATES — ranks 69–278 (210 NFTs) ─────────────────────────────────
+// 5 openers × 42 cores × 2 closers = 420 combos ≥ 210 — uniqueness guaranteed
 var TPL_EPIC = [
   'I built a whole framework around {t1}. I barely sleep. it works.',
   'the {t2} edge isn\'t luck. I ran the numbers and ran them again.',
@@ -139,9 +214,12 @@ var TPL_EPIC = [
   'I\'m wired into {t2} at all times. building inside {t1} is the only mode.',
   'builders in {t1} don\'t wait for permission. I never did.',
   'the {t2} thread went viral. I wrote the thing it was based on.',
+  'I don\'t take breaks from {t1}. I take breaks from everything else.',
+  'the {t2} architecture was mine before anyone gave it a name.',
 ];
 
-// Ranks 279–698 (Rare): Survivors. Tested. Self-aware. Rebuilt stronger.
+// ─── RARE TEMPLATES — ranks 279–698 (420 NFTs) ────────────────────────────────
+// 6 openers × 40 cores × 2 closers = 480 combos ≥ 420 — uniqueness guaranteed
 var TPL_RARE = [
   'I bought the {t1} top. I\'m still here. that\'s the whole story.',
   'the {t1} dip kept dipping. I held. turns out that was the right call.',
@@ -185,7 +263,8 @@ var TPL_RARE = [
   'I\'ve earned the right to be in {t1} the hard way.',
 ];
 
-// Ranks 699–1667 (Uncommon): Community members. Genuine. Consistent. No ego.
+// ─── UNCOMMON TEMPLATES — ranks 699–1667 (969 NFTs) ───────────────────────────
+// 8 openers × 45 cores × 3 closers = 1080 combos ≥ 969 — uniqueness guaranteed
 var TPL_UNCOMMON = [
   'here for {t1}. not overthinking {t2}. just showing up.',
   'I\'m in {t1} and having a genuinely good time. that\'s the whole plan.',
@@ -234,7 +313,8 @@ var TPL_UNCOMMON = [
   'the {t2} community runs deeper than I realized on day one. still discovering it.',
 ];
 
-// Ranks 1668–3333 (Common): Fresh arrivals. Hopeful. Learning. Still figuring it out.
+// ─── COMMON TEMPLATES — ranks 1668–3333 (1666 NFTs) ───────────────────────────
+// 10 openers × 50 cores × 4 closers = 2000 combos ≥ 1666 — uniqueness guaranteed
 var TPL_COMMON = [
   'still learning {t1}. the {t2} community has been surprisingly kind.',
   'I\'m new to {t1} and still finding my footing. everyone starts somewhere.',
@@ -288,24 +368,69 @@ var TPL_COMMON = [
   'common entry. uncommon patience. the patience is load-bearing.',
 ];
 
-// ─── ROLES — community identity by tier ───────────────────────────────────────
-var ROLES = {
-  Mythic:    ['Protocol Genesis','Culture Architect','The First Signal','Origin Block','The Immutable Reference','Zero Hash. Full Proof.','Genesis Figure','Network Root','The Satoshi Constant','Foundation Layer'],
-  Legendary: ['Cycle Veteran','The OG Presence','Culture Shaper','Two-Cycle Survivor','Community Elder','Pre-Hype Builder','The Long Memory','Founding Contributor','Community Cornerstone','Cycle-Hardened','The Quiet Foundation','Community Lore','The Thesis That Held'],
-  Epic:      ['Protocol Builder','Ecosystem Architect','The Obsessive Contributor','Innovation Lead','Community Infrastructure','Full-Time Builder','The Relentless One','Core Contributor','Builder in Residence','Roadmap Author','Systems Builder','The Always-On','Precision Builder'],
-  Rare:      ['The Comeback','Survivor of the Dip','Battle-Tested','The Rebuilt One','Earned Their Seat','The Resilient','Contrarian Who Stayed','Through the Fire','The Recoverer','Hardened Community Member','Scar-Tissue Pioneer','Wrong Entry. Right Direction.'],
-  Uncommon:  ['Community Member','The Consistent Presence','Good-Vibes Contributor','Reliable Participant','Community Connector','Steady Contributor','The Vibe Keeper','Community Backbone','The Low-Drama Member','Participant in Good Standing','The Genuine One'],
-  Common:    ['Newcomer','The Curious Arrival','Community Apprentice','Fresh Signal','The Hopeful','New Energy','Just Getting Started','The Eager Learner','First-Cycle Member','Community Seedling','The Bright-Eyed'],
+// ─── OPENERS — short prefix fragments per tier ────────────────────────────────
+// These combine with CORES and CLOSERS to guarantee unique phrases per rank
+var OPENERS = {
+  Epic: [
+    'deep in the build —',
+    'wired in, always on:',
+    'the roadmap doesn\'t wait.',
+    'obsessive by design;',
+    'zero downtime, full output:',
+  ],
+  Rare: [
+    'came back from the dip harder —',
+    'two bear markets, still standing.',
+    'earned every scar;',
+    'when others exited,',
+    'rebuilt once. won\'t need to again.',
+    'the wrong entry was the right lesson —',
+  ],
+  Uncommon: [
+    'two cycles in and still here —',
+    'consistent. never loud.',
+    'not the most vocal,',
+    'survived the red months;',
+    'built my presence quietly.',
+    'nobody noticed when I arrived,',
+    'the dip taught me patience —',
+    'every contribution adds up,',
+  ],
+  Common: [
+    'still finding my footing, but',
+    'new here and already know',
+    'only a handful of sats to my name,',
+    'first cycle and already learning that',
+    'came in late, but',
+    'the market humbled me once already.',
+    'nobody told me it\'d feel this honest,',
+    'learning in public is part of it —',
+    'every block that passes I understand more.',
+    'I won\'t pretend I\'ve seen everything,',
+  ],
 };
 
-// ─── PERSONALITY — tier-aware tone descriptors ────────────────────────────────
-var PERSONALITY = {
-  Mythic:    ['Untouchable. Absolute.','Origin-level certainty.','Protocol incarnate.','Sovereign. Complete.','Beyond question.','The culture itself.','First. Permanent. Final.','Genesis energy.','Zero doubt. Full presence.','Self-evident. Always.'],
-  Legendary: ['Calm. Battle-tested.','OG energy. Still here.','Cycle-hardened. Certain.','Patient. Unshakeable.','Composed. Earned.','Long memory. Strong roots.','Quiet confidence. Deep.','Lived-in certainty.','The steady foundation.','Veterans don\'t panic.'],
-  Epic:      ['Obsessive. Always on.','Wired and building.','High output. Low drama.','Relentless contributor.','Builder energy, always.','Never satisfied. Growing.','Intensity as a feature.','Mission-driven. Sharp.','Focused. Caffeinated. Moving.','The always-forward type.'],
-  Rare:      ['Earned every scar.','Rebuilt and resilient.','Survived. Stronger now.','Honest about the hard parts.','Unbreakable. Self-aware.','Battle-tested. Still here.','No illusions. No quit.','Scars are credentials.','The comeback is the story.','Gritty. Genuine. Present.'],
-  Uncommon:  ['Vibing. Consistent.','Good community energy.','Genuinely here for it.','Low-key. High-value.','Present and participating.','Curious. Comfortable.','No ego. Just contribution.','Steady. Real. Valued.','Community-first mindset.','Reliable good vibes.'],
-  Common:    ['Hopeful. Learning.','Earnest and eager.','New energy, full heart.','Still figuring it out.','Curious. Open. Humble.','Learning out loud.','Grateful to be here.','Newcomer with conviction.','Eyes wide. Moving forward.','Fresh start. Real intent.'],
+// ─── CLOSERS — short suffix fragments per tier ────────────────────────────────
+var CLOSERS = {
+  Epic: [
+    'the work speaks.',
+    'that\'s the protocol.',
+  ],
+  Rare: [
+    'earned, not given.',
+    'that\'s the credential.',
+  ],
+  Uncommon: [
+    'still showing up.',
+    'that counts for something.',
+    'consistency is the credential.',
+  ],
+  Common: [
+    'first cycle. not the last.',
+    'one block at a time.',
+    'and that\'s enough for now.',
+    'still here.',
+  ],
 };
 
 // ─── TEMPLATES INDEX ──────────────────────────────────────────────────────────
@@ -318,75 +443,118 @@ var ALL_TEMPLATES = {
   Common:    TPL_COMMON,
 };
 
-// Trait priority for selecting t1 and t2 (most distinctive traits first)
+// Tier start rank (1-indexed) — used for rankInTier calculation
+var TIER_RANK_START = { Mythic:1, Legendary:11, Epic:69, Rare:279, Uncommon:699, Common:1668 };
+
+// ─── ROLES ────────────────────────────────────────────────────────────────────
+var ROLES = {
+  Mythic:    ['Protocol Genesis','Culture Architect','The First Signal','Origin Block','The Immutable Reference','Zero Hash. Full Proof.','Genesis Figure','Network Root','The Satoshi Constant','Foundation Layer'],
+  Legendary: ['Cycle Veteran','The OG Presence','Culture Shaper','Two-Cycle Survivor','Community Elder','Pre-Hype Builder','The Long Memory','Founding Contributor','Community Cornerstone','Cycle-Hardened','The Quiet Foundation','Community Lore','The Thesis That Held'],
+  Epic:      ['Protocol Builder','Ecosystem Architect','The Obsessive Contributor','Innovation Lead','Community Infrastructure','Full-Time Builder','The Relentless One','Core Contributor','Builder in Residence','Roadmap Author','Systems Builder','The Always-On','Precision Builder'],
+  Rare:      ['The Comeback','Survivor of the Dip','Battle-Tested','The Rebuilt One','Earned Their Seat','The Resilient','Contrarian Who Stayed','Through the Fire','The Recoverer','Hardened Community Member','Scar-Tissue Pioneer','Wrong Entry. Right Direction.'],
+  Uncommon:  ['Community Member','The Consistent Presence','Good-Vibes Contributor','Reliable Participant','Community Connector','Steady Contributor','The Vibe Keeper','Community Backbone','The Low-Drama Member','Participant in Good Standing','The Genuine One'],
+  Common:    ['Newcomer','The Curious Arrival','Community Apprentice','Fresh Signal','The Hopeful','New Energy','Just Getting Started','The Eager Learner','First-Cycle Member','Community Seedling','The Bright-Eyed'],
+};
+
+// ─── PERSONALITY ──────────────────────────────────────────────────────────────
+var PERSONALITY = {
+  Mythic:    ['Untouchable. Absolute.','Origin-level certainty.','Protocol incarnate.','Sovereign. Complete.','Beyond question.','The culture itself.','First. Permanent. Final.','Genesis energy.','Zero doubt. Full presence.','Self-evident. Always.'],
+  Legendary: ['Calm. Battle-tested.','OG energy. Still here.','Cycle-hardened. Certain.','Patient. Unshakeable.','Composed. Earned.','Long memory. Strong roots.','Quiet confidence. Deep.','Lived-in certainty.','The steady foundation.','Veterans don\'t panic.'],
+  Epic:      ['Obsessive. Always on.','Wired and building.','High output. Low drama.','Relentless contributor.','Builder energy, always.','Never satisfied. Growing.','Intensity as a feature.','Mission-driven. Sharp.','Focused. Caffeinated. Moving.','The always-forward type.'],
+  Rare:      ['Earned every scar.','Rebuilt and resilient.','Survived. Stronger now.','Honest about the hard parts.','Unbreakable. Self-aware.','Battle-tested. Still here.','No illusions. No quit.','Scars are credentials.','The comeback is the story.','Gritty. Genuine. Present.'],
+  Uncommon:  ['Vibing. Consistent.','Good community energy.','Genuinely here for it.','Low-key. High-value.','Present and participating.','Curious. Comfortable.','No ego. Just contribution.','Steady. Real. Valued.','Community-first mindset.','Reliable good vibes.'],
+  Common:    ['Hopeful. Learning.','Earnest and eager.','New energy, full heart.','Still figuring it out.','Curious. Open. Humble.','Learning out loud.','Grateful to be here.','Newcomer with conviction.','Eyes wide. Moving forward.','Fresh start. Real intent.'],
+};
+
+// ─── TRAIT PRIORITY ───────────────────────────────────────────────────────────
 var TRAIT_PRIORITY = ['Specials','Classes','Weapons','Hair','Eyes','Cloths','Head gear','Acessories','Background','Mouths','Eye Brows'];
 
+// ─── GENERATE CHARACTER LORE ──────────────────────────────────────────────────
 function generateCharacterLore(nft) {
-  var id = nft.id;
-  var tier = nft.tier;
-  var rank = nft.rank;
+  var id    = parseInt(nft.id, 10);
+  var tier  = nft.tier;
+  var rank  = nft.rank;
   var traits = nft.traits || {};
 
-  // Seed based on id+rank for maximum variation
-  var seed = (Math.imul(id, 2654435761) ^ Math.imul(rank, 1234567891)) | 0;
-  var rng = seededRandom(seed);
+  // Two independent RNG streams: one for trait/phrase selection, one for role/personality
+  var seed  = (Math.imul(id, 2654435761) ^ Math.imul(rank, 1234567891)) | 0;
+  var rng   = seededRandom(seed);
+  var rng2  = seededRandom(seed ^ 0x5a5a5a5a);
 
-  // Select t1 and t2: non-None traits in priority order
-  var available = TRAIT_PRIORITY.filter(function(k) { return traits[k] && traits[k] !== 'None'; });
-  if (available.length === 0) available = ['Background'];
+  // ── PHRASE ────────────────────────────────────────────────────────────────
+  var phrase;
 
-  var t1idx = Math.floor(rng() * available.length);
-  var t1key = available[t1idx];
-  var t1 = traits[t1key] || 'this';
+  if (id === 2736) {
+    // resurrection lore — deleted from gallery and came back
+    phrase = LORE_2736;
+  } else if (TWIN_PHRASES[id]) {
+    // twin — hardcoded reference to sibling NFT
+    phrase = TWIN_PHRASES[id];
+  } else {
+    // select t1, t2 from non-None traits in priority order
+    var available = TRAIT_PRIORITY.filter(function(k) {
+      return traits[k] && traits[k] !== 'None';
+    });
+    if (available.length === 0) available = ['Background'];
 
-  var t2candidates = available.filter(function(k) { return k !== t1key; });
-  if (t2candidates.length === 0) t2candidates = TRAIT_PRIORITY.filter(function(k) { return k !== t1key; });
-  var t2 = traits[t2candidates[Math.floor(rng() * t2candidates.length)]] || 'that';
+    var t1key = available[Math.floor(rng() * available.length)];
+    var t1    = (traits[t1key] || 'this').toLowerCase();
+    var t2src = available.filter(function(k) { return k !== t1key; });
+    if (!t2src.length) t2src = TRAIT_PRIORITY.filter(function(k) { return k !== t1key; });
+    var t2 = (traits[t2src[Math.floor(rng() * t2src.length)]] || 'that').toLowerCase();
 
-  // Template: use rank as primary index (rank is unique 1–3333, guarantees unique phrase per NFT)
-  var templates = ALL_TEMPLATES[tier] || ALL_TEMPLATES['Common'];
-  var tplIdx = rank % templates.length;
-  var template = templates[tplIdx];
+    var cores   = ALL_TEMPLATES[tier] || ALL_TEMPLATES['Common'];
+    var openers = OPENERS[tier] || [];
+    var closers = CLOSERS[tier] || [];
 
-  // Interpolate {t1} and {t2} — no rank numbers in phrases
-  var phrase = template
-    .replace(/\{t1\}/g, t1.toLowerCase())
-    .replace(/\{t2\}/g, t2.toLowerCase());
+    // Combinatorial base-conversion selection: guarantees unique (oi,ci,li) per rankInTier
+    // because O×C×L ≥ count of NFTs in tier (verified above)
+    var rit  = Math.max(0, rank - (TIER_RANK_START[tier] || 1)); // rank index within tier (0-based)
+    var olen = openers.length || 1;
+    var clen = cores.length;
+    var llen = closers.length || 1;
 
-  // Role (tier-aware)
+    var oi = openers.length ? rit % olen : -1;
+    var ci = Math.floor(rit / olen) % clen;
+    var li = closers.length ? Math.floor(rit / (olen * clen)) % llen : -1;
+
+    var core = cores[ci]
+      .replace(/\{t1\}/g, t1)
+      .replace(/\{t2\}/g, t2);
+
+    phrase = (oi >= 0 ? openers[oi] + ' ' : '') +
+             core +
+             (li >= 0 ? ' ' + closers[li] : '');
+  }
+
+  // ── ROLE ──────────────────────────────────────────────────────────────────
   var rolePool = ROLES[tier] || ROLES['Common'];
-  var role = rolePool[Math.floor(rng() * rolePool.length)];
+  var role = rolePool[Math.floor(rng2() * rolePool.length)];
 
-  // satsWallet
-  var satsVar = rng();
-  var satsWallet;
-  if      (tier === 'Mythic')    satsWallet = 21000000;
-  else if (tier === 'Legendary') satsWallet = 6900000 + Math.floor(satsVar * 3100000);
-  else if (tier === 'Epic')      satsWallet = 1000000 + Math.floor(satsVar * 2000000);
-  else if (tier === 'Rare')      satsWallet = 420000  + Math.floor(satsVar * 579999);
-  else if (tier === 'Uncommon')  satsWallet = 69000   + Math.floor(satsVar * 350999);
-  else                           satsWallet = 1000    + Math.floor(satsVar * 67999);
+  // ── SATS — rank-proportional, unique, golden ratio curve ─────────────────
+  var satsWallet = _satsByRank(rank);
 
-  // Personality (tier-aware)
+  // ── PERSONALITY ───────────────────────────────────────────────────────────
   var persPool = PERSONALITY[tier] || PERSONALITY['Common'];
-  var personality = persPool[Math.floor(rng() * persPool.length)];
+  var personality = persPool[Math.floor(rng2() * persPool.length)];
 
   var color = RARITY_COLORS[tier] || RARITY_COLORS['Common'];
-  var animDuration = (tier === 'Legendary' || tier === 'Mythic') ? '5s' : (tier === 'Epic' || tier === 'Rare') ? '4s' : '3s';
+  var animDuration = (tier === 'Legendary' || tier === 'Mythic') ? '5s'
+                   : (tier === 'Epic'      || tier === 'Rare')   ? '4s' : '3s';
 
   return {
-    phrase: phrase,
-    role: role,
-    satsWallet: satsWallet,
-    personality: personality,
-    rarityColor: color.hex,
-    rarityRgb: color.rgb,
-    rarityName: tier.toUpperCase(),
+    phrase:       phrase,
+    role:         role,
+    satsWallet:   satsWallet,
+    personality:  personality,
+    rarityColor:  color.hex,
+    rarityRgb:    color.rgb,
+    rarityName:   tier.toUpperCase(),
     animDuration: animDuration,
   };
 }
 
 window.DopamilioLore = {
   generateCharacterLore: generateCharacterLore,
-  RARITY_COLORS: RARITY_COLORS,
+  RARITY_COLORS:         RARITY_COLORS,
 };
