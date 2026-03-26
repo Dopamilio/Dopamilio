@@ -3,10 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="3,333 unique degenerates etched on Bitcoin. OP-721 NFT. Mint at dopamilio.xyz.">
 <title>DOPAMILIO — MINT</title>
 <link rel="icon" type="image/png" href="/favicon.png" sizes="64x64">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link rel="preconnect" href="https://testnet.opnet.org">
+<link rel="preconnect" href="https://chocolate-decisive-silverfish-606.mypinata.cloud">
+<link rel="dns-prefetch" href="https://chocolate-decisive-silverfish-606.mypinata.cloud">
 <link rel="stylesheet" href="/fonts/fonts.css">
 <link rel="preload" as="image" href="nft_preview/1.webp" fetchpriority="high">
 <style>
@@ -1195,6 +1198,7 @@ input,textarea{-webkit-user-select:text;-moz-user-select:text;user-select:text;}
   box-shadow:0 2px 12px rgba(0,0,0,.4);
 }
 #scroll-toast.show{opacity:1;}
+@media(max-width:768px){#scroll-toast{display:none !important;}}
 @supports(padding:env(safe-area-inset-bottom)){
   #ticker{padding-bottom:env(safe-area-inset-bottom);}
   #nav{padding-top:max(8px,env(safe-area-inset-top));}
@@ -1565,7 +1569,7 @@ input,textarea{-webkit-user-select:text;-moz-user-select:text;user-select:text;}
 </div>
 
 <div id="wallet-toast"></div>
-<div id="page">
+<div id="page" role="main">
   <div id="cards-row">
     <div class="card" id="nft-card" style="position:relative;">
       <div class="nft-viewport" id="nftViewport">
@@ -2827,6 +2831,15 @@ async function doMint(){
     const msg=e?.message??String(e);
     const isInsufficientSats=(msg&&(msg.toLowerCase().includes('insufficient')||msg.toLowerCase().includes('not enough')||msg.toLowerCase().includes('balance')||msg.toLowerCase().includes('funds')));
     if(isInsufficientSats){showRektModal();}
+    else if(msg.toLowerCase().includes('whitelist')||msg.toLowerCase().includes('wl proof')||msg.toLowerCase().includes('not whitelisted')){
+      walletToast('err','NOT WHITELISTED<br>WL ONLY \u2014 SORRY ANON');
+    }
+    else if(msg.toUpperCase().includes('MAX_MINT')||msg.toLowerCase().includes('exceeds max')||msg.toLowerCase().includes('max mint')||msg.toLowerCase().includes('already minted')){
+      walletToast('err','MAX '+_getPhaseMax()+' PER WALLET<br>THIS PHASE SER');
+    }
+    else if(msg.toUpperCase().includes('MAX_SUPPLY')||msg.toLowerCase().includes('sold out')||msg.toLowerCase().includes('supply exceeded')||msg.toLowerCase().includes('mint limit')){
+      walletToast('err','SOLD OUT<br>ALL 3333 MINTED SER');
+    }
     else if(!msg.includes('User rejected')) walletToast('err','Mint error: '+msg.slice(0,120));
     console.error('doMint:',e?.message??e);
   }finally{
@@ -2976,6 +2989,7 @@ var _galLoadObserver = new IntersectionObserver(function(entries) {
     if (entry.isIntersecting) {
       var img = entry.target;
       if (img.dataset.src && !img.dataset.loaded) {
+        if(img.dataset.idx === '0') img.fetchPriority = 'high';
         img.src = img.dataset.src;
         img.dataset.loaded = '1';
         _galLoadObserver.unobserve(img);
@@ -3006,14 +3020,16 @@ function _galleryRenderInner() {
   /* Abort if a newer render was scheduled while we were setting up */
   if (myVersion !== _galRenderVersion) return;
 
-  pageIds.forEach(function(id) {
+  pageIds.forEach(function(id, idx) {
     var card = document.createElement('div');
     card.className = 'gal-card';
     var img = document.createElement('img');
+    img.width = 200; img.height = 200;
     img.loading = 'lazy';
     img.decoding = 'async';
     img.src = _TINY_GIF;
     img.dataset.src = _getImgUrl(id);
+    img.dataset.idx = String(idx);
     img.alt = 'Dopamilio #' + id;
     _galLoadObserver.observe(img);
     var label = document.createElement('div');
@@ -3608,43 +3624,92 @@ document.addEventListener('dragstart',function(e){e.preventDefault();});
 })();
 
 /* ── SCROLL TOAST ── */
-(function(){
-  var toast=document.getElementById('scroll-toast');
-  if(!toast)return;
-  var t=null;
-  window.addEventListener('scroll',function(){
-    var loader=document.getElementById('loader');
-    var mkt=document.getElementById('marketplacePage');
-    if(loader&&!loader.classList.contains('done'))return;
-    if(mkt&&mkt.style.display!=='none')return;
-    toast.classList.add('show');
-    clearTimeout(t);
-    t=setTimeout(function(){toast.classList.remove('show');},2500);
-  },{passive:true});
-})();
+if('requestIdleCallback' in window){
+  requestIdleCallback(function(){
+    (function(){
+      var toast=document.getElementById('scroll-toast');
+      if(!toast)return;
+      var t=null;
+      window.addEventListener('scroll',function(){
+        var loader=document.getElementById('loader');
+        var mkt=document.getElementById('marketplacePage');
+        if(loader&&!loader.classList.contains('done'))return;
+        if(mkt&&mkt.style.display!=='none')return;
+        toast.classList.add('show');
+        clearTimeout(t);
+        t=setTimeout(function(){toast.classList.remove('show');},2500);
+      },{passive:true});
+    })();
+  });
+}else{
+  setTimeout(function(){
+    (function(){
+      var toast=document.getElementById('scroll-toast');
+      if(!toast)return;
+      var t=null;
+      window.addEventListener('scroll',function(){
+        var loader=document.getElementById('loader');
+        var mkt=document.getElementById('marketplacePage');
+        if(loader&&!loader.classList.contains('done'))return;
+        if(mkt&&mkt.style.display!=='none')return;
+        toast.classList.add('show');
+        clearTimeout(t);
+        t=setTimeout(function(){toast.classList.remove('show');},2500);
+      },{passive:true});
+    })();
+  },200);
+}
 
 /* ── SNIPER DRAGGABLE ── */
-(function(){
-  var el=document.getElementById('sniper-overlay');
-  if(!el)return;
-  var handle=el.querySelector('.sniper-drag-handle');
-  if(!handle)handle=el;
-  var dx=0,dy=0,mx=0,my=0,dragging=false;
-  handle.addEventListener('mousedown',function(e){
-    dragging=true;
-    var r=el.getBoundingClientRect();
-    dx=e.clientX-r.left; dy=e.clientY-r.top;
-    el.style.right='auto'; el.style.bottom='auto';
-    el.style.left=r.left+'px'; el.style.top=r.top+'px';
-    e.preventDefault();
+if('requestIdleCallback' in window){
+  requestIdleCallback(function(){
+    (function(){
+      var el=document.getElementById('sniper-overlay');
+      if(!el)return;
+      var handle=el.querySelector('.sniper-drag-handle');
+      if(!handle)handle=el;
+      var dx=0,dy=0,mx=0,my=0,dragging=false;
+      handle.addEventListener('mousedown',function(e){
+        dragging=true;
+        var r=el.getBoundingClientRect();
+        dx=e.clientX-r.left; dy=e.clientY-r.top;
+        el.style.right='auto'; el.style.bottom='auto';
+        el.style.left=r.left+'px'; el.style.top=r.top+'px';
+        e.preventDefault();
+      });
+      document.addEventListener('mousemove',function(e){
+        if(!dragging)return;
+        el.style.left=(e.clientX-dx)+'px';
+        el.style.top=(e.clientY-dy)+'px';
+      });
+      document.addEventListener('mouseup',function(){dragging=false;});
+    })();
   });
-  document.addEventListener('mousemove',function(e){
-    if(!dragging)return;
-    el.style.left=(e.clientX-dx)+'px';
-    el.style.top=(e.clientY-dy)+'px';
-  });
-  document.addEventListener('mouseup',function(){dragging=false;});
-})();
+}else{
+  setTimeout(function(){
+    (function(){
+      var el=document.getElementById('sniper-overlay');
+      if(!el)return;
+      var handle=el.querySelector('.sniper-drag-handle');
+      if(!handle)handle=el;
+      var dx=0,dy=0,mx=0,my=0,dragging=false;
+      handle.addEventListener('mousedown',function(e){
+        dragging=true;
+        var r=el.getBoundingClientRect();
+        dx=e.clientX-r.left; dy=e.clientY-r.top;
+        el.style.right='auto'; el.style.bottom='auto';
+        el.style.left=r.left+'px'; el.style.top=r.top+'px';
+        e.preventDefault();
+      });
+      document.addEventListener('mousemove',function(e){
+        if(!dragging)return;
+        el.style.left=(e.clientX-dx)+'px';
+        el.style.top=(e.clientY-dy)+'px';
+      });
+      document.addEventListener('mouseup',function(){dragging=false;});
+    })();
+  },200);
+}
 document.addEventListener('copy',function(e){
   if(e.target.tagName!=='INPUT'&&e.target.tagName!=='TEXTAREA')e.preventDefault();
 });
@@ -3654,7 +3719,7 @@ document.addEventListener('copy',function(e){
 
 <div id="rekt-modal" style="display:none;position:fixed;inset:0;z-index:9000;background:rgba(0,0,0,.88);align-items:center;justify-content:center;" onclick="document.getElementById('rekt-modal').style.display='none'">
   <div style="background:rgba(60,0,0,.97);border:3px solid #f00;border-radius:18px;padding:28px 24px;max-width:300px;text-align:center;font-family:'Press Start 2P',monospace;box-shadow:0 0 60px rgba(255,0,0,.5),0 0 120px rgba(255,0,0,.2);" onclick="event.stopPropagation()">
-    <img id="rektGif" src="./memes_mlg/rektgif.webp" style="width:130px;margin-bottom:14px;border-radius:8px;border:2px solid #f00;" loading="lazy" width="130" height="130">
+    <img id="rektGif" src="./memes_mlg/rektgif.webp" alt="" style="width:130px;margin-bottom:14px;border-radius:8px;border:2px solid #f00;" loading="lazy" width="130" height="130">
     <div id="rekt-msg" style="font-size:10px;color:#f55;line-height:2;letter-spacing:1px;margin-bottom:16px;">GG NO SATS<br>REKT AS USUAL</div>
     <button onclick="document.getElementById('rekt-modal').style.display='none'" style="background:#c00;border:none;color:#fff;font-family:'Press Start 2P',monospace;font-size:9px;padding:10px 20px;border-radius:8px;cursor:pointer;letter-spacing:1px;">OK I'M POOR</button>
   </div>
