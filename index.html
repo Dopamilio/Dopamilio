@@ -2615,8 +2615,11 @@ async function doMint(){
     // 5. Fetch WL proof if in WL phase (chain phase 2)
     let wlProof = [];
     if(_rawChainPhase===2){
-      // Blockchain.tx.sender = wallet OPNet identity (wallet.address, 32 bytes)
-      const identityHex=walletAddr.replace(/^0x/,'').toLowerCase();
+      // Blockchain.tx.sender = MLDSA identity (mldsaBytes, already computed above)
+      const isNonZero=mldsaBytes.some(function(b){return b!==0;});
+      const identityHex=isNonZero
+        ?Array.from(mldsaBytes).map(function(x){return x.toString(16).padStart(2,'0');}).join('')
+        :walletAddr.replace(/^0x/,'').toLowerCase();
       try{
         const pr=await fetch('/api/proof?addr='+encodeURIComponent(identityHex));
         if(pr.ok){const pd=await pr.json();wlProof=pd.proof||[];}
