@@ -231,4 +231,12 @@ var CardModal = (function() {
   return { open: open, close: close };
 })();
 
+window.addEventListener('orientationchange', function() {
+  var overlay = document.getElementById('cardModal');
+  if (overlay && overlay.style.display === 'flex') {
+    var card = overlay.querySelector('[style*="width"]');
+    if (card) card.style.width = 'min(360px, calc(100vw - 20px))';
+  }
+});
+
 window.DopamilioCardModal = CardModal;

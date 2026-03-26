@@ -859,6 +859,21 @@ body{font-family:'JetBrains Mono','SF Mono','Menlo','Courier New',monospace;}
     overflow-x:auto;scrollbar-width:none;-ms-overflow-style:none;padding:2px 0;}
   .center-nav::-webkit-scrollbar{display:none;}
   .nav-link{font-size:10px;letter-spacing:1.5px;padding:4px 10px;white-space:nowrap;}
+  /* Touch targets */
+  button,a,.nav-pill,.nav-link,.gal-card,.phase-btn{touch-action:manipulation;}
+  .nav-pill,.nav-link{min-height:36px;display:inline-flex;align-items:center;justify-content:center;}
+  /* Mint card */
+  .card{max-width:min(480px,calc(100vw - 24px));width:100%;margin:0 auto;}
+  /* Activity table */
+  #activity{-webkit-overflow-scrolling:touch;}
+  .act-col-header,.act-row{min-width:0;}
+  /* Marketplace overflow guard */
+  #marketplacePage{overflow-x:hidden;}
+  .mkt-list,.mkt-nft-area{max-width:100%;overflow-x:hidden;}
+  /* iOS input zoom prevention */
+  input,select,textarea{font-size:16px !important;}
+  /* Gallery controls */
+  .gallery-header-bar{gap:8px;}
 }
 
 /* DOPA-2: TXID COL */
@@ -1109,6 +1124,10 @@ input,textarea{-webkit-user-select:text;-moz-user-select:text;user-select:text;}
   #mintBtn{width:100%;}
   /* Activity table horizontal scroll */
   #activity{overflow-x:auto;-webkit-overflow-scrolling:touch;}
+  /* Gallery pagination touch targets */
+  #galPageInfo,.gal-page-nav button,.gal-btn{min-height:36px;}
+  /* Bottom padding for livebar */
+  #galleryPage,#lorePage,#marketplacePage{padding-bottom:calc(var(--ticker-h,33px) + 16px);}
 }
 /* Extra small: 360px and below */
 @media(max-width:360px){
@@ -1128,6 +1147,10 @@ input,textarea{-webkit-user-select:text;-moz-user-select:text;user-select:text;}
   .nft-detail-close{width:36px;height:36px;font-size:16px;}
   /* Gallery lore title: reduce letter-spacing */
   .lore-page-title,.gallery-title{letter-spacing:2px;}
+  /* Lore title scale */
+  .lore-page-title{font-size:18px;}
+  /* Lore terminal font */
+  .lore-terminal{font-size:8px;}
 }
 
 
@@ -1157,6 +1180,10 @@ input,textarea{-webkit-user-select:text;-moz-user-select:text;user-select:text;}
   box-shadow:0 2px 12px rgba(0,0,0,.4);
 }
 #scroll-toast.show{opacity:1;}
+@supports(padding:env(safe-area-inset-bottom)){
+  #ticker{padding-bottom:env(safe-area-inset-bottom);}
+  #nav{padding-top:max(8px,env(safe-area-inset-top));}
+}
 </style>
 <style>
 /* ═══════════════════════════════════════════════════════
@@ -1319,6 +1346,10 @@ input,textarea{-webkit-user-select:text;-moz-user-select:text;user-select:text;}
   line-height: 1;
 }
 #cardModalClose:hover { background: rgba(255,255,255,0.15); color: #fff; }
+@media(max-width:768px){
+  #cardModalClose{width:44px;height:44px;font-size:18px;}
+  .card-detail,#cardDetailWrap>div{max-height:88vh;overflow-y:auto;-webkit-overflow-scrolling:touch;}
+}
 
 /* === FLOATING TERMINAL (left side — no box) === */
 #cardTerminalFloat {
@@ -3206,8 +3237,14 @@ function loadGalleryPage(){
       var valSpan = document.getElementById('search-typing-value');
       if (!prompt || !valSpan) return;
       var rect = inputEl.getBoundingClientRect();
-      prompt.style.top = (rect.bottom + 10) + 'px';
-      prompt.style.left = rect.left + 'px';
+      var pTop = rect.bottom + 10;
+      var pLeft = rect.left;
+      var promptW = Math.min(window.innerWidth - 20, 320);
+      if (pLeft + promptW > window.innerWidth - 10) pLeft = window.innerWidth - promptW - 10;
+      if (pLeft < 10) pLeft = 10;
+      prompt.style.top = pTop + 'px';
+      prompt.style.left = pLeft + 'px';
+      prompt.style.maxWidth = promptW + 'px';
       valSpan.textContent = value ? 'seek --nft ' + value : '';
       prompt.style.display = value ? 'block' : 'none';
     }
@@ -3599,7 +3636,7 @@ document.addEventListener('copy',function(e){
 <div id="crt-vignette" style="position:fixed;inset:0;pointer-events:none;z-index:2;background:radial-gradient(ellipse at center,transparent 55%,rgba(0,0,0,0.65) 100%);"></div>
 <div id="crt-phosphor" style="position:fixed;inset:0;pointer-events:none;z-index:2;background:rgba(0,20,0,0.04);"></div>
 <!-- Search terminal prompt — direct child of body to escape stacking context of galleryPage -->
-<div id="search-typing-prompt" style="display:none;position:fixed;z-index:99999;font-family:'JetBrains Mono','SF Mono',monospace;font-size:13px;color:#00FF41;pointer-events:none;white-space:nowrap;text-shadow:0 0 8px rgba(0,255,65,0.6);">
+<div id="search-typing-prompt" style="display:none;position:fixed;z-index:99999;font-family:'JetBrains Mono','SF Mono',monospace;font-size:13px;color:#00FF41;pointer-events:none;white-space:nowrap;text-shadow:0 0 8px rgba(0,255,65,0.6);max-width:calc(100vw - 20px);overflow:hidden;">
   <span style="color:rgba(0,255,65,0.6);">dopamilio@bitcoin:~/gallery$ </span><span id="search-typing-value"></span><span id="search-typing-cursor" style="display:inline-block;width:8px;height:14px;background:#00FF41;margin-left:1px;vertical-align:middle;animation:term-blink 1s step-end infinite;"></span>
 </div>
 <audio id="bg-music" src="audio/darude.mp3" loop preload="none"></audio>
