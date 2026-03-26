@@ -1755,6 +1755,8 @@ input,textarea{-webkit-user-select:text;-moz-user-select:text;user-select:text;}
   </div>
 </div>
 <audio id="sniper-audio" src="./memes_mlg/sniper/sniperaudio.mp3" preload="none"></audio>
+<button id="test-sniper-btn" onclick="_playSniperEffect()" style="display:none;position:fixed;bottom:80px;right:16px;z-index:99999;background:#0f0;color:#000;font-weight:700;font-size:12px;padding:8px 14px;border:none;border-radius:6px;cursor:pointer;">🎯 TEST SNIPER</button>
+<script>if(location.search.includes('test=1'))document.getElementById('test-sniper-btn').style.display='block';</script>
 <script>
 const NFT_IMGS=[
   'nft_preview/1.webp',
