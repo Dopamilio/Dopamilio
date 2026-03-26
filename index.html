@@ -1853,7 +1853,6 @@ async function _fetchFeeRate(){
     currentFeeRate = gasParams.bitcoin.recommended.medium;
     gasSats = BigInt(Math.round(currentFeeRate * 1000));
   }catch(e){
-    console.warn('fee rate fetch failed, using fallback:', e);
   }
   _updateCostDisplay();
 }
@@ -1901,7 +1900,7 @@ async function _loadContractInfo(){
     const startTime = Number(startRes?.properties?.startTime ?? 0n);
     const isTestnet = isTestRes?.properties?.isTestnet ?? false;
     _updatePhaseDisplay(phase, startTime, isTestnet);
-  }catch(e){ console.warn('[dopamilio] loadContractInfo:', e?.message); }
+  }catch(e){}
 }
 
 function updateGalleryStates(){
@@ -2073,7 +2072,6 @@ async function _fetchRecentMints(){
         }).catch(()=>{});
     }
   }catch(e){
-    console.warn('_fetchRecentMints fallback:', e?.message||e);
   }
 }
 
@@ -2673,7 +2671,7 @@ async function doConnect(){
   btn.textContent='\u23F3 CONNECTING...';btn.disabled=true;
   try{
     if(!window.opnet){
-      alert('OP_Wallet not found.\nInstall it at opnet.org to continue.');
+      walletToast('err','OP_WALLET NOT FOUND<br>Install at opnet.org');
       btn.textContent='\u26A1 CONNECT WALLET';btn.disabled=false;return;
     }
     const accounts = await window.opnet.requestAccounts();
@@ -2691,7 +2689,6 @@ async function doConnect(){
     _loadContractInfo();
   }catch(e){
     btn.textContent='\u26A1 CONNECT WALLET';btn.disabled=false;
-    if(e?.message&&!e.message.includes('User rejected')) console.error('connect:',e);
   }
 }
 function doDisconnect(){
@@ -2841,7 +2838,6 @@ async function doMint(){
       walletToast('err','SOLD OUT<br>ALL 3333 MINTED SER');
     }
     else if(!msg.includes('User rejected')) walletToast('err','Mint error: '+msg.slice(0,120));
-    console.error('doMint:',e?.message??e);
   }finally{
     btn.textContent='\uD83D\uDD25 MINT NOW \uD83D\uDD25';btn.disabled=false;
   }
