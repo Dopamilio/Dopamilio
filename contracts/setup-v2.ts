@@ -24,9 +24,9 @@ const TESTNET_RPC = 'https://testnet.opnet.org';
 const NETWORK     = networks.opnetTestnet;
 
 // Collection values (must match DopamilioNFT.ts constants — plain URLs, no HTML)
-const BASE_URI    = 'https://dopamilio.vercel.app/api/metadata';
-const ICON_URL    = 'https://dopamilio.vercel.app/icon.png';
-const BANNER_URL  = 'https://dopamilio.vercel.app/banner.png';
+const BASE_URI    = 'https://dopamilio.xyz/api/metadata';
+const ICON_URL    = 'https://dopamilio.xyz/icon.png';
+const BANNER_URL  = 'https://dopamilio.xyz/banner.png';
 const WEBSITE_URL = 'https://dopamilio.xyz';
 const DESCRIPTION = '3,333 unique degenerates etched on Bitcoin. 100% on-chain. Pure dopamine.';
 
@@ -174,7 +174,7 @@ async function main(): Promise<void> {
     console.log(' Icon       :', ICON_URL);
     console.log(' Banner     :', BANNER_URL);
     console.log(' Phase      :', phaseSim.properties?.phase ?? '?', '(3=PUBLIC)');
-    console.log(' IsTestnet  : true');
+    console.log(' IsTestnet  :', NETWORK === networks.opnetTestnet ? 'true' : 'false');
     console.log(' MintPrice  : 6969 sats');
     console.log('=================================================================');
 }

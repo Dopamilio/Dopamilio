@@ -1617,11 +1617,6 @@ input,textarea{-webkit-user-select:text;-moz-user-select:text;user-select:text;}
   <div id="mkt-soon-text">SOON</div>
 </div>
 
-<!-- DEV TEMP BUTTON — remove before mainnet -->
-<div id="dev-btns" style="position:fixed;bottom:calc(var(--ticker-h,33px) + 8px);left:10px;z-index:9999;display:flex;flex-direction:column;gap:5px;">
-  <button onclick="_setSoldOut(true);showPage('gallery');" style="background:#0a0f0a;border:1px dashed #ff3333;color:#ff3333;font-family:'JetBrains Mono',monospace;font-size:8px;padding:4px 10px;cursor:pointer;letter-spacing:1px;opacity:0.75;">🧪 SOLD OUT + GALLERY</button>
-</div>
-
 <!-- DOPA-2: GALLERY PAGE -->
 <section id="galleryPage" class="page-section" style="display:none">
   <div class="gallery-wrap">
@@ -2624,7 +2619,8 @@ async function doConnect(){
     try{ walletPubKey = await window.opnet.getPublicKey(); }catch(_){}
     connected   = true;
     walletToast('connect');
-    const disp  = walletAddr.slice(0,10)+'...'+walletAddr.slice(-5);
+    const _addrDisp = walletAddr.startsWith('0x') ? _hexToOpnet(walletAddr) : walletAddr;
+    const disp  = _addrDisp.slice(0,10)+'...'+_addrDisp.slice(-5);
     btn.innerHTML='\u2713 '+_safeText(disp);
     btn.classList.add('on');btn.disabled=false;
     const ws=document.getElementById('wSt');

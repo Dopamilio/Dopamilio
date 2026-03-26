@@ -45,7 +45,7 @@ const SYMBOL_MAP = {
 };
 
 module.exports = async function handler(req, res) {
-  res.setHeader('Access-Control-Allow-Origin', 'https://dopamilio-mint.vercel.app');
+  res.setHeader('Access-Control-Allow-Origin', 'https://dopamilio.xyz');
   res.setHeader('Access-Control-Allow-Methods', 'GET');
   res.setHeader('Vary', 'Origin');
 
