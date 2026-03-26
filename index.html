@@ -989,7 +989,7 @@ body{font-family:'JetBrains Mono','SF Mono','Menlo','Courier New',monospace;}
 .gal-btn:hover { background:rgba(255,255,255,0.15); }
 .gal-btn:disabled { opacity:0.3; cursor:not-allowed; }
 .gal-page { font-size:10px; font-family:'JetBrains Mono',monospace; color:rgba(255,255,255,0.5); }
-@media(max-width:600px){ .gallery-grid { grid-template-columns: repeat(auto-fill, minmax(120px,1fr)); gap:8px; } }
+@media(max-width:600px){ .gallery-grid { grid-template-columns: repeat(3,1fr); gap:8px; } }
 
 /* APPLE NAV BUTTONS */
 .nav-btn-apple {
@@ -1046,7 +1046,22 @@ body{font-family:'JetBrains Mono','SF Mono','Menlo','Courier New',monospace;}
   width:min(42vw,560px);
 }
 #sniper-overlay.show{display:block;}
-#sniper-gif{width:100%;height:auto;display:block;border-radius:6px;}
+/* CSS quickscope crosshair — replaces quickscope.png */
+#sniper-gif{width:100%;aspect-ratio:500/354;display:block;border-radius:6px;
+  position:relative;overflow:hidden;background:rgba(0,0,0,.88);}
+#sniper-gif .sc-bg-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.18;pointer-events:none;}
+.sc-circle{position:absolute;border-radius:50%;border:2px solid rgba(0,255,0,.75);
+  top:50%;left:50%;transform:translate(-50%,-50%);}
+.sc-outer-ring{width:66%;padding-bottom:66%;}
+.sc-inner-ring{width:24%;padding-bottom:24%;border-color:rgba(0,255,0,.45);}
+.sc-hline,.sc-vline{position:absolute;background:rgba(0,255,0,.65);}
+.sc-hline{width:100%;height:2px;top:50%;transform:translateY(-50%);}
+.sc-vline{height:100%;width:2px;left:50%;transform:translateX(-50%);}
+.sc-dot{position:absolute;width:5px;height:5px;background:#00ff00;border-radius:50%;
+  top:50%;left:50%;transform:translate(-50%,-50%);}
+.sc-label{position:absolute;bottom:8%;right:5%;
+  font-family:'JetBrains Mono',monospace;font-size:min(2vw,11px);
+  color:rgba(0,255,0,.7);letter-spacing:3px;text-transform:uppercase;}
 #sniper-overlay .sniper-drag-handle{
   position:absolute;top:0;left:0;right:0;height:28px;
   cursor:move;background:rgba(0,0,0,0.01);
@@ -1084,7 +1099,7 @@ input,textarea{-webkit-user-select:text;-moz-user-select:text;user-select:text;}
   .nav-right{gap:4px;}
   .nav-right .nav-pill{padding:0 8px;font-size:9px;letter-spacing:1px;}
   #galleryPage,.lore-page-title{padding-left:12px;padding-right:12px;}
-  .gallery-grid{grid-template-columns:repeat(auto-fill,minmax(140px,1fr));}
+  .gallery-grid{grid-template-columns:repeat(auto-fill,minmax(130px,1fr));}
   .lore-terminal{font-size:10px;padding:12px;}
   .lore-page-title{font-size:24px;letter-spacing:4px;padding:12px 12px 0;}
   /* Performance: disable heavy visual effects on mobile */
@@ -1097,7 +1112,7 @@ input,textarea{-webkit-user-select:text;-moz-user-select:text;user-select:text;}
   .mkt-nft-area{padding-bottom:calc(var(--ticker-h,33px) + 80px);}
 }
 @media(max-width:480px){
-  .gallery-grid{grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:6px;}
+  .gallery-grid{grid-template-columns:repeat(3,1fr);gap:6px;}
   #cards-row{min-height:unset;}
   .card{min-height:unset;}
   .center-nav{gap:12px;}
@@ -1133,7 +1148,7 @@ input,textarea{-webkit-user-select:text;-moz-user-select:text;user-select:text;}
 @media(max-width:360px){
   :root{--nav-h:58px;}
   .ti{padding:0 7px;font-size:9px;}
-  .gallery-grid{grid-template-columns:repeat(2,1fr);gap:5px;}
+  .gallery-grid{grid-template-columns:repeat(3,1fr);gap:5px;}
   #cards-row{gap:8px;}
   .phases{grid-template-columns:1fr 1fr;}
   /* NFT trait labels: slightly larger for readability */
@@ -1725,7 +1740,15 @@ input,textarea{-webkit-user-select:text;-moz-user-select:text;user-select:text;}
 <!-- Sniper overlay — shown on mint confirm -->
 <div id="sniper-overlay">
   <div class="sniper-drag-handle"></div>
-  <img id="sniper-gif" src="./memes_mlg/quickscope.png" alt="" loading="lazy" width="500" height="354">
+  <div id="sniper-gif" class="sc-hw">
+    <div class="sc-circle sc-outer-ring"></div>
+    <div class="sc-circle sc-inner-ring"></div>
+    <div class="sc-hline"></div>
+    <div class="sc-vline"></div>
+    <div class="sc-dot"></div>
+    <img src="./memes_mlg/sniper/sniper.webp" alt="" class="sc-bg-img" loading="lazy">
+    <span class="sc-label">360 NOSCOPE</span>
+  </div>
 </div>
 <audio id="sniper-audio" src="./memes_mlg/sniper/sniperaudio.mp3" preload="none"></audio>
 <script>
@@ -2017,9 +2040,14 @@ async function _fetchRecentMints(){
       let owner = '';
       if(res.status==='fulfilled'){
         const raw = res.value?.properties?.owner;
-        if(typeof raw === 'string' && raw.length > 5) owner = raw;
-        else if(typeof raw === 'bigint') owner = '0x'+raw.toString(16).padStart(40,'0');
-        else if(raw && typeof raw === 'object') owner = raw.toString?.() || raw.address || String(raw);
+        if(typeof raw === 'string' && raw.length > 5){
+          owner = raw.startsWith('0x') ? _hexToOpnet(raw) : raw;
+        } else if(typeof raw === 'bigint'){
+          owner = _hexToOpnet('0x'+raw.toString(16).padStart(64,'0'));
+        } else if(raw && typeof raw === 'object'){
+          const s = raw.toString?.() || raw.address || String(raw);
+          owner = (s.startsWith('0x') && s.length >= 10) ? _hexToOpnet(s) : s;
+        }
       }
       const tid = String(id);
       return {tokenId:tid, minter:owner, txid:_mintTxCache[tid]||'', time:'on-chain'};
@@ -2052,7 +2080,7 @@ function _buildActRow(tokenId, minter, txid, timeLabel) {
   var imgSrc = (tokenId && tokenId !== '?')
     ? _getImgUrl(tokenId)
     : (NFT_IMGS[Number(tokenId || 0) % NFT_IMGS.length] || '');
-  var shortAddr = minter ? (minter.slice(0,5)+'...'+minter.slice(-5)) : '—';
+  var shortAddr = minter ? (minter.slice(0,10)+'...'+minter.slice(-6)) : '—';
   var txShort   = txid   ? (txid.slice(0,16)+'...'+txid.slice(-10))   : '—';
   var txEl = txid
     ? '<a href="'+OPSCAN_BASE+_safeText(txid)+OPSCAN_QUERY+'" target="_blank" class="act-txid-link" rel="noopener">'+_safeText(txShort)+'</a>'
@@ -3390,14 +3418,14 @@ function _tickItem(sym, price, chgPct) {
 
 /* Equity seed — last known values used as fallback when API is unavailable */
 var _EQUITY_SEED=[
-  {sym:'MSTR', price:135.66, chg:+2.34},
-  {sym:'NVDA', price:172.70, chg:-1.87},
-  {sym:'MSFT', price:381.87, chg:+0.63},
-  {sym:'AAPL', price:247.99, chg:-0.42},
-  {sym:'TSLA', price:367.96, chg:+3.11},
-  {sym:'SPX',  price:6506.49,chg:+0.28},
-  {sym:'GOLD', price:4291.81,chg:+1.05},
-  {sym:'DXY',  price:99.83,  chg:-0.31},
+  {sym:'MSTR', price:325.40, chg:+1.82},
+  {sym:'NVDA', price:108.90, chg:-0.74},
+  {sym:'MSFT', price:376.20, chg:+0.41},
+  {sym:'AAPL', price:220.50, chg:-0.38},
+  {sym:'TSLA', price:272.60, chg:+2.15},
+  {sym:'SPX',  price:5580.00,chg:-0.54},
+  {sym:'GOLD', price:3310.00,chg:+0.82},
+  {sym:'DXY',  price:104.10, chg:-0.22},
 ];
 
 /* Live equity from Twelve Data via /api/quotes (Vercel function) */
