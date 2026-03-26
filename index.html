@@ -148,7 +148,7 @@ body{
 @keyframes lb{0%,100%{background:#f00;}50%{background:#800;}}
 .tick-inner{overflow:hidden;flex:1;position:relative;}
 .tick-inner::before{content:'';position:absolute;left:0;top:0;bottom:0;width:60px;background:linear-gradient(to right,rgba(0,0,0,.95) 0%,transparent 100%);z-index:2;pointer-events:none;}
-.tick-track{display:flex;white-space:nowrap;animation:ts 28s linear infinite;}
+.tick-track{display:flex;white-space:nowrap;animation:ts 56s linear infinite;}
 .tick-track .tick-clone{display:inline-flex;flex-shrink:0;padding-right:60px;}
 .ti{padding:0 18px;font-family:'JetBrains Mono','SF Mono',monospace;font-size:11px;font-weight:400;letter-spacing:0.3px;}
 .ti-sym{color:rgba(255,255,255,0.7);margin-right:6px;font-weight:500;}
@@ -295,7 +295,7 @@ body{
 .thumb:hover{opacity:1;border-color:rgba(255,255,255,.4);transform:scale(1.08);}
 .thumb.active{opacity:1;border-color:#0f4;box-shadow:0 0 8px rgba(0,255,68,.6);}
 .nft-name{font-family:'Bangers',cursive;font-size:16px;color:#fff;letter-spacing:1px;display:block;}
-.nft-sub{font-family:'Press Start 2P',monospace;font-size:6px;color:rgba(255,255,255,.2);letter-spacing:1px;margin-top:2px;}
+.nft-sub{font-family:'Press Start 2P',monospace;font-size:8px;color:#fff;letter-spacing:1px;margin-top:4px;display:block;text-align:center;line-height:1.7;}
 
 /* MINT CARD — liquid glass */
 #mint-card{
@@ -1485,7 +1485,7 @@ input,textarea{-webkit-user-select:text;-moz-user-select:text;user-select:text;}
       </div>
       <div id="nft-bottom">
         <div class="nft-thumbs" id="thumbRow"></div>
-        <span class="nft-name" id="nftName">Dopamilio #5</span>
+        <span class="nft-name" id="nftName" style="display:none">Dopamilio #5</span>
         <span class="nft-sub">360 NOSCOPE &bull; GET <span style="color:#00ff88">RICH</span> OR GET <span style="color:#ff3333">REKT</span></span>
       </div>
     </div>
@@ -3276,7 +3276,7 @@ async function _fetchEquityLive(equityData){
 }
 
 var _tickerLastRender=0;
-var _TICKER_CYCLE=28000; /* must match CSS animation duration */
+var _TICKER_CYCLE=56000; /* must match CSS animation duration */
 
 async function tickerUpdate() {
   var track = document.querySelector('.tick-track');
