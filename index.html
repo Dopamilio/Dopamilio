@@ -3608,7 +3608,7 @@ document.addEventListener('dragstart',function(e){e.preventDefault();});
   }
   function _play(){
     if(!_ctx||!_buf)return;
-    var g=_ctx.createGain();g.gain.value=1;
+    var g=_ctx.createGain();g.gain.value=0.7;
     var s=_ctx.createBufferSource();
     s.buffer=_buf;
     s.playbackRate.value=1.6; /* 60% faster */
