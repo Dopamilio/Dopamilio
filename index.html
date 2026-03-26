@@ -372,7 +372,7 @@ body{
     rgba(0,8,0,0.22) 3px,rgba(0,8,0,0.22) 4px
   );
   pointer-events:none;z-index:3;
-  animation:mkt-soon-scan 0.42069s step-end infinite;
+  animation:mkt-soon-scan 1.42069s step-end infinite;
 }
 #mkt-soon-text{
   position:relative;z-index:2;
@@ -380,7 +380,7 @@ body{
   font-size:clamp(56px,14vw,140px);
   color:#00ff41;
   letter-spacing:12px;
-  animation:mkt-soon-blink 0.42069s step-end infinite;
+  animation:mkt-soon-blink 1.42069s step-end infinite;
 }
 .badge-soon{background:rgba(255,255,255,.1);color:rgba(255,255,255,.3);}
 .badge-done{background:rgba(255,255,255,.06);color:rgba(255,255,255,.2);}
@@ -1362,8 +1362,8 @@ input,textarea{-webkit-user-select:text;-moz-user-select:text;user-select:text;}
   0%,100%{opacity:1}
   50%{opacity:0}
 }
-.soon-tag{color:#00ff41;font-size:10px;animation:blink 1s step-start infinite;margin-left:4px;font-weight:700;vertical-align:middle;letter-spacing:1px;}
-.blink-soon{animation:blink 1s step-start infinite;}
+.soon-tag{color:#00ff41;font-size:10px;animation:mkt-soon-blink 1.42069s step-start infinite;margin-left:4px;font-weight:700;vertical-align:middle;letter-spacing:1px;}
+.blink-soon{animation:mkt-soon-blink 1.42069s step-start infinite;}
 #marketplacePage{font-family:'Courier New',monospace;color:#c8a84b;background:#060d06;padding:calc(var(--mac-bar-h,32px) + var(--nav-h) + 9px) 0 calc(var(--ticker-h,40px) + 74px);}
 .mkt-collection-header{background:#0a120a;border-bottom:1px solid #1a2a1a;padding:20px 24px;}
 .mkt-d-logo{width:48px;height:48px;border:1px solid #00ff41;display:flex;align-items:center;justify-content:center;color:#00ff41;font-size:22px;font-weight:bold;font-family:'Courier New',monospace;flex-shrink:0;}
