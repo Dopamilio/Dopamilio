@@ -2830,7 +2830,7 @@ function showPage(page){
     if(actDiv) actDiv.style.display='none';
     var target=document.getElementById(page+'Page');
     if(target) target.style.display='block';
-    if(page==='gallery'){loadGalleryPage();if(_galleryLoaded&&typeof galleryRender==='function'){galleryRender();}startGalleryGuard();}
+    if(page==='gallery'){loadGalleryPage();startGalleryGuard();}
     if(page==='lore') startLoreTyping();
     if(page==='marketplace') mktRenderPage();
   }
@@ -2893,39 +2893,69 @@ _loadImgCids();
   }
 })();
 
-var _galImgObserver = new IntersectionObserver(function(entries) {
+var _TINY_GIF = 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=';
+
+/* Unload observer: when an image that was loaded scrolls >600px past the viewport, reset it */
+var _galUnloadObserver = new IntersectionObserver(function(entries) {
   entries.forEach(function(entry) {
-    if (entry.isIntersecting) {
+    if (!entry.isIntersecting) {
       var img = entry.target;
-      if (img.dataset.src) {
-        img.src = img.dataset.src;
-        _galImgObserver.unobserve(img);
+      if (img.dataset.loaded) {
+        img.src = _TINY_GIF;
+        img.dataset.loaded = '';
+        _galUnloadObserver.unobserve(img);
+        _galLoadObserver.observe(img);
       }
     }
   });
-}, { rootMargin: '200px' });
+}, { rootMargin: '600px 0px 600px 0px' });
 
+/* Load observer: preload images 400px before they enter the viewport */
+var _galLoadObserver = new IntersectionObserver(function(entries) {
+  entries.forEach(function(entry) {
+    if (entry.isIntersecting) {
+      var img = entry.target;
+      if (img.dataset.src && !img.dataset.loaded) {
+        img.src = img.dataset.src;
+        img.dataset.loaded = '1';
+        _galLoadObserver.unobserve(img);
+        _galUnloadObserver.observe(img);
+      }
+    }
+  });
+}, { rootMargin: '400px 0px 400px 0px' });
+
+/* Keep _galImgObserver as alias so any legacy references still work */
+var _galImgObserver = _galLoadObserver;
+
+var _galRenderVersion = 0;
 function _galleryRenderInner() {
   var grid = document.getElementById('galleryGrid');
   if (!grid) return;
+  var myVersion = ++_galRenderVersion;
   window._currentGalleryPage = GAL_PAGE;
   var totalPages = Math.ceil(GAL_IDS.length / GAL_PER_PAGE);
   var start = (GAL_PAGE - 1) * GAL_PER_PAGE;
   var pageIds = GAL_IDS.slice(start, start + GAL_PER_PAGE);
 
-  _galImgObserver.disconnect();
+  _galLoadObserver.disconnect();
+  _galUnloadObserver.disconnect();
   grid.innerHTML = '';
   grid.classList.remove('premium-mode');
+
+  /* Abort if a newer render was scheduled while we were setting up */
+  if (myVersion !== _galRenderVersion) return;
+
   pageIds.forEach(function(id) {
     var card = document.createElement('div');
     card.className = 'gal-card';
     var img = document.createElement('img');
     img.loading = 'lazy';
     img.decoding = 'async';
-    img.src = 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=';
+    img.src = _TINY_GIF;
     img.dataset.src = _getImgUrl(id);
     img.alt = 'Dopamilio #' + id;
-    _galImgObserver.observe(img);
+    _galLoadObserver.observe(img);
     var label = document.createElement('div');
     label.className = 'gal-card-label';
     label.textContent = '#' + id;
@@ -2943,21 +2973,15 @@ function _galleryRenderInner() {
   if (prevBtn) prevBtn.disabled = GAL_PAGE <= 1;
   if (nextBtn) nextBtn.disabled = GAL_PAGE >= totalPages;
 
-  var gp = document.getElementById('galleryPage');
-  if (gp) gp.scrollIntoView({ behavior: 'smooth' });
-  /* Re-attach page-jump after re-render */
   setTimeout(_attachGalPageJump, 0);
-  /* Empty guard: if grid is empty after render, retry once */
-  var _isGalleryVisible = gp && gp.style.display !== 'none';
-  setTimeout(function() {
-    if (grid && grid.children.length === 0 && _isGalleryVisible) {
-      galleryRender();
-    }
-  }, 500);
 }
 
+var _galRenderTimer = null;
 function galleryRender() {
-  _loadImgCids(function() { _galleryRenderInner(); });
+  clearTimeout(_galRenderTimer);
+  _galRenderTimer = setTimeout(function() {
+    _loadImgCids(function() { _galleryRenderInner(); });
+  }, 30);
 }
 
 function galleryPrevPage() { if (GAL_PAGE > 1) { GAL_PAGE--; galleryRender(); } }
@@ -3423,8 +3447,9 @@ function startGalleryGuard() {
   _galleryGuardTimer = setInterval(function() {
     var galPage = document.getElementById('galleryPage');
     if (!galPage || galPage.style.display === 'none') return;
-    if (document.querySelectorAll('.gal-card').length === 0) {
-      if (typeof galleryRender === 'function') galleryRender(window._currentGalleryPage || 1);
+    var grid = document.getElementById('galleryGrid');
+    if (grid && grid.children.length === 0 && GAL_IDS.length > 0) {
+      galleryRender();
     }
   }, 5000);
 }
