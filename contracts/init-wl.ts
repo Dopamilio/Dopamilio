@@ -1,15 +1,13 @@
 /**
- * init-wl.ts — Initialize WL phase on deployed DopamilioNFT (new contract)
+ * init-wl.ts — Initialize WL phase on deployed DopamilioNFT v3 (Merkle WL)
  *
  * Usage (from contracts/ folder):
  *   OPNET_MNEMONIC="..." npx tsx init-wl.ts <contractAddress>
  *
- * Reads wl.txt and calls initMint(wlAddresses[]) — a single transaction that:
- *   1. Sets all WL addresses on-chain
- *   2. Activates the TEAM→WL phase clock
- *
- * Only opt1p... bech32m addresses are passed as WL.
- * The deployer wallet is added to TEAM automatically in onDeployment().
+ * Reads wl-root.txt (64-char hex Merkle root) and calls:
+ *   1. setWLRoot(root) — stores the Merkle root on-chain
+ *   2. startMint()     — activates the TEAM→WL phase clock
+ * Two separate transactions. Verifies getPhase() == 1 (TEAM) at end.
  *
  * SECURITY: mnemonic only via env var — NEVER hardcoded.
  */
@@ -23,7 +21,6 @@ import {
     Address,
 } from '@btc-vision/transaction';
 import { ABIDataTypes, BitcoinAbiTypes, BitcoinInterfaceAbi, getContract, JSONRpcProvider } from 'opnet';
-import { bech32m } from 'bech32';
 
 const RPC_URL = 'https://testnet.opnet.org';
 const NETWORK  = networks.opnetTestnet;
@@ -41,44 +38,16 @@ if (!mnemonic) {
     process.exit(1);
 }
 
-// ─── Parse wl.txt ──────────────────────────────────────────────────────────
-// Only opt1p... bech32m addresses are WL entries (deployer hex is TEAM, handled in contract)
-const wlFile = resolve(__dirname, 'wl.txt');
-const wlLines: string[] = readFileSync(wlFile, 'utf8')
-    .split('\n')
-    .map(l => l.trim())
-    .filter(l => l && !l.startsWith('#'));
-
-const opt1pAddresses = wlLines.filter(l => l.startsWith('opt1p'));
-if (opt1pAddresses.length === 0) {
-    console.error('ERROR: no opt1p addresses found in wl.txt');
+// Read wl-root.txt — 64-char hex Merkle root
+const rootFile = resolve(__dirname, 'wl-root.txt');
+const rootHex  = readFileSync(rootFile, 'utf8').trim().replace(/^0x/i, '');
+if (rootHex.length !== 64) {
+    console.error(`ERROR: wl-root.txt must contain a 64-char hex string, got ${rootHex.length} chars`);
     process.exit(1);
 }
+const rootBigInt = BigInt('0x' + rootHex);
 
-// Decode bech32m opt1p → 32-byte x-only pubkey → BigInt
-function opt1pToBigInt(addr: string): bigint {
-    const decoded = bech32m.decode(addr);
-    // witness program: first byte is version (1), rest is the 32-byte pubkey
-    const words = bech32m.fromWords(decoded.words.slice(1)); // skip witness version
-    if (words.length !== 32) {
-        throw new Error(`Invalid opt1p address (expected 32 bytes, got ${words.length}): ${addr}`);
-    }
-    const hex = Buffer.from(words).toString('hex');
-    return BigInt('0x' + hex);
-}
-
-const wlBigInts: bigint[] = opt1pAddresses.map((addr, i) => {
-    try {
-        const bi = opt1pToBigInt(addr);
-        console.log(`WL[${i}] ${addr} → 0x${bi.toString(16).padStart(64, '0')}`);
-        return bi;
-    } catch (e: any) {
-        console.error(`ERROR decoding WL address ${addr}: ${e.message}`);
-        process.exit(1);
-    }
-});
-
-// ─── Wallet setup ───────────────────────────────────────────────────────────
+// Wallet setup
 const mnemonicObj = new Mnemonic(mnemonic!, '', NETWORK, MLDSASecurityLevel.LEVEL1);
 const wallet      = mnemonicObj.deriveOPWallet(AddressTypes.P2WPKH, 0);
 
@@ -94,13 +63,19 @@ const senderAddr = Address.fromString(
 console.log('\nDeployer P2TR  :', wallet.p2tr);
 console.log('Deployer OPNet :', wallet.address.toString());
 console.log('Contract       :', CONTRACT_ADDR);
-console.log(`WL count       : ${wlBigInts.length} addresses`);
+console.log('WL Merkle Root :', '0x' + rootHex);
 
-// ─── ABI ────────────────────────────────────────────────────────────────────
+// ABI
 const ABI: BitcoinInterfaceAbi = [
     {
-        name: 'initMint',
-        inputs:  [{ name: 'wlAddresses', type: ABIDataTypes.ARRAY_OF_UINT256 }],
+        name: 'setWLRoot',
+        inputs:  [{ name: 'root', type: ABIDataTypes.UINT256 }],
+        outputs: [{ name: 'success', type: ABIDataTypes.BOOL }],
+        type: BitcoinAbiTypes.Function,
+    },
+    {
+        name: 'startMint',
+        inputs:  [],
         outputs: [{ name: 'success', type: ABIDataTypes.BOOL }],
         type: BitcoinAbiTypes.Function,
     },
@@ -111,14 +86,13 @@ const ABI: BitcoinInterfaceAbi = [
         type: BitcoinAbiTypes.Function,
     },
     {
-        name: 'isWhitelisted',
-        inputs:  [{ name: 'addr', type: ABIDataTypes.ADDRESS }],
-        outputs: [{ name: 'ok', type: ABIDataTypes.BOOL }],
+        name: 'getWLRoot',
+        inputs:  [],
+        outputs: [{ name: 'root', type: ABIDataTypes.UINT256 }],
         type: BitcoinAbiTypes.Function,
     },
 ];
 
-// ─── Main ────────────────────────────────────────────────────────────────────
 const provider = new JSONRpcProvider({ url: RPC_URL, network: NETWORK });
 
 async function sleep(ms: number): Promise<void> {
@@ -133,25 +107,46 @@ async function main(): Promise<void> {
     const phase = Number(phaseSim.properties?.phase ?? phaseSim);
     console.log('\nCurrent phase:', phase, '(expected 0 = INACTIVE)');
     if (phase !== 0) {
-        console.warn('WARNING: Phase is not 0. initMint may revert if already initialized.');
+        console.warn('WARNING: Phase is not 0. startMint may revert if already initialized.');
     }
 
-    // Call initMint(wlAddresses[])
-    console.log('\n--- Calling initMint ---');
-    const sim = await (contract as any).initMint(wlBigInts);
-    if (sim.revert) {
-        throw new Error(`initMint simulation reverted: ${sim.revert}`);
+    // Step 1: Call setWLRoot(rootBigInt)
+    console.log('\n--- Step 1: setWLRoot ---');
+    const rootSim = await (contract as any).setWLRoot(rootBigInt);
+    if (rootSim.revert) {
+        throw new Error(`setWLRoot simulation reverted: ${rootSim.revert}`);
     }
 
-    const receipt = await sim.sendTransaction({
+    const rootReceipt = await rootSim.sendTransaction({
         signer:      wallet.keypair,
         mldsaSigner: wallet.mldsaKeypair,
         refundTo:    wallet.p2tr,
         network:     NETWORK,
         maximumAllowedSatToSpend: 100_000n,
     });
-    if (!receipt) throw new Error('initMint: no receipt');
-    console.log('  OK initMint TX:', receipt.transactionId ?? '');
+    if (!rootReceipt) throw new Error('setWLRoot: no receipt');
+    console.log('  OK setWLRoot TX:', rootReceipt.transactionId ?? '');
+
+    // Wait for indexer
+    console.log('  Waiting 12s for indexer...');
+    await sleep(12_000);
+
+    // Step 2: Call startMint()
+    console.log('\n--- Step 2: startMint ---');
+    const startSim = await (contract as any).startMint();
+    if (startSim.revert) {
+        throw new Error(`startMint simulation reverted: ${startSim.revert}`);
+    }
+
+    const startReceipt = await startSim.sendTransaction({
+        signer:      wallet.keypair,
+        mldsaSigner: wallet.mldsaKeypair,
+        refundTo:    wallet.p2tr,
+        network:     NETWORK,
+        maximumAllowedSatToSpend: 100_000n,
+    });
+    if (!startReceipt) throw new Error('startMint: no receipt');
+    console.log('  OK startMint TX:', startReceipt.transactionId ?? '');
 
     // Wait for indexer
     console.log('  Waiting 15s for indexer...');
@@ -160,13 +155,24 @@ async function main(): Promise<void> {
     // Verify phase moved to TEAM (1)
     const phaseAfterSim = await (contract as any).getPhase();
     const phaseAfter = Number(phaseAfterSim.properties?.phase ?? phaseAfterSim);
-    console.log('Phase after initMint:', phaseAfter, '(expected 1 = TEAM)');
+    console.log('Phase after startMint:', phaseAfter, '(expected 1 = TEAM)');
+
+    if (phaseAfter !== 1) {
+        console.warn('WARNING: Expected phase 1 (TEAM) but got', phaseAfter);
+    }
+
+    // Verify WL root stored
+    const rootVerifySim = await (contract as any).getWLRoot();
+    const storedRoot = rootVerifySim.properties?.root ?? 0n;
+    const storedRootHex = storedRoot.toString(16).padStart(64, '0');
+    console.log('Stored WL root:', '0x' + storedRootHex);
+    console.log('Root match    :', storedRootHex === rootHex ? 'YES' : 'NO — MISMATCH!');
 
     console.log('\n=================================================================');
-    console.log(' initMint complete!');
+    console.log(' init-wl complete!');
     console.log(' Contract :', CONTRACT_ADDR);
-    console.log(` WL count : ${wlBigInts.length} addresses set on-chain`);
-    console.log(' Phase    :', phaseAfter, '(1=TEAM 15min → 2=WL 1day → 3=PUBLIC)');
+    console.log(' WL root  : 0x' + rootHex);
+    console.log(' Phase    :', phaseAfter, '(1=TEAM 15min → 2=WL 1hr → 3=PUBLIC)');
     console.log(' Next: update CONTRACT_ADDR + CONTRACT_P2TR in index.html, then git push');
     console.log('=================================================================');
 }
