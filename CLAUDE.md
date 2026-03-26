@@ -30,7 +30,7 @@ dopamilio/
 │   ├── deploy.ts            ← deploy script
 │   ├── init-wl.ts           ← initialize WL phase on-chain
 │   ├── generate-merkle.ts   ← generate WL merkle tree from wl.txt
-│   ├── setup-v2.ts          ← post-deploy verification
+│   ├── setup.ts             ← post-deploy verification
 │   ├── update-onchain.ts    ← update on-chain metadata (baseURI etc)
 │   ├── diagnose.ts          ← diagnostic utility (query contract state)
 │   ├── wl.txt               ← whitelist addresses (MLDSA hex or opt1p)
@@ -57,7 +57,7 @@ git push   # Vercel auto-deploys on push to main
 cd contracts
 npm run build && npm run verify   # must print schnorr_gone=true chainErr_gone=true
 OPNET_MNEMONIC="..." npx tsx deploy.ts
-OPNET_MNEMONIC="..." npx tsx setup-v2.ts <addr>
+OPNET_MNEMONIC="..." npx tsx setup.ts <addr>
 # Then run: bash scripts/switch-to-mainnet.sh <addr> <p2tr> <block>
 # Then: git add index.html vercel.json && git push
 ```

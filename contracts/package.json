@@ -1,7 +1,7 @@
 {
   "name": "dopamilio-contracts",
-  "version": "2.0.0",
-  "description": "DopamilioNFT v2 — OP-721 NFT on OPNet Bitcoin",
+  "version": "1.0.0",
+  "description": "DopamilioNFT — OP-721 NFT on OPNet Bitcoin",
   "private": true,
   "scripts": {
     "build": "node node_modules/@btc-vision/assemblyscript/bin/asc.js op721/index.ts --target dopamilioNft --config asconfig.json --measure",

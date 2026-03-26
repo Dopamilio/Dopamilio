@@ -1,5 +1,5 @@
 /**
- * deploy.ts — DopamilioNFT v2 deployment script
+ * deploy.ts — DopamilioNFT deployment script
  *
  * Usage (from contracts/ folder):
  *   OPNET_MNEMONIC="..." npx tsx deploy.ts
@@ -17,10 +17,10 @@ import {
 } from '@btc-vision/transaction';
 import { JSONRpcProvider } from 'opnet';
 
-const TESTNET_RPC = 'https://testnet.opnet.org';
-const WASM_PATH   = './build/DopamilioNFT.wasm';
-const NETWORK     = networks.opnetTestnet;
-const FEE_RATE    = 5;      // sat/vbyte — testnet
+const RPC_URL   = 'https://testnet.opnet.org';
+const WASM_PATH = './build/DopamilioNFT.wasm';
+const NETWORK   = networks.opnetTestnet;
+const FEE_RATE  = 5;      // sat/vbyte
 const GAS_SAT_FEE = 15_000n;
 
 const mnemonic = process.env.OPNET_MNEMONIC;
@@ -35,7 +35,7 @@ const wallet      = mnemonicObj.deriveOPWallet(AddressTypes.P2WPKH, 0);
 console.log('Deployer P2TR   :', wallet.p2tr);
 console.log('Deployer OPNet  :', wallet.address.toString());
 
-const provider = new JSONRpcProvider({ url: TESTNET_RPC, network: NETWORK });
+const provider = new JSONRpcProvider({ url: RPC_URL, network: NETWORK });
 const factory  = new TransactionFactory();
 
 async function deploy(): Promise<void> {
@@ -45,7 +45,7 @@ async function deploy(): Promise<void> {
     const utxos = await provider.utxoManager.getUTXOs({ address: wallet.p2tr, optimize: false });
     console.log('Available UTXOs  :', utxos.length);
     if (utxos.length === 0) {
-        console.error('ERROR: no UTXOs for', wallet.p2tr, '— fund with testnet BTC first');
+        console.error('ERROR: no UTXOs for', wallet.p2tr, '— fund with BTC first');
         process.exit(1);
     }
 
@@ -79,8 +79,8 @@ async function deploy(): Promise<void> {
     console.log('Reveal  TX       :', reveal.txid ?? reveal);
 
     console.log('\n=================================================================');
-    console.log(' DopamilioNFT v2 deployed at:', deployment.contractAddress);
-    console.log(' Next: OPNET_MNEMONIC="..." npx tsx setup-v2.ts', deployment.contractAddress);
+    console.log(' DopamilioNFT deployed at:', deployment.contractAddress);
+    console.log(' Next: OPNET_MNEMONIC="..." npx tsx setup.ts', deployment.contractAddress);
     console.log('=================================================================');
 }
 

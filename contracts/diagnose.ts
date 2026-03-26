@@ -17,7 +17,7 @@ const ABI = [
     { name:'getWlDuration', inputs:[], outputs:[{name:'dur',       type:ABIDataTypes.UINT64}],   type: BitcoinAbiTypes.Function },
 ];
 
-const c = getContract('opt1sqrxrkuluvvl5rlguxmeamyd6vlywaza3zyu3znpp', ABI, provider, NETWORK, sender);
+const c = getContract('opt1sqrurzx45lsdm62q0ejjhru55kukj253a7u60xmgx', ABI, provider, NETWORK, sender);
 
 async function main() {
     const [ph, st, rt, it, wd] = await Promise.all([

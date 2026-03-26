@@ -1,10 +1,10 @@
 /**
- * setup-v2.ts — Configure DopamilioNFT v14 after deployment
+ * setup.ts — Configure DopamilioNFT after deployment
  *
  * Usage (from contracts/ folder):
- *   OPNET_MNEMONIC="..." npx tsx setup-v2.ts <contractAddress>
+ *   OPNET_MNEMONIC="..." npx tsx setup.ts <contractAddress>
  *
- * v14 notes:
+ * Notes:
  *   - baseURI, icon, banner, description, website are all set inside onDeployment
  *     via instantiate(). This script verifies state and can update via changeMetadata.
  *
@@ -20,8 +20,8 @@ import {
 } from '@btc-vision/transaction';
 import { BitcoinAbiTypes, BitcoinInterfaceAbi, getContract, JSONRpcProvider } from 'opnet';
 
-const TESTNET_RPC = 'https://testnet.opnet.org';
-const NETWORK     = networks.opnetTestnet;
+const RPC_URL = 'https://testnet.opnet.org';
+const NETWORK = networks.opnetTestnet;
 
 // Collection values (must match DopamilioNFT.ts constants — plain URLs, no HTML)
 const BASE_URI    = 'https://dopamilio.xyz/api/metadata';
@@ -32,7 +32,7 @@ const DESCRIPTION = '3,333 unique degenerates etched on Bitcoin. 100% on-chain. 
 
 const args = process.argv.slice(2);
 if (args.length < 1) {
-    console.error('Usage: OPNET_MNEMONIC="..." npx tsx setup-v2.ts <contractAddress>');
+    console.error('Usage: OPNET_MNEMONIC="..." npx tsx setup.ts <contractAddress>');
     process.exit(1);
 }
 const CONTRACT_ADDR = args[0];
@@ -50,7 +50,7 @@ console.log('Deployer P2TR   :', wallet.p2tr);
 console.log('Deployer OPNet  :', wallet.address.toString());
 console.log('Contract        :', CONTRACT_ADDR);
 
-const provider = new JSONRpcProvider({ url: TESTNET_RPC, network: NETWORK });
+const provider = new JSONRpcProvider({ url: RPC_URL, network: NETWORK });
 
 function bytesToHex(b: Uint8Array): string {
     return Array.from(b).map(x => x.toString(16).padStart(2, '0')).join('');
@@ -168,7 +168,7 @@ async function main(): Promise<void> {
     }
 
     console.log('\n=================================================================');
-    console.log(' Setup v14 complete! All metadata set via onDeployment:');
+    console.log(' Setup complete! All metadata set via onDeployment:');
     console.log(' Contract   :', CONTRACT_ADDR);
     console.log(' BaseURI    :', BASE_URI);
     console.log(' Icon       :', ICON_URL);

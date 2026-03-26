@@ -106,7 +106,7 @@ dopamilio/
 │   ├── deploy.ts            ← deploy script
 │   ├── init-wl.ts           ← initialize WL phase on-chain
 │   ├── generate-merkle.ts   ← generate WL merkle tree
-│   └── setup-v2.ts          ← post-deploy verification
+│   └── setup.ts             ← post-deploy verification
 ├── memes_mlg/               ← the culture. do NOT remove.
 ├── nft_preview/             ← preview images (sample only)
 ├── fonts/                   ← woff2 fonts. cached forever.

@@ -21,8 +21,8 @@ import {
 } from '@btc-vision/transaction';
 import { BitcoinAbiTypes, BitcoinInterfaceAbi, getContract, JSONRpcProvider } from 'opnet';
 
-const TESTNET_RPC = 'https://testnet.opnet.org';
-const NETWORK     = networks.opnetTestnet;
+const RPC_URL = 'https://testnet.opnet.org';
+const NETWORK = networks.opnetTestnet;
 
 const ICON_URL    = 'https://dopamilio.xyz/icon.png';
 const BANNER_URL  = 'https://dopamilio.xyz/banner.png';
@@ -39,7 +39,7 @@ if (!mnemonic) { console.error('ERROR: set OPNET_MNEMONIC env var'); process.exi
 
 const mnemonicObj = new Mnemonic(mnemonic!, '', NETWORK, MLDSASecurityLevel.LEVEL1);
 const wallet      = mnemonicObj.deriveOPWallet(AddressTypes.P2WPKH, 0);
-const provider    = new JSONRpcProvider({ url: TESTNET_RPC, network: NETWORK });
+const provider    = new JSONRpcProvider({ url: RPC_URL, network: NETWORK });
 
 function bytesToHex(b: Uint8Array): string {
     return Array.from(b).map(x => x.toString(16).padStart(2, '0')).join('');

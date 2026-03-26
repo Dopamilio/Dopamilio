@@ -1,12 +1,12 @@
 /**
- * set-base-uri.ts — Update baseURI for DopamilioNFT v14
+ * set-base-uri.ts — Update baseURI for DopamilioNFT
  * Usage: OPNET_MNEMONIC="..." npx tsx set-base-uri.ts <contractAddress> <newBaseURI>
  */
 import { networks } from '@btc-vision/bitcoin';
 import { ABIDataTypes, Mnemonic, MLDSASecurityLevel, AddressTypes, Address } from '@btc-vision/transaction';
 import { BitcoinAbiTypes, BitcoinInterfaceAbi, getContract, JSONRpcProvider } from 'opnet';
 
-const TESTNET_RPC = 'https://testnet.opnet.org';
+const RPC_URL = 'https://testnet.opnet.org';
 const NETWORK     = networks.opnetTestnet;
 
 const args = process.argv.slice(2);
@@ -27,7 +27,7 @@ console.log('Deployer P2TR  :', wallet.p2tr);
 console.log('Contract       :', CONTRACT_ADDR);
 console.log('New baseURI    :', NEW_BASE_URI);
 
-const provider = new JSONRpcProvider({ url: TESTNET_RPC, network: NETWORK });
+const provider = new JSONRpcProvider({ url: RPC_URL, network: NETWORK });
 
 function bytesToHex(b: Uint8Array): string {
     return Array.from(b).map(x => x.toString(16).padStart(2, '0')).join('');

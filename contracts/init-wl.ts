@@ -22,7 +22,7 @@ import {
 } from '@btc-vision/transaction';
 import { BitcoinAbiTypes, BitcoinInterfaceAbi, getContract, JSONRpcProvider } from 'opnet';
 
-const TESTNET_RPC = 'https://testnet.opnet.org';
+const RPC_URL = 'https://testnet.opnet.org';
 const NETWORK     = networks.opnetTestnet;
 
 const args = process.argv.slice(2);
@@ -71,7 +71,7 @@ console.log('Deployer OPNet  :', wallet.address.toString());
 console.log('Contract        :', CONTRACT_ADDR);
 console.log('WL Root (hex)   :', rootHex);
 
-const provider = new JSONRpcProvider({ url: TESTNET_RPC, network: NETWORK });
+const provider = new JSONRpcProvider({ url: RPC_URL, network: NETWORK });
 
 async function sleep(ms: number): Promise<void> {
     return new Promise(r => setTimeout(r, ms));
@@ -158,7 +158,7 @@ async function main(): Promise<void> {
     console.log(' WL initialization complete!');
     console.log(' Contract      :', CONTRACT_ADDR);
     console.log(' WL Root       :', rootHex);
-    console.log(' Phase         :', phaseAfter, '(2 = WL, WL lasts 7 days)');
+    console.log(' Phase         :', phaseAfter, '(2 = WL, WL lasts 1.5 hours)');
     console.log(' Next: update CONTRACT_ADDR in index.html, then git push');
     console.log('=================================================================');
 }

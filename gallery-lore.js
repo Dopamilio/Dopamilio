@@ -1,5 +1,5 @@
 'use strict';
-// Dopamilio Lore Engine v5 — rank-proportional sats, guaranteed unique phrases
+// Dopamilio Lore Engine — rank-proportional sats, guaranteed unique phrases
 
 // ─── RARITY COLORS ────────────────────────────────────────────────────────────
 var RARITY_COLORS = {
