@@ -2828,7 +2828,7 @@ async function doMint(){
     const msg=e?.message??String(e);
     const isInsufficientSats=(msg&&(msg.toLowerCase().includes('insufficient')||msg.toLowerCase().includes('not enough')||msg.toLowerCase().includes('balance')||msg.toLowerCase().includes('funds')));
     if(isInsufficientSats){showRektModal();}
-    else if(msg.toLowerCase().includes('whitelist')||msg.toLowerCase().includes('wl proof')||msg.toLowerCase().includes('not whitelisted')){
+    else if(msg.toLowerCase().includes('whitelist')||msg.toLowerCase().includes('wl proof')||msg.toLowerCase().includes('not whitelisted')||msg.toLowerCase().includes('wl cap')||msg.toLowerCase().includes('cap exceeded')){
       walletToast('err','NOT WHITELISTED<br>WL ONLY \u2014 SORRY ANON');
     }
     else if(msg.toUpperCase().includes('MAX_MINT')||msg.toLowerCase().includes('exceeds max')||msg.toLowerCase().includes('max mint')||msg.toLowerCase().includes('already minted')){
