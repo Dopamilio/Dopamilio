@@ -3214,8 +3214,10 @@ function loadGalleryPage(){
       srch.addEventListener('blur', function() {
         var self = this;
         setTimeout(function() {
-          var ov = document.getElementById('nft-detail-overlay');
-          if (ov && ov.classList.contains('show')) return;
+          var ov1 = document.getElementById('nft-detail-overlay');
+          var ov2 = document.getElementById('cardModal');
+          if ((ov1 && ov1.classList.contains('show')) ||
+              (ov2 && ov2.style.display === 'flex')) return;
           updateSearchPill(self, '');
         }, 200);
       });

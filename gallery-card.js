@@ -225,6 +225,7 @@ var CardModal = (function() {
     var wrap = document.getElementById('cardDetailWrap');
     if (wrap) wrap.innerHTML = '';
     if (_escHandler) { document.removeEventListener('keydown', _escHandler); _escHandler = null; }
+    if (typeof closeNftDetail === 'function') closeNftDetail();
   }
 
   return { open: open, close: close };
