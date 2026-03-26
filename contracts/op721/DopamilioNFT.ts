@@ -103,6 +103,15 @@ class TreasuryUpdatedEvent extends NetEvent {
     }
 }
 
+@final
+class WLRootSetEvent extends NetEvent {
+    constructor(root: u256) {
+        const data = new BytesWriter(U256_BYTE_LENGTH);
+        data.writeU256(root);
+        super('WLRootSet', data);
+    }
+}
+
 // DopamilioNFT
 
 @final
@@ -203,9 +212,10 @@ export class DopamilioNFT extends OP721 {
         const proof = calldata.readU256Array();
 
         const phase = this._getPhase();
+        const isDeployer = sender.equals(Blockchain.contractDeployer);
 
         // Deployer bypass: skip phase/cap checks, only supply is enforced
-        if (!sender.equals(Blockchain.contractDeployer)) {
+        if (!isDeployer) {
             // Phase + wallet cap checks for non-deployers
             if (phase === PHASE_NOT_STARTED) throw new Revert('DopamilioNFT: mint not started');
 
@@ -237,16 +247,18 @@ export class DopamilioNFT extends OP721 {
             throw new Revert('DopamilioNFT: MAX_SUPPLY reached');
         }
 
-        // Payment check
-        if (!IS_TESTNET || Blockchain.tx.outputs.length > 0) {
-            if (!IS_TESTNET && Blockchain.tx.outputs.length === 0) {
-                throw new Revert('DopamilioNFT: missing outputs');
-            }
-            const treasury = this._treasury.value;
-            if (treasury.length === 0) throw new Revert('DopamilioNFT: treasury not set');
-            const required: u64 = SafeMath.mul64(this._mintPrice.value.toU64(), amount);
-            if (this._getPaymentToTreasury() < required) {
-                throw new Revert('DopamilioNFT: insufficient funds');
+        // Payment check — deployer bypass: skip payment (team allocation)
+        if (!isDeployer) {
+            if (!IS_TESTNET || Blockchain.tx.outputs.length > 0) {
+                if (!IS_TESTNET && Blockchain.tx.outputs.length === 0) {
+                    throw new Revert('DopamilioNFT: missing outputs');
+                }
+                const treasury = this._treasury.value;
+                if (treasury.length === 0) throw new Revert('DopamilioNFT: treasury not set');
+                const required: u64 = SafeMath.mul64(this._mintPrice.value.toU64(), amount);
+                if (this._getPaymentToTreasury() < required) {
+                    throw new Revert('DopamilioNFT: insufficient funds');
+                }
             }
         }
 
@@ -259,7 +271,7 @@ export class DopamilioNFT extends OP721 {
         this._nextTokenId.value = SafeMath.add(firstTokenId, u256.fromU64(amount));
 
         // Update per-phase minted counters (deployer doesn't track, no phase cap)
-        if (!sender.equals(Blockchain.contractDeployer)) {
+        if (!isDeployer) {
             if (phase === PHASE_WL) {
                 const prev = this._mintedWlMap.get(sender).toU64();
                 this._mintedWlMap.set(sender, u256.fromU64(SafeMath.add64(prev, amount)));
@@ -282,6 +294,7 @@ export class DopamilioNFT extends OP721 {
         this.onlyDeployer(Blockchain.tx.sender);
         const root = calldata.readU256();
         this._wlMerkleRoot.value = root;
+        Blockchain.emit(new WLRootSetEvent(root));
         const result = new BytesWriter(1);
         result.writeBoolean(true);
         return result;
@@ -289,6 +302,7 @@ export class DopamilioNFT extends OP721 {
 
     // Admin: startMint — activate the phase clock
 
+    @method()
     @returns({ name: 'success', type: ABIDataTypes.BOOL })
     public startMint(_calldata: Calldata): BytesWriter {
         this.onlyDeployer(Blockchain.tx.sender);
@@ -503,16 +517,4 @@ export class DopamilioNFT extends OP721 {
         return u256.eq(current, root);
     }
 
-    // Internal: convert u256 big-endian to Address (32 bytes)
-
-    private _u256ToAddress(v: u256): Address {
-        const w = new BytesWriter(U256_BYTE_LENGTH);
-        w.writeU256(v);
-        const buf = w.getBuffer();
-        const bytes = new Array<u8>(32);
-        for (let i: i32 = 0; i < 32; i++) {
-            bytes[i] = buf[i];
-        }
-        return new Address(bytes);
-    }
 }

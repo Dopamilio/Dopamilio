@@ -429,137 +429,139 @@
  (data $175.1 (i32.const 15288) "\02\00\00\00*\00\00\00B\00u\00f\00f\00e\00r\00 \00i\00s\00 \00n\00o\00t\00 \00d\00e\00f\00i\00n\00e\00d")
  (data $176 (i32.const 15340) "\\")
  (data $176.1 (i32.const 15352) "\02\00\00\00D\00\00\00O\00n\00l\00y\00 \00d\00e\00p\00l\00o\00y\00e\00r\00 \00c\00a\00n\00 \00c\00a\00l\00l\00 \00t\00h\00i\00s\00 \00m\00e\00t\00h\00o\00d")
- (data $177 (i32.const 15436) "L")
- (data $177.1 (i32.const 15448) "\02\00\00\00:\00\00\00D\00o\00p\00a\00m\00i\00l\00i\00o\00N\00F\00T\00:\00 \00a\00l\00r\00e\00a\00d\00y\00 \00s\00t\00a\00r\00t\00e\00d")
- (data $178 (i32.const 15516) ",")
- (data $178.1 (i32.const 15528) "\02\00\00\00\16\00\00\00M\00i\00n\00t\00S\00t\00a\00r\00t\00e\00d")
- (data $179 (i32.const 15564) "\\")
- (data $179.1 (i32.const 15576) "\02\00\00\00>\00\00\00D\00o\00p\00a\00m\00i\00l\00i\00o\00N\00F\00T\00:\00 \00p\00r\00i\00c\00e\00 \00m\00u\00s\00t\00 \00b\00e\00 \00>\00 \000")
- (data $180 (i32.const 15660) "L")
- (data $180.1 (i32.const 15672) "\02\00\00\006\00\00\00D\00o\00p\00a\00m\00i\00l\00i\00o\00N\00F\00T\00:\00 \00e\00m\00p\00t\00y\00 \00a\00d\00d\00r\00e\00s\00s")
- (data $181 (i32.const 15740) "L")
- (data $181.1 (i32.const 15752) "\02\00\00\002\00\00\00:\00 \00v\00a\00l\00u\00e\00 \00i\00s\00 \00t\00o\00o\00 \00l\00o\00n\00g\00 \00(\00m\00a\00x\00=")
- (data $182 (i32.const 15820) ",\00\00\00\03\00\00\00\00\00\00\00\05\00\00\00\10\00\00\00\00\00\00\00\90=\00\00\00\00\00\00\80\n")
- (data $183 (i32.const 15868) "\9c")
- (data $183.1 (i32.const 15880) "\02\00\00\00\80\00\00\00~\00l\00i\00b\00/\00@\00b\00t\00c\00-\00v\00i\00s\00i\00o\00n\00/\00b\00t\00c\00-\00r\00u\00n\00t\00i\00m\00e\00/\00r\00u\00n\00t\00i\00m\00e\00/\00s\00t\00o\00r\00a\00g\00e\00/\00B\00a\00s\00e\00S\00t\00o\00r\00e\00d\00S\00t\00r\00i\00n\00g\00.\00t\00s")
- (data $184 (i32.const 16028) "<")
- (data $184.1 (i32.const 16040) "\02\00\00\00\1e\00\00\00T\00r\00e\00a\00s\00u\00r\00y\00U\00p\00d\00a\00t\00e\00d")
- (data $185 (i32.const 16092) "<")
- (data $185.1 (i32.const 16104) "\02\00\00\00(\00\00\00T\00o\00k\00e\00n\00 \00d\00o\00e\00s\00 \00n\00o\00t\00 \00e\00x\00i\00s\00t")
- (data $186 (i32.const 16156) "<")
- (data $186.1 (i32.const 16168) "\02\00\00\00(\00\00\00I\00c\00o\00n\00 \00c\00a\00n\00n\00o\00t\00 \00b\00e\00 \00e\00m\00p\00t\00y")
- (data $187 (i32.const 16220) "<")
- (data $187.1 (i32.const 16232) "\02\00\00\00,\00\00\00B\00a\00n\00n\00e\00r\00 \00c\00a\00n\00n\00o\00t\00 \00b\00e\00 \00e\00m\00p\00t\00y")
- (data $188 (i32.const 16284) "L")
- (data $188.1 (i32.const 16296) "\02\00\00\006\00\00\00D\00e\00s\00c\00r\00i\00p\00t\00i\00o\00n\00 \00c\00a\00n\00n\00o\00t\00 \00b\00e\00 \00e\00m\00p\00t\00y")
- (data $189 (i32.const 16364) "L")
- (data $189.1 (i32.const 16376) "\02\00\00\00.\00\00\00W\00e\00b\00s\00i\00t\00e\00 \00c\00a\00n\00n\00o\00t\00 \00b\00e\00 \00e\00m\00p\00t\00y")
- (data $190 (i32.const 16444) "<")
- (data $190.1 (i32.const 16456) "\02\00\00\00\1e\00\00\00I\00n\00v\00a\00l\00i\00d\00 \00a\00d\00d\00r\00e\00s\00s")
- (data $191 (i32.const 16508) "\1c")
- (data $191.1 (i32.const 16520) "\01")
- (data $192 (i32.const 16540) ",")
- (data $192.1 (i32.const 16552) "\02\00\00\00\1c\00\00\00I\00n\00v\00a\00l\00i\00d\00 \00s\00e\00n\00d\00e\00r")
- (data $193 (i32.const 16588) "<")
- (data $193.1 (i32.const 16600) "\02\00\00\00 \00\00\00I\00n\00v\00a\00l\00i\00d\00 \00r\00e\00c\00e\00i\00v\00e\00r")
- (data $194 (i32.const 16652) "L")
- (data $194.1 (i32.const 16664) "\02\00\00\00:\00\00\00T\00r\00a\00n\00s\00f\00e\00r\00 \00f\00r\00o\00m\00 \00i\00n\00c\00o\00r\00r\00e\00c\00t\00 \00o\00w\00n\00e\00r")
- (data $195 (i32.const 16732) "L")
- (data $195.1 (i32.const 16744) "\02\00\00\004\00\00\00K\00e\00y\00 \00n\00o\00t\00 \00f\00o\00u\00n\00d\00 \00i\00n\00 \00m\00a\00p\00 \00(\00M\00a\00p\00)")
- (data $196 (i32.const 16812) "|")
- (data $196.1 (i32.const 16824) "\02\00\00\00f\00\00\00~\00l\00i\00b\00/\00@\00b\00t\00c\00-\00v\00i\00s\00i\00o\00n\00/\00b\00t\00c\00-\00r\00u\00n\00t\00i\00m\00e\00/\00r\00u\00n\00t\00i\00m\00e\00/\00g\00e\00n\00e\00r\00i\00c\00/\00M\00a\00p\00.\00t\00s")
- (data $197 (i32.const 16940) "L")
- (data $197.1 (i32.const 16952) "\02\00\00\004\00\00\00N\00o\00t\00 \00a\00u\00t\00h\00o\00r\00i\00z\00e\00d\00 \00t\00o\00 \00t\00r\00a\00n\00s\00f\00e\00r")
- (data $198 (i32.const 17020) "<")
- (data $198.1 (i32.const 17032) "\02\00\00\00(\00\00\00T\00o\00k\00e\00n\00 \00a\00r\00r\00a\00y\00 \00i\00s\00 \00e\00m\00p\00t\00y")
- (data $199 (i32.const 17084) "<")
- (data $199.1 (i32.const 17096) "\02\00\00\00\"\00\00\00g\00e\00t\00:\00 \00o\00u\00t\00 \00o\00f\00 \00r\00a\00n\00g\00e")
- (data $200 (i32.const 17148) "l")
- (data $200.1 (i32.const 17160) "\02\00\00\00X\00\00\00s\00e\00t\00:\00 \00i\00n\00d\00e\00x\00 \00e\00x\00c\00e\00e\00d\00s\00 \00M\00A\00X\00_\00L\00E\00N\00G\00T\00H\00 \00(\00p\00a\00c\00k\00e\00d\00 \00a\00r\00r\00a\00y\00)")
- (data $201 (i32.const 17260) "l")
- (data $201.1 (i32.const 17272) "\02\00\00\00R\00\00\00d\00e\00l\00e\00t\00e\00L\00a\00s\00t\00:\00 \00a\00r\00r\00a\00y\00 \00i\00s\00 \00e\00m\00p\00t\00y\00 \00(\00p\00a\00c\00k\00e\00d\00 \00a\00r\00r\00a\00y\00)")
- (data $202 (i32.const 17372) "\\")
- (data $202.1 (i32.const 17384) "\02\00\00\00>\00\00\00S\00a\00f\00e\00M\00a\00t\00h\00:\00 \00s\00u\00b\00t\00r\00a\00c\00t\00i\00o\00n\00 \00u\00n\00d\00e\00r\00f\00l\00o\00w")
- (data $203 (i32.const 17468) ",")
- (data $203.1 (i32.const 17480) "\02\00\00\00\16\00\00\00T\00r\00a\00n\00s\00f\00e\00r\00r\00e\00d")
- (data $204 (i32.const 17516) "\\")
- (data $204.1 (i32.const 17528) "\02\00\00\00@\00\00\00D\00e\00s\00t\00i\00n\00a\00t\00i\00o\00n\00 \00c\00o\00n\00t\00r\00a\00c\00t\00 \00i\00s\00 \00r\00e\00q\00u\00i\00r\00e\00d")
- (data $205 (i32.const 17612) "L")
- (data $205.1 (i32.const 17624) "\02\00\00\00<\00\00\00T\00r\00a\00n\00s\00f\00e\00r\00 \00r\00e\00j\00e\00c\00t\00e\00d\00 \00b\00y\00 \00r\00e\00c\00i\00p\00i\00e\00n\00t")
- (data $206 (i32.const 17692) "L")
- (data $206.1 (i32.const 17704) "\02\00\00\006\00\00\00C\00a\00n\00n\00o\00t\00 \00a\00p\00p\00r\00o\00v\00e\00 \00z\00e\00r\00o\00 \00a\00d\00d\00r\00e\00s\00s")
- (data $207 (i32.const 17772) "L")
- (data $207.1 (i32.const 17784) "\02\00\00\002\00\00\00A\00p\00p\00r\00o\00v\00a\00l\00 \00t\00o\00 \00c\00u\00r\00r\00e\00n\00t\00 \00o\00w\00n\00e\00r")
- (data $208 (i32.const 17852) "L")
- (data $208.1 (i32.const 17864) "\02\00\00\002\00\00\00N\00o\00t\00 \00a\00u\00t\00h\00o\00r\00i\00z\00e\00d\00 \00t\00o\00 \00a\00p\00p\00r\00o\00v\00e")
- (data $209 (i32.const 17932) ",")
- (data $209.1 (i32.const 17944) "\02\00\00\00\10\00\00\00A\00p\00p\00r\00o\00v\00e\00d")
- (data $210 (i32.const 17980) "<")
- (data $210.1 (i32.const 17992) "\02\00\00\00&\00\00\00C\00a\00n\00n\00o\00t\00 \00a\00p\00p\00r\00o\00v\00e\00 \00s\00e\00l\00f")
- (data $211 (i32.const 18044) "<")
- (data $211.1 (i32.const 18056) "\02\00\00\00 \00\00\00i\00n\00v\00a\00l\00i\00d\00 \00d\00o\00w\00n\00c\00a\00s\00t")
- (data $212 (i32.const 18108) "\8c")
- (data $212.1 (i32.const 18120) "\02\00\00\00n\00\00\00~\00l\00i\00b\00/\00@\00b\00t\00c\00-\00v\00i\00s\00i\00o\00n\00/\00b\00t\00c\00-\00r\00u\00n\00t\00i\00m\00e\00/\00r\00u\00n\00t\00i\00m\00e\00/\00m\00e\00m\00o\00r\00y\00/\00M\00a\00p\00O\00f\00M\00a\00p\00.\00t\00s")
- (data $213 (i32.const 18252) ",")
- (data $213.1 (i32.const 18264) "\02\00\00\00\1c\00\00\00A\00p\00p\00r\00o\00v\00e\00d\00F\00o\00r\00A\00l\00l")
- (data $214 (i32.const 18300) "<")
- (data $214.1 (i32.const 18312) "\02\00\00\00\1e\00\00\00N\00o\00t\00 \00t\00o\00k\00e\00n\00 \00o\00w\00n\00e\00r")
- (data $215 (i32.const 18364) "L")
- (data $215.1 (i32.const 18376) "\02\00\00\000\00\00\00I\00n\00v\00a\00l\00i\00d\00 \00s\00i\00g\00n\00a\00t\00u\00r\00e\00 \00l\00e\00n\00g\00t\00h")
- (data $216 (i32.const 18444) "<")
- (data $216.1 (i32.const 18456) "\02\00\00\00\"\00\00\00S\00i\00g\00n\00a\00t\00u\00r\00e\00 \00e\00x\00p\00i\00r\00e\00d")
- (data $217 (i32.const 18508) "L")
- (data $217.1 (i32.const 18520) "\02\00\00\00.\00\00\00P\00r\00o\00t\00o\00c\00o\00l\00 \00i\00d\00 \00i\00s\00 \00r\00e\00q\00u\00i\00r\00e\00d")
- (data $218 (i32.const 18588) "L")
- (data $218.1 (i32.const 18600) "\02\00\00\008\00\00\00C\00o\00n\00t\00r\00a\00c\00t\00 \00a\00d\00d\00r\00e\00s\00s\00 \00i\00s\00 \00r\00e\00q\00u\00i\00r\00e\00d")
- (data $219 (i32.const 18668) "L")
- (data $219.1 (i32.const 18680) "\02\00\00\002\00\00\00I\00n\00v\00a\00l\00i\00d\00 \00s\00i\00g\00n\00a\00t\00u\00r\00e\00 \00l\00e\00n\00g\00t\00h\00.")
- (data $220 (i32.const 18748) "<")
- (data $220.1 (i32.const 18760) "\02\00\00\00(\00\00\00I\00n\00v\00a\00l\00i\00d\00 \00h\00a\00s\00h\00 \00l\00e\00n\00g\00t\00h\00.")
- (data $221 (i32.const 18812) "\0c\01")
- (data $221.1 (i32.const 18824) "\02\00\00\00\fc\00\00\00E\00C\00D\00S\00A\00 \00v\00e\00r\00i\00f\00i\00c\00a\00t\00i\00o\00n\00 \00i\00s\00 \00n\00o\00t\00 \00s\00u\00p\00p\00o\00r\00t\00e\00d\00 \00b\00y\00 \00v\00e\00r\00i\00f\00y\00S\00i\00g\00n\00a\00t\00u\00r\00e\00(\00)\00.\00 \00U\00s\00e\00 \00v\00e\00r\00i\00f\00y\00E\00C\00D\00S\00A\00S\00i\00g\00n\00a\00t\00u\00r\00e\00(\00)\00 \00o\00r\00 \00v\00e\00r\00i\00f\00y\00B\00i\00t\00c\00o\00i\00n\00E\00C\00D\00S\00A\00S\00i\00g\00n\00a\00t\00u\00r\00e\00(\00)\00 \00i\00n\00s\00t\00e\00a\00d\00.")
- (data $222 (i32.const 19084) "L")
- (data $222.1 (i32.const 19096) "\02\00\00\00:\00\00\00I\00n\00v\00a\00l\00i\00d\00 \00M\00L\00-\00D\00S\00A\00 \00s\00e\00c\00u\00r\00i\00t\00y\00 \00l\00e\00v\00e\00l")
- (data $223 (i32.const 19164) "\9c")
- (data $223.1 (i32.const 19176) "\02\00\00\00\86\00\00\00~\00l\00i\00b\00/\00@\00b\00t\00c\00-\00v\00i\00s\00i\00o\00n\00/\00b\00t\00c\00-\00r\00u\00n\00t\00i\00m\00e\00/\00r\00u\00n\00t\00i\00m\00e\00/\00e\00n\00v\00/\00c\00o\00n\00s\00e\00n\00s\00u\00s\00/\00M\00L\00D\00S\00A\00M\00e\00t\00a\00d\00a\00t\00a\00.\00t\00s")
- (data $224 (i32.const 19324) "L")
- (data $224.1 (i32.const 19336) "\02\00\00\006\00\00\00M\00L\00-\00D\00S\00A\00 \00p\00u\00b\00l\00i\00c\00 \00k\00e\00y\00 \00n\00o\00t\00 \00f\00o\00u\00n\00d")
- (data $225 (i32.const 19404) "|")
- (data $225.1 (i32.const 19416) "\02\00\00\00d\00\00\00~\00l\00i\00b\00/\00@\00b\00t\00c\00-\00v\00i\00s\00i\00o\00n\00/\00b\00t\00c\00-\00r\00u\00n\00t\00i\00m\00e\00/\00r\00u\00n\00t\00i\00m\00e\00/\00e\00n\00v\00/\00g\00l\00o\00b\00a\00l\00.\00t\00s")
- (data $226 (i32.const 19532) "\\")
- (data $226.1 (i32.const 19544) "\02\00\00\00B\00\00\00I\00n\00v\00a\00l\00i\00d\00 \00M\00L\00-\00D\00S\00A\00 \00p\00u\00b\00l\00i\00c\00 \00k\00e\00y\00 \00l\00e\00n\00g\00t\00h\00.")
- (data $227 (i32.const 19628) "\\")
- (data $227.1 (i32.const 19640) "\02\00\00\00@\00\00\00I\00n\00v\00a\00l\00i\00d\00 \00M\00L\00-\00D\00S\00A\00 \00s\00i\00g\00n\00a\00t\00u\00r\00e\00 \00l\00e\00n\00g\00t\00h\00.")
- (data $228 (i32.const 19724) "\bc")
- (data $228.1 (i32.const 19736) "\02\00\00\00\aa\00\00\00I\00n\00v\00a\00l\00i\00d\00 \00s\00i\00g\00n\00a\00t\00u\00r\00e\00 \00t\00y\00p\00e\00 \00o\00r\00 \00s\00i\00g\00n\00a\00t\00u\00r\00e\00s\00 \00s\00c\00h\00e\00m\00a\00 \00n\00o\00t\00 \00a\00l\00l\00o\00w\00e\00d\00 \00u\00n\00d\00e\00r\00 \00c\00u\00r\00r\00e\00n\00t\00 \00c\00o\00n\00s\00e\00n\00s\00u\00s\00 \00r\00u\00l\00e\00s")
- (data $229 (i32.const 19916) "<")
- (data $229.1 (i32.const 19928) "\02\00\00\00\"\00\00\00I\00n\00v\00a\00l\00i\00d\00 \00s\00i\00g\00n\00a\00t\00u\00r\00e")
- (data $230 (i32.const 19980) "<")
- (data $230.1 (i32.const 19992) "\02\00\00\00,\00\00\00N\00o\00t\00 \00a\00u\00t\00h\00o\00r\00i\00z\00e\00d\00 \00t\00o\00 \00b\00u\00r\00n")
- (data $231 (i32.const 20044) "\1c")
- (data $231.1 (i32.const 20056) "\02\00\00\00\0c\00\00\00B\00u\00r\00n\00e\00d")
- (data $232 (i32.const 20076) "<")
- (data $232.1 (i32.const 20088) "\02\00\00\00&\00\00\00I\00n\00d\00e\00x\00 \00o\00u\00t\00 \00o\00f\00 \00b\00o\00u\00n\00d\00s")
- (data $233 (i32.const 20140) "L")
- (data $233.1 (i32.const 20152) "\02\00\00\000\00\00\00B\00a\00s\00e\00 \00U\00R\00I\00 \00c\00a\00n\00n\00o\00t\00 \00b\00e\00 \00e\00m\00p\00t\00y")
- (data $234 (i32.const 20220) "\\")
- (data $234.1 (i32.const 20232) "\02\00\00\00>\00\00\00B\00a\00s\00e\00 \00U\00R\00I\00 \00e\00x\00c\00e\00e\00d\00s\00 \00m\00a\00x\00i\00m\00u\00m\00 \00l\00e\00n\00g\00t\00h")
- (data $235 (i32.const 20316) "\\")
- (data $235.1 (i32.const 20328) "\02\00\00\00@\00\00\00R\00e\00e\00n\00t\00r\00a\00n\00c\00y\00G\00u\00a\00r\00d\00:\00 \00D\00e\00p\00t\00h\00 \00u\00n\00d\00e\00r\00f\00l\00o\00w")
- (data $236 (i32.const 20412) ",")
- (data $236.1 (i32.const 20424) "\02\00\00\00\12\00\00\00D\00o\00p\00a\00m\00i\00l\00i\00o")
+ (data $177 (i32.const 15436) ",")
+ (data $177.1 (i32.const 15448) "\02\00\00\00\12\00\00\00W\00L\00R\00o\00o\00t\00S\00e\00t")
+ (data $178 (i32.const 15484) "L")
+ (data $178.1 (i32.const 15496) "\02\00\00\00:\00\00\00D\00o\00p\00a\00m\00i\00l\00i\00o\00N\00F\00T\00:\00 \00a\00l\00r\00e\00a\00d\00y\00 \00s\00t\00a\00r\00t\00e\00d")
+ (data $179 (i32.const 15564) ",")
+ (data $179.1 (i32.const 15576) "\02\00\00\00\16\00\00\00M\00i\00n\00t\00S\00t\00a\00r\00t\00e\00d")
+ (data $180 (i32.const 15612) "\\")
+ (data $180.1 (i32.const 15624) "\02\00\00\00>\00\00\00D\00o\00p\00a\00m\00i\00l\00i\00o\00N\00F\00T\00:\00 \00p\00r\00i\00c\00e\00 \00m\00u\00s\00t\00 \00b\00e\00 \00>\00 \000")
+ (data $181 (i32.const 15708) "L")
+ (data $181.1 (i32.const 15720) "\02\00\00\006\00\00\00D\00o\00p\00a\00m\00i\00l\00i\00o\00N\00F\00T\00:\00 \00e\00m\00p\00t\00y\00 \00a\00d\00d\00r\00e\00s\00s")
+ (data $182 (i32.const 15788) "L")
+ (data $182.1 (i32.const 15800) "\02\00\00\002\00\00\00:\00 \00v\00a\00l\00u\00e\00 \00i\00s\00 \00t\00o\00o\00 \00l\00o\00n\00g\00 \00(\00m\00a\00x\00=")
+ (data $183 (i32.const 15868) ",\00\00\00\03\00\00\00\00\00\00\00\05\00\00\00\10\00\00\00\00\00\00\00\c0=\00\00\00\00\00\00\80\n")
+ (data $184 (i32.const 15916) "\9c")
+ (data $184.1 (i32.const 15928) "\02\00\00\00\80\00\00\00~\00l\00i\00b\00/\00@\00b\00t\00c\00-\00v\00i\00s\00i\00o\00n\00/\00b\00t\00c\00-\00r\00u\00n\00t\00i\00m\00e\00/\00r\00u\00n\00t\00i\00m\00e\00/\00s\00t\00o\00r\00a\00g\00e\00/\00B\00a\00s\00e\00S\00t\00o\00r\00e\00d\00S\00t\00r\00i\00n\00g\00.\00t\00s")
+ (data $185 (i32.const 16076) "<")
+ (data $185.1 (i32.const 16088) "\02\00\00\00\1e\00\00\00T\00r\00e\00a\00s\00u\00r\00y\00U\00p\00d\00a\00t\00e\00d")
+ (data $186 (i32.const 16140) "<")
+ (data $186.1 (i32.const 16152) "\02\00\00\00(\00\00\00T\00o\00k\00e\00n\00 \00d\00o\00e\00s\00 \00n\00o\00t\00 \00e\00x\00i\00s\00t")
+ (data $187 (i32.const 16204) "<")
+ (data $187.1 (i32.const 16216) "\02\00\00\00(\00\00\00I\00c\00o\00n\00 \00c\00a\00n\00n\00o\00t\00 \00b\00e\00 \00e\00m\00p\00t\00y")
+ (data $188 (i32.const 16268) "<")
+ (data $188.1 (i32.const 16280) "\02\00\00\00,\00\00\00B\00a\00n\00n\00e\00r\00 \00c\00a\00n\00n\00o\00t\00 \00b\00e\00 \00e\00m\00p\00t\00y")
+ (data $189 (i32.const 16332) "L")
+ (data $189.1 (i32.const 16344) "\02\00\00\006\00\00\00D\00e\00s\00c\00r\00i\00p\00t\00i\00o\00n\00 \00c\00a\00n\00n\00o\00t\00 \00b\00e\00 \00e\00m\00p\00t\00y")
+ (data $190 (i32.const 16412) "L")
+ (data $190.1 (i32.const 16424) "\02\00\00\00.\00\00\00W\00e\00b\00s\00i\00t\00e\00 \00c\00a\00n\00n\00o\00t\00 \00b\00e\00 \00e\00m\00p\00t\00y")
+ (data $191 (i32.const 16492) "<")
+ (data $191.1 (i32.const 16504) "\02\00\00\00\1e\00\00\00I\00n\00v\00a\00l\00i\00d\00 \00a\00d\00d\00r\00e\00s\00s")
+ (data $192 (i32.const 16556) "\1c")
+ (data $192.1 (i32.const 16568) "\01")
+ (data $193 (i32.const 16588) ",")
+ (data $193.1 (i32.const 16600) "\02\00\00\00\1c\00\00\00I\00n\00v\00a\00l\00i\00d\00 \00s\00e\00n\00d\00e\00r")
+ (data $194 (i32.const 16636) "<")
+ (data $194.1 (i32.const 16648) "\02\00\00\00 \00\00\00I\00n\00v\00a\00l\00i\00d\00 \00r\00e\00c\00e\00i\00v\00e\00r")
+ (data $195 (i32.const 16700) "L")
+ (data $195.1 (i32.const 16712) "\02\00\00\00:\00\00\00T\00r\00a\00n\00s\00f\00e\00r\00 \00f\00r\00o\00m\00 \00i\00n\00c\00o\00r\00r\00e\00c\00t\00 \00o\00w\00n\00e\00r")
+ (data $196 (i32.const 16780) "L")
+ (data $196.1 (i32.const 16792) "\02\00\00\004\00\00\00K\00e\00y\00 \00n\00o\00t\00 \00f\00o\00u\00n\00d\00 \00i\00n\00 \00m\00a\00p\00 \00(\00M\00a\00p\00)")
+ (data $197 (i32.const 16860) "|")
+ (data $197.1 (i32.const 16872) "\02\00\00\00f\00\00\00~\00l\00i\00b\00/\00@\00b\00t\00c\00-\00v\00i\00s\00i\00o\00n\00/\00b\00t\00c\00-\00r\00u\00n\00t\00i\00m\00e\00/\00r\00u\00n\00t\00i\00m\00e\00/\00g\00e\00n\00e\00r\00i\00c\00/\00M\00a\00p\00.\00t\00s")
+ (data $198 (i32.const 16988) "L")
+ (data $198.1 (i32.const 17000) "\02\00\00\004\00\00\00N\00o\00t\00 \00a\00u\00t\00h\00o\00r\00i\00z\00e\00d\00 \00t\00o\00 \00t\00r\00a\00n\00s\00f\00e\00r")
+ (data $199 (i32.const 17068) "<")
+ (data $199.1 (i32.const 17080) "\02\00\00\00(\00\00\00T\00o\00k\00e\00n\00 \00a\00r\00r\00a\00y\00 \00i\00s\00 \00e\00m\00p\00t\00y")
+ (data $200 (i32.const 17132) "<")
+ (data $200.1 (i32.const 17144) "\02\00\00\00\"\00\00\00g\00e\00t\00:\00 \00o\00u\00t\00 \00o\00f\00 \00r\00a\00n\00g\00e")
+ (data $201 (i32.const 17196) "l")
+ (data $201.1 (i32.const 17208) "\02\00\00\00X\00\00\00s\00e\00t\00:\00 \00i\00n\00d\00e\00x\00 \00e\00x\00c\00e\00e\00d\00s\00 \00M\00A\00X\00_\00L\00E\00N\00G\00T\00H\00 \00(\00p\00a\00c\00k\00e\00d\00 \00a\00r\00r\00a\00y\00)")
+ (data $202 (i32.const 17308) "l")
+ (data $202.1 (i32.const 17320) "\02\00\00\00R\00\00\00d\00e\00l\00e\00t\00e\00L\00a\00s\00t\00:\00 \00a\00r\00r\00a\00y\00 \00i\00s\00 \00e\00m\00p\00t\00y\00 \00(\00p\00a\00c\00k\00e\00d\00 \00a\00r\00r\00a\00y\00)")
+ (data $203 (i32.const 17420) "\\")
+ (data $203.1 (i32.const 17432) "\02\00\00\00>\00\00\00S\00a\00f\00e\00M\00a\00t\00h\00:\00 \00s\00u\00b\00t\00r\00a\00c\00t\00i\00o\00n\00 \00u\00n\00d\00e\00r\00f\00l\00o\00w")
+ (data $204 (i32.const 17516) ",")
+ (data $204.1 (i32.const 17528) "\02\00\00\00\16\00\00\00T\00r\00a\00n\00s\00f\00e\00r\00r\00e\00d")
+ (data $205 (i32.const 17564) "\\")
+ (data $205.1 (i32.const 17576) "\02\00\00\00@\00\00\00D\00e\00s\00t\00i\00n\00a\00t\00i\00o\00n\00 \00c\00o\00n\00t\00r\00a\00c\00t\00 \00i\00s\00 \00r\00e\00q\00u\00i\00r\00e\00d")
+ (data $206 (i32.const 17660) "L")
+ (data $206.1 (i32.const 17672) "\02\00\00\00<\00\00\00T\00r\00a\00n\00s\00f\00e\00r\00 \00r\00e\00j\00e\00c\00t\00e\00d\00 \00b\00y\00 \00r\00e\00c\00i\00p\00i\00e\00n\00t")
+ (data $207 (i32.const 17740) "L")
+ (data $207.1 (i32.const 17752) "\02\00\00\006\00\00\00C\00a\00n\00n\00o\00t\00 \00a\00p\00p\00r\00o\00v\00e\00 \00z\00e\00r\00o\00 \00a\00d\00d\00r\00e\00s\00s")
+ (data $208 (i32.const 17820) "L")
+ (data $208.1 (i32.const 17832) "\02\00\00\002\00\00\00A\00p\00p\00r\00o\00v\00a\00l\00 \00t\00o\00 \00c\00u\00r\00r\00e\00n\00t\00 \00o\00w\00n\00e\00r")
+ (data $209 (i32.const 17900) "L")
+ (data $209.1 (i32.const 17912) "\02\00\00\002\00\00\00N\00o\00t\00 \00a\00u\00t\00h\00o\00r\00i\00z\00e\00d\00 \00t\00o\00 \00a\00p\00p\00r\00o\00v\00e")
+ (data $210 (i32.const 17980) ",")
+ (data $210.1 (i32.const 17992) "\02\00\00\00\10\00\00\00A\00p\00p\00r\00o\00v\00e\00d")
+ (data $211 (i32.const 18028) "<")
+ (data $211.1 (i32.const 18040) "\02\00\00\00&\00\00\00C\00a\00n\00n\00o\00t\00 \00a\00p\00p\00r\00o\00v\00e\00 \00s\00e\00l\00f")
+ (data $212 (i32.const 18092) "<")
+ (data $212.1 (i32.const 18104) "\02\00\00\00 \00\00\00i\00n\00v\00a\00l\00i\00d\00 \00d\00o\00w\00n\00c\00a\00s\00t")
+ (data $213 (i32.const 18156) "\8c")
+ (data $213.1 (i32.const 18168) "\02\00\00\00n\00\00\00~\00l\00i\00b\00/\00@\00b\00t\00c\00-\00v\00i\00s\00i\00o\00n\00/\00b\00t\00c\00-\00r\00u\00n\00t\00i\00m\00e\00/\00r\00u\00n\00t\00i\00m\00e\00/\00m\00e\00m\00o\00r\00y\00/\00M\00a\00p\00O\00f\00M\00a\00p\00.\00t\00s")
+ (data $214 (i32.const 18300) ",")
+ (data $214.1 (i32.const 18312) "\02\00\00\00\1c\00\00\00A\00p\00p\00r\00o\00v\00e\00d\00F\00o\00r\00A\00l\00l")
+ (data $215 (i32.const 18348) "<")
+ (data $215.1 (i32.const 18360) "\02\00\00\00\1e\00\00\00N\00o\00t\00 \00t\00o\00k\00e\00n\00 \00o\00w\00n\00e\00r")
+ (data $216 (i32.const 18412) "L")
+ (data $216.1 (i32.const 18424) "\02\00\00\000\00\00\00I\00n\00v\00a\00l\00i\00d\00 \00s\00i\00g\00n\00a\00t\00u\00r\00e\00 \00l\00e\00n\00g\00t\00h")
+ (data $217 (i32.const 18492) "<")
+ (data $217.1 (i32.const 18504) "\02\00\00\00\"\00\00\00S\00i\00g\00n\00a\00t\00u\00r\00e\00 \00e\00x\00p\00i\00r\00e\00d")
+ (data $218 (i32.const 18556) "L")
+ (data $218.1 (i32.const 18568) "\02\00\00\00.\00\00\00P\00r\00o\00t\00o\00c\00o\00l\00 \00i\00d\00 \00i\00s\00 \00r\00e\00q\00u\00i\00r\00e\00d")
+ (data $219 (i32.const 18636) "L")
+ (data $219.1 (i32.const 18648) "\02\00\00\008\00\00\00C\00o\00n\00t\00r\00a\00c\00t\00 \00a\00d\00d\00r\00e\00s\00s\00 \00i\00s\00 \00r\00e\00q\00u\00i\00r\00e\00d")
+ (data $220 (i32.const 18716) "L")
+ (data $220.1 (i32.const 18728) "\02\00\00\002\00\00\00I\00n\00v\00a\00l\00i\00d\00 \00s\00i\00g\00n\00a\00t\00u\00r\00e\00 \00l\00e\00n\00g\00t\00h\00.")
+ (data $221 (i32.const 18796) "<")
+ (data $221.1 (i32.const 18808) "\02\00\00\00(\00\00\00I\00n\00v\00a\00l\00i\00d\00 \00h\00a\00s\00h\00 \00l\00e\00n\00g\00t\00h\00.")
+ (data $222 (i32.const 18860) "\0c\01")
+ (data $222.1 (i32.const 18872) "\02\00\00\00\fc\00\00\00E\00C\00D\00S\00A\00 \00v\00e\00r\00i\00f\00i\00c\00a\00t\00i\00o\00n\00 \00i\00s\00 \00n\00o\00t\00 \00s\00u\00p\00p\00o\00r\00t\00e\00d\00 \00b\00y\00 \00v\00e\00r\00i\00f\00y\00S\00i\00g\00n\00a\00t\00u\00r\00e\00(\00)\00.\00 \00U\00s\00e\00 \00v\00e\00r\00i\00f\00y\00E\00C\00D\00S\00A\00S\00i\00g\00n\00a\00t\00u\00r\00e\00(\00)\00 \00o\00r\00 \00v\00e\00r\00i\00f\00y\00B\00i\00t\00c\00o\00i\00n\00E\00C\00D\00S\00A\00S\00i\00g\00n\00a\00t\00u\00r\00e\00(\00)\00 \00i\00n\00s\00t\00e\00a\00d\00.")
+ (data $223 (i32.const 19132) "L")
+ (data $223.1 (i32.const 19144) "\02\00\00\00:\00\00\00I\00n\00v\00a\00l\00i\00d\00 \00M\00L\00-\00D\00S\00A\00 \00s\00e\00c\00u\00r\00i\00t\00y\00 \00l\00e\00v\00e\00l")
+ (data $224 (i32.const 19212) "\9c")
+ (data $224.1 (i32.const 19224) "\02\00\00\00\86\00\00\00~\00l\00i\00b\00/\00@\00b\00t\00c\00-\00v\00i\00s\00i\00o\00n\00/\00b\00t\00c\00-\00r\00u\00n\00t\00i\00m\00e\00/\00r\00u\00n\00t\00i\00m\00e\00/\00e\00n\00v\00/\00c\00o\00n\00s\00e\00n\00s\00u\00s\00/\00M\00L\00D\00S\00A\00M\00e\00t\00a\00d\00a\00t\00a\00.\00t\00s")
+ (data $225 (i32.const 19372) "L")
+ (data $225.1 (i32.const 19384) "\02\00\00\006\00\00\00M\00L\00-\00D\00S\00A\00 \00p\00u\00b\00l\00i\00c\00 \00k\00e\00y\00 \00n\00o\00t\00 \00f\00o\00u\00n\00d")
+ (data $226 (i32.const 19452) "|")
+ (data $226.1 (i32.const 19464) "\02\00\00\00d\00\00\00~\00l\00i\00b\00/\00@\00b\00t\00c\00-\00v\00i\00s\00i\00o\00n\00/\00b\00t\00c\00-\00r\00u\00n\00t\00i\00m\00e\00/\00r\00u\00n\00t\00i\00m\00e\00/\00e\00n\00v\00/\00g\00l\00o\00b\00a\00l\00.\00t\00s")
+ (data $227 (i32.const 19580) "\\")
+ (data $227.1 (i32.const 19592) "\02\00\00\00B\00\00\00I\00n\00v\00a\00l\00i\00d\00 \00M\00L\00-\00D\00S\00A\00 \00p\00u\00b\00l\00i\00c\00 \00k\00e\00y\00 \00l\00e\00n\00g\00t\00h\00.")
+ (data $228 (i32.const 19676) "\\")
+ (data $228.1 (i32.const 19688) "\02\00\00\00@\00\00\00I\00n\00v\00a\00l\00i\00d\00 \00M\00L\00-\00D\00S\00A\00 \00s\00i\00g\00n\00a\00t\00u\00r\00e\00 \00l\00e\00n\00g\00t\00h\00.")
+ (data $229 (i32.const 19772) "\bc")
+ (data $229.1 (i32.const 19784) "\02\00\00\00\aa\00\00\00I\00n\00v\00a\00l\00i\00d\00 \00s\00i\00g\00n\00a\00t\00u\00r\00e\00 \00t\00y\00p\00e\00 \00o\00r\00 \00s\00i\00g\00n\00a\00t\00u\00r\00e\00s\00 \00s\00c\00h\00e\00m\00a\00 \00n\00o\00t\00 \00a\00l\00l\00o\00w\00e\00d\00 \00u\00n\00d\00e\00r\00 \00c\00u\00r\00r\00e\00n\00t\00 \00c\00o\00n\00s\00e\00n\00s\00u\00s\00 \00r\00u\00l\00e\00s")
+ (data $230 (i32.const 19964) "<")
+ (data $230.1 (i32.const 19976) "\02\00\00\00\"\00\00\00I\00n\00v\00a\00l\00i\00d\00 \00s\00i\00g\00n\00a\00t\00u\00r\00e")
+ (data $231 (i32.const 20028) "<")
+ (data $231.1 (i32.const 20040) "\02\00\00\00,\00\00\00N\00o\00t\00 \00a\00u\00t\00h\00o\00r\00i\00z\00e\00d\00 \00t\00o\00 \00b\00u\00r\00n")
+ (data $232 (i32.const 20092) "\1c")
+ (data $232.1 (i32.const 20104) "\02\00\00\00\0c\00\00\00B\00u\00r\00n\00e\00d")
+ (data $233 (i32.const 20124) "<")
+ (data $233.1 (i32.const 20136) "\02\00\00\00&\00\00\00I\00n\00d\00e\00x\00 \00o\00u\00t\00 \00o\00f\00 \00b\00o\00u\00n\00d\00s")
+ (data $234 (i32.const 20188) "L")
+ (data $234.1 (i32.const 20200) "\02\00\00\000\00\00\00B\00a\00s\00e\00 \00U\00R\00I\00 \00c\00a\00n\00n\00o\00t\00 \00b\00e\00 \00e\00m\00p\00t\00y")
+ (data $235 (i32.const 20268) "\\")
+ (data $235.1 (i32.const 20280) "\02\00\00\00>\00\00\00B\00a\00s\00e\00 \00U\00R\00I\00 \00e\00x\00c\00e\00e\00d\00s\00 \00m\00a\00x\00i\00m\00u\00m\00 \00l\00e\00n\00g\00t\00h")
+ (data $236 (i32.const 20364) "\\")
+ (data $236.1 (i32.const 20376) "\02\00\00\00@\00\00\00R\00e\00e\00n\00t\00r\00a\00n\00c\00y\00G\00u\00a\00r\00d\00:\00 \00D\00e\00p\00t\00h\00 \00u\00n\00d\00e\00r\00f\00l\00o\00w")
  (data $237 (i32.const 20460) ",")
- (data $237.1 (i32.const 20472) "\02\00\00\00\10\00\00\00D\00O\00P\00A\00M\00I\00N\00E")
- (data $238 (i32.const 20508) "<")
- (data $238.1 (i32.const 20520) "\02\00\00\00&\00\00\00A\00l\00r\00e\00a\00d\00y\00 \00i\00n\00i\00t\00i\00a\00l\00i\00z\00e\00d")
- (data $239 (i32.const 20572) "<")
- (data $239.1 (i32.const 20584) "\02\00\00\00(\00\00\00N\00a\00m\00e\00 \00c\00a\00n\00n\00o\00t\00 \00b\00e\00 \00e\00m\00p\00t\00y")
- (data $240 (i32.const 20636) "<")
- (data $240.1 (i32.const 20648) "\02\00\00\00,\00\00\00S\00y\00m\00b\00o\00l\00 \00c\00a\00n\00n\00o\00t\00 \00b\00e\00 \00e\00m\00p\00t\00y")
- (data $241 (i32.const 20700) "L")
- (data $241.1 (i32.const 20712) "\02\00\00\002\00\00\00M\00a\00x\00 \00s\00u\00p\00p\00l\00y\00 \00c\00a\00n\00n\00o\00t\00 \00b\00e\00 \00z\00e\00r\00o")
- (data $242 (i32.const 20780) ",")
- (data $242.1 (i32.const 20792) "\02\00\00\00\18\00\00\00S\00t\00o\00r\00e\00d\00S\00t\00r\00i\00n\00g")
+ (data $237.1 (i32.const 20472) "\02\00\00\00\12\00\00\00D\00o\00p\00a\00m\00i\00l\00i\00o")
+ (data $238 (i32.const 20508) ",")
+ (data $238.1 (i32.const 20520) "\02\00\00\00\10\00\00\00D\00O\00P\00A\00M\00I\00N\00E")
+ (data $239 (i32.const 20556) "<")
+ (data $239.1 (i32.const 20568) "\02\00\00\00&\00\00\00A\00l\00r\00e\00a\00d\00y\00 \00i\00n\00i\00t\00i\00a\00l\00i\00z\00e\00d")
+ (data $240 (i32.const 20620) "<")
+ (data $240.1 (i32.const 20632) "\02\00\00\00(\00\00\00N\00a\00m\00e\00 \00c\00a\00n\00n\00o\00t\00 \00b\00e\00 \00e\00m\00p\00t\00y")
+ (data $241 (i32.const 20684) "<")
+ (data $241.1 (i32.const 20696) "\02\00\00\00,\00\00\00S\00y\00m\00b\00o\00l\00 \00c\00a\00n\00n\00o\00t\00 \00b\00e\00 \00e\00m\00p\00t\00y")
+ (data $242 (i32.const 20748) "L")
+ (data $242.1 (i32.const 20760) "\02\00\00\002\00\00\00M\00a\00x\00 \00s\00u\00p\00p\00l\00y\00 \00c\00a\00n\00n\00o\00t\00 \00b\00e\00 \00z\00e\00r\00o")
+ (data $243 (i32.const 20828) ",")
+ (data $243.1 (i32.const 20840) "\02\00\00\00\18\00\00\00S\00t\00o\00r\00e\00d\00S\00t\00r\00i\00n\00g")
  (table $0 2 2 funcref)
  (elem $0 (i32.const 1) $start:op721/index~anonymous|0)
  (export "abort" (func $op721/index/abort))
@@ -2448,7 +2450,7 @@
   (local $2 i32)
   (local $3 i32)
   (local $4 i32)
-  i32.const 20828
+  i32.const 20876
   global.set $~lib/rt/stub/offset
   i64.const 0
   i64.const 0
@@ -2735,7 +2737,7 @@
   i64.const -1
   i64.const 9223372036854775807
   call $~lib/@btc-vision/as-bignum/assembly/integer/i128/i128#constructor
-  block $__inlined_func$start:~lib/@btc-vision/btc-runtime/runtime/secp256k1/ECPoint$331
+  block $__inlined_func$start:~lib/@btc-vision/btc-runtime/runtime/secp256k1/ECPoint$332
    block $folding-inner0
     i32.const 5404
     i32.load
@@ -2788,7 +2790,7 @@
     i64.load offset=24
     call $~lib/@btc-vision/as-bignum/assembly/integer/u256/u256#constructor
     drop
-    br $__inlined_func$start:~lib/@btc-vision/btc-runtime/runtime/secp256k1/ECPoint$331
+    br $__inlined_func$start:~lib/@btc-vision/btc-runtime/runtime/secp256k1/ECPoint$332
    end
    i32.const 2304
    i32.const 5664
@@ -5183,33 +5185,33 @@
    call $~lib/@btc-vision/btc-runtime/runtime/abort/abort/revertOnError
    unreachable
   end
-  block $__inlined_func$~lib/@btc-vision/btc-runtime/runtime/script/Networks/NetworkManager#fromChainId$333
+  block $__inlined_func$~lib/@btc-vision/btc-runtime/runtime/script/Networks/NetworkManager#fromChainId$334
    local.get $6
    local.get $2
    i32.load
    call $~lib/@btc-vision/btc-runtime/runtime/script/Networks/NetworkManager#equals
-   br_if $__inlined_func$~lib/@btc-vision/btc-runtime/runtime/script/Networks/NetworkManager#fromChainId$333
+   br_if $__inlined_func$~lib/@btc-vision/btc-runtime/runtime/script/Networks/NetworkManager#fromChainId$334
    i32.const 1
    local.set $3
    local.get $6
    local.get $2
    i32.load offset=4
    call $~lib/@btc-vision/btc-runtime/runtime/script/Networks/NetworkManager#equals
-   br_if $__inlined_func$~lib/@btc-vision/btc-runtime/runtime/script/Networks/NetworkManager#fromChainId$333
+   br_if $__inlined_func$~lib/@btc-vision/btc-runtime/runtime/script/Networks/NetworkManager#fromChainId$334
    i32.const 2
    local.set $3
    local.get $6
    local.get $2
    i32.load offset=12
    call $~lib/@btc-vision/btc-runtime/runtime/script/Networks/NetworkManager#equals
-   br_if $__inlined_func$~lib/@btc-vision/btc-runtime/runtime/script/Networks/NetworkManager#fromChainId$333
+   br_if $__inlined_func$~lib/@btc-vision/btc-runtime/runtime/script/Networks/NetworkManager#fromChainId$334
    i32.const 3
    local.set $3
    local.get $6
    local.get $2
    i32.load offset=8
    call $~lib/@btc-vision/btc-runtime/runtime/script/Networks/NetworkManager#equals
-   br_if $__inlined_func$~lib/@btc-vision/btc-runtime/runtime/script/Networks/NetworkManager#fromChainId$333
+   br_if $__inlined_func$~lib/@btc-vision/btc-runtime/runtime/script/Networks/NetworkManager#fromChainId$334
    i32.const 9776
    i32.const 9632
    i32.const 97
@@ -5772,7 +5774,7 @@
        i64.or
        i64.eqz
        if
-        i32.const 20336
+        i32.const 20384
         i32.const 11648
         i32.const 98
         i32.const 17
@@ -5953,7 +5955,7 @@
     global.get $op721/DopamilioNFT/MAX_SUPPLY
     local.set $2
     i32.const 32
-    i32.const 71
+    i32.const 72
     call $~lib/rt/stub/__new
     local.tee $0
     i32.const 0
@@ -5980,10 +5982,10 @@
     i32.const 0
     i32.store offset=28
     local.get $0
-    i32.const 20432
+    i32.const 20480
     i32.store
     local.get $0
-    i32.const 20480
+    i32.const 20528
     i32.store offset=4
     local.get $0
     i32.const 7136
@@ -7089,7 +7091,7 @@
   local.get $0
   i32.load offset=4
   i32.const 1
-  i32.const 20800
+  i32.const 20848
   call $~lib/@btc-vision/btc-runtime/runtime/math/abi/encodePointer
   local.tee $4
   i32.load offset=8
@@ -7807,7 +7809,7 @@
   if
    i32.const 11984
    i32.const 12080
-   i32.const 176
+   i32.const 185
    i32.const 37
    call $~lib/@btc-vision/btc-runtime/runtime/abort/abort/revertOnError
    unreachable
@@ -7960,7 +7962,7 @@
   if
    i32.const 9424
    i32.const 12080
-   i32.const 122
+   i32.const 131
    i32.const 16
    call $~lib/@btc-vision/btc-runtime/runtime/abort/abort/revertOnError
    unreachable
@@ -8048,7 +8050,7 @@
   if
    i32.const 9424
    i32.const 12080
-   i32.const 134
+   i32.const 143
    i32.const 16
    call $~lib/@btc-vision/btc-runtime/runtime/abort/abort/revertOnError
    unreachable
@@ -9473,7 +9475,7 @@
   if
    i32.const 9424
    i32.const 12080
-   i32.const 128
+   i32.const 137
    i32.const 16
    call $~lib/@btc-vision/btc-runtime/runtime/abort/abort/revertOnError
    unreachable
@@ -9498,7 +9500,7 @@
   if
    i32.const 9424
    i32.const 12080
-   i32.const 116
+   i32.const 125
    i32.const 16
    call $~lib/@btc-vision/btc-runtime/runtime/abort/abort/revertOnError
    unreachable
@@ -10487,7 +10489,7 @@
   i32.add
   i32.load
   local.set $1
-  block $__inlined_func$~lib/set/Set<u32>#find$1545
+  block $__inlined_func$~lib/set/Set<u32>#find$1546
    loop $while-continue|0
     local.get $1
     if
@@ -10504,7 +10506,7 @@
       local.get $2
       i32.eq
      end
-     br_if $__inlined_func$~lib/set/Set<u32>#find$1545
+     br_if $__inlined_func$~lib/set/Set<u32>#find$1546
      local.get $4
      i32.const -2
      i32.and
@@ -11212,8 +11214,8 @@
   (local $6 i32)
   (local $7 i32)
   (local $8 i32)
-  (local $9 i32)
-  (local $10 i64)
+  (local $9 i64)
+  (local $10 i32)
   (local $11 i32)
   (local $12 i32)
   (local $13 i32)
@@ -11250,7 +11252,7 @@
     if
      i32.const 12784
      i32.const 12080
-     i32.const 195
+     i32.const 204
      i32.const 13
      call $~lib/@btc-vision/btc-runtime/runtime/abort/abort/revertOnError
      unreachable
@@ -11262,7 +11264,7 @@
     if
      i32.const 12880
      i32.const 12080
-     i32.const 199
+     i32.const 208
      i32.const 27
      call $~lib/@btc-vision/btc-runtime/runtime/abort/abort/revertOnError
      unreachable
@@ -11273,67 +11275,78 @@
     if
      i32.const 12976
      i32.const 12080
-     i32.const 200
+     i32.const 209
      i32.const 27
      call $~lib/@btc-vision/btc-runtime/runtime/abort/abort/revertOnError
      unreachable
     end
     local.get $1
     call $~lib/@btc-vision/btc-runtime/runtime/buffer/BytesReader/BytesReader#readU16
-    local.tee $11
+    local.tee $10
     i32.const 65535
     i32.and
-    local.set $12
+    local.set $11
     i32.const 16
     i32.const 61
     call $~lib/rt/stub/__new
-    local.tee $13
+    local.tee $12
     i32.const 0
     i32.store
-    local.get $13
+    local.get $12
     i32.const 0
     i32.store offset=4
-    local.get $13
+    local.get $12
     i32.const 0
     i32.store offset=8
-    local.get $13
+    local.get $12
     i32.const 0
     i32.store offset=12
+    local.get $11
+    i32.const 268435455
+    i32.gt_u
+    if
+     i32.const 2304
+     i32.const 4192
+     i32.const 72
+     i32.const 60
+     call $~lib/@btc-vision/btc-runtime/runtime/abort/abort/revertOnError
+     unreachable
+    end
     i32.const 8
-    local.get $12
-    local.get $12
+    local.get $11
+    local.get $11
     i32.const 8
     i32.le_u
     select
     i32.const 2
     i32.shl
-    local.tee $8
+    local.tee $13
     i32.const 1
     call $~lib/rt/stub/__new
-    local.tee $9
+    local.tee $8
     i32.const 0
-    local.get $8
+    local.get $13
     memory.fill
-    local.get $13
-    local.get $9
-    i32.store
-    local.get $13
-    local.get $9
-    i32.store offset=4
-    local.get $13
-    local.get $8
-    i32.store offset=8
-    local.get $13
     local.get $12
+    local.get $8
+    i32.store
+    local.get $12
+    local.get $8
+    i32.store offset=4
+    local.get $12
+    local.get $13
+    i32.store offset=8
+    local.get $12
+    local.get $11
     i32.store offset=12
     loop $for-loop|0
      local.get $5
-     local.get $11
+     local.get $10
      i32.const 65535
      i32.and
      i32.lt_u
      if
-      local.get $13
+      local.get $12
       local.get $5
       local.get $1
       call $~lib/@btc-vision/btc-runtime/runtime/buffer/BytesReader/BytesReader#readU256
@@ -11352,6 +11365,7 @@
     global.get $~lib/@btc-vision/btc-runtime/runtime/env/index/Blockchain
     call $~lib/@btc-vision/btc-runtime/runtime/env/BlockchainEnvironment/BlockchainEnvironment#get:contractDeployer
     call $~lib/@btc-vision/btc-runtime/runtime/types/Address/Address#equals
+    local.tee $5
     i32.eqz
     if
      local.get $1
@@ -11359,7 +11373,7 @@
      if
       i32.const 13120
       i32.const 12080
-      i32.const 210
+      i32.const 220
       i32.const 46
       call $~lib/@btc-vision/btc-runtime/runtime/abort/abort/revertOnError
       unreachable
@@ -11370,7 +11384,7 @@
      if
       i32.const 13200
       i32.const 12080
-      i32.const 213
+      i32.const 223
       i32.const 17
       call $~lib/@btc-vision/btc-runtime/runtime/abort/abort/revertOnError
       unreachable
@@ -11381,13 +11395,13 @@
       if
        local.get $0
        local.get $7
-       local.get $13
+       local.get $12
        call $op721/DopamilioNFT/DopamilioNFT#_verifyMerkleProof
        i32.eqz
        if
         i32.const 13312
         i32.const 12080
-        i32.const 218
+        i32.const 228
         i32.const 21
         call $~lib/@btc-vision/btc-runtime/runtime/abort/abort/revertOnError
         unreachable
@@ -11404,7 +11418,7 @@
        if
         i32.const 13456
         i32.const 12080
-        i32.const 222
+        i32.const 232
         i32.const 21
         call $~lib/@btc-vision/btc-runtime/runtime/abort/abort/revertOnError
         unreachable
@@ -11422,7 +11436,7 @@
        if
         i32.const 13536
         i32.const 12080
-        i32.const 229
+        i32.const 239
         i32.const 21
         call $~lib/@btc-vision/btc-runtime/runtime/abort/abort/revertOnError
         unreachable
@@ -11433,7 +11447,7 @@
     local.get $0
     i32.load offset=52
     call $~lib/@btc-vision/btc-runtime/runtime/storage/StoredU256/StoredU256#get:value
-    local.tee $5
+    local.tee $8
     block $~lib/@btc-vision/as-bignum/assembly/integer/u256/u256.fromU64|inlined.3 (result i32)
      local.get $4
      i64.eqz
@@ -11463,7 +11477,7 @@
      call $~lib/@btc-vision/as-bignum/assembly/integer/u256/u256#constructor
     end
     call $~lib/@btc-vision/btc-runtime/runtime/types/SafeMath/SafeMath.add
-    local.set $8
+    local.set $10
     global.get $op721/DopamilioNFT/MAX_SUPPLY
     i64.const 1
     i64.const 0
@@ -11471,139 +11485,143 @@
     i64.const 0
     call $~lib/@btc-vision/as-bignum/assembly/integer/u256/u256#constructor
     call $~lib/@btc-vision/btc-runtime/runtime/types/SafeMath/SafeMath.add
-    local.get $8
+    local.get $10
     call $~lib/@btc-vision/as-bignum/assembly/integer/u256/u256.lt
     if
      i32.const 13632
      i32.const 12080
-     i32.const 237
+     i32.const 247
      i32.const 13
      call $~lib/@btc-vision/btc-runtime/runtime/abort/abort/revertOnError
      unreachable
     end
-    global.get $~lib/@btc-vision/btc-runtime/runtime/env/index/Blockchain
-    local.tee $8
-    i32.load offset=24
-    i32.eqz
-    br_if $folding-inner2
-    local.get $8
-    i32.load offset=24
-    local.tee $8
-    i32.eqz
-    br_if $folding-inner3
-    local.get $8
-    call $~lib/@btc-vision/btc-runtime/runtime/env/classes/Transaction/Transaction#get:outputs
-    i32.load offset=12
+    local.get $5
     i32.eqz
     if
-     i32.const 13888
-     i32.const 12080
-     i32.const 243
-     i32.const 17
-     call $~lib/@btc-vision/btc-runtime/runtime/abort/abort/revertOnError
-     unreachable
-    end
-    local.get $0
-    call $op721/DopamilioNFT/DopamilioNFT#get:_treasury
-    call $~lib/@btc-vision/btc-runtime/runtime/storage/BaseStoredString/BaseStoredString#get:value
-    call $~lib/string/String#get:length
-    i32.eqz
-    if
-     i32.const 13968
-     i32.const 12080
-     i32.const 246
-     i32.const 40
-     call $~lib/@btc-vision/btc-runtime/runtime/abort/abort/revertOnError
-     unreachable
-    end
-    local.get $4
-    i64.eqz
-    local.get $0
-    call $op721/DopamilioNFT/DopamilioNFT#get:_mintPrice
-    call $~lib/@btc-vision/btc-runtime/runtime/storage/StoredU256/StoredU256#get:value
-    i64.load
-    local.tee $10
-    i64.eqz
-    i32.or
-    i32.eqz
-    if
-     local.get $4
+     global.get $~lib/@btc-vision/btc-runtime/runtime/env/index/Blockchain
+     local.tee $10
+     i32.load offset=24
+     i32.eqz
+     br_if $folding-inner2
      local.get $10
-     i64.mul
-     local.tee $3
+     i32.load offset=24
+     local.tee $10
+     i32.eqz
+     br_if $folding-inner3
      local.get $10
-     i64.div_u
-     local.get $4
-     i64.ne
+     call $~lib/@btc-vision/btc-runtime/runtime/env/classes/Transaction/Transaction#get:outputs
+     i32.load offset=12
+     i32.eqz
      if
-      i32.const 8368
-      i32.const 8464
-      i32.const 230
-      i32.const 13
+      i32.const 13888
+      i32.const 12080
+      i32.const 254
+      i32.const 21
       call $~lib/@btc-vision/btc-runtime/runtime/abort/abort/revertOnError
       unreachable
      end
-    end
-    global.get $~lib/@btc-vision/btc-runtime/runtime/env/index/Blockchain
-    local.tee $8
-    i32.load offset=24
-    i32.eqz
-    br_if $folding-inner2
-    local.get $8
-    i32.load offset=24
-    local.tee $8
-    i32.eqz
-    br_if $folding-inner3
-    local.get $8
-    call $~lib/@btc-vision/btc-runtime/runtime/env/classes/Transaction/Transaction#get:outputs
-    local.set $8
-    local.get $0
-    call $op721/DopamilioNFT/DopamilioNFT#get:_treasury
-    call $~lib/@btc-vision/btc-runtime/runtime/storage/BaseStoredString/BaseStoredString#get:value
-    local.set $9
-    loop $for-loop|00
-     local.get $6
-     local.get $8
-     i32.load offset=12
-     i32.lt_s
+     local.get $0
+     call $op721/DopamilioNFT/DopamilioNFT#get:_treasury
+     call $~lib/@btc-vision/btc-runtime/runtime/storage/BaseStoredString/BaseStoredString#get:value
+     call $~lib/string/String#get:length
+     i32.eqz
      if
-      local.get $8
-      local.get $6
-      call $~lib/array/Array<~lib/@btc-vision/btc-runtime/runtime/plugins/Plugin/Plugin>#__get
-      local.tee $11
-      i32.load offset=8
-      call $~lib/string/String.__not
-      i32.eqz
-      if
-       local.get $11
-       i32.load offset=8
-       local.get $9
-       call $~lib/string/String.__eq
-       if
-        local.get $2
-        local.get $11
-        i64.load offset=16
-        call $~lib/@btc-vision/btc-runtime/runtime/types/SafeMath/SafeMath.add64
-        local.set $2
-       end
-      end
-      local.get $6
-      i32.const 1
-      i32.add
-      local.set $6
-      br $for-loop|00
+      i32.const 13968
+      i32.const 12080
+      i32.const 257
+      i32.const 44
+      call $~lib/@btc-vision/btc-runtime/runtime/abort/abort/revertOnError
+      unreachable
      end
-    end
-    local.get $2
-    local.get $3
-    i64.lt_u
-    if
-     i32.const 14048
-     i32.const 12080
-     i32.const 249
-     i32.const 17
-     call $~lib/@btc-vision/btc-runtime/runtime/abort/abort/revertOnError
-     unreachable
+     local.get $4
+     i64.eqz
+     local.get $0
+     call $op721/DopamilioNFT/DopamilioNFT#get:_mintPrice
+     call $~lib/@btc-vision/btc-runtime/runtime/storage/StoredU256/StoredU256#get:value
+     i64.load
+     local.tee $9
+     i64.eqz
+     i32.or
+     i32.eqz
+     if
+      local.get $4
+      local.get $9
+      i64.mul
+      local.tee $3
+      local.get $9
+      i64.div_u
+      local.get $4
+      i64.ne
+      if
+       i32.const 8368
+       i32.const 8464
+       i32.const 230
+       i32.const 13
+       call $~lib/@btc-vision/btc-runtime/runtime/abort/abort/revertOnError
+       unreachable
+      end
+     end
+     global.get $~lib/@btc-vision/btc-runtime/runtime/env/index/Blockchain
+     local.tee $10
+     i32.load offset=24
+     i32.eqz
+     br_if $folding-inner2
+     local.get $10
+     i32.load offset=24
+     local.tee $10
+     i32.eqz
+     br_if $folding-inner3
+     local.get $10
+     call $~lib/@btc-vision/btc-runtime/runtime/env/classes/Transaction/Transaction#get:outputs
+     local.set $10
+     local.get $0
+     call $op721/DopamilioNFT/DopamilioNFT#get:_treasury
+     call $~lib/@btc-vision/btc-runtime/runtime/storage/BaseStoredString/BaseStoredString#get:value
+     local.set $11
+     loop $for-loop|00
+      local.get $6
+      local.get $10
+      i32.load offset=12
+      i32.lt_s
+      if
+       local.get $10
+       local.get $6
+       call $~lib/array/Array<~lib/@btc-vision/btc-runtime/runtime/plugins/Plugin/Plugin>#__get
+       local.tee $12
+       i32.load offset=8
+       call $~lib/string/String.__not
+       i32.eqz
+       if
+        local.get $12
+        i32.load offset=8
+        local.get $11
+        call $~lib/string/String.__eq
+        if
+         local.get $2
+         local.get $12
+         i64.load offset=16
+         call $~lib/@btc-vision/btc-runtime/runtime/types/SafeMath/SafeMath.add64
+         local.set $2
+        end
+       end
+       local.get $6
+       i32.const 1
+       i32.add
+       local.set $6
+       br $for-loop|00
+      end
+     end
+     local.get $2
+     local.get $3
+     i64.lt_u
+     if
+      i32.const 14048
+      i32.const 12080
+      i32.const 260
+      i32.const 21
+      call $~lib/@btc-vision/btc-runtime/runtime/abort/abort/revertOnError
+      unreachable
+     end
     end
     i64.const 0
     local.set $3
@@ -11614,7 +11632,7 @@
      if
       local.get $0
       local.get $7
-      local.get $5
+      local.get $8
       block $~lib/@btc-vision/as-bignum/assembly/integer/u256/u256.fromU64|inlined.4 (result i32)
        local.get $3
        i64.eqz
@@ -11654,7 +11672,7 @@
     end
     local.get $0
     i32.load offset=52
-    local.get $5
+    local.get $8
     block $~lib/@btc-vision/as-bignum/assembly/integer/u256/u256.fromU64|inlined.5 (result i32)
      local.get $4
      i64.eqz
@@ -11685,10 +11703,7 @@
     end
     call $~lib/@btc-vision/btc-runtime/runtime/types/SafeMath/SafeMath.add
     call $~lib/@btc-vision/btc-runtime/runtime/storage/StoredU256/StoredU256#set:value
-    local.get $7
-    global.get $~lib/@btc-vision/btc-runtime/runtime/env/index/Blockchain
-    call $~lib/@btc-vision/btc-runtime/runtime/env/BlockchainEnvironment/BlockchainEnvironment#get:contractDeployer
-    call $~lib/@btc-vision/btc-runtime/runtime/types/Address/Address#equals
+    local.get $5
     i32.eqz
     if
      local.get $1
@@ -11788,7 +11803,7 @@
     i32.const 32
     call $~lib/@btc-vision/btc-runtime/runtime/buffer/BytesWriter/BytesWriter#constructor
     local.tee $0
-    local.get $5
+    local.get $8
     call $~lib/@btc-vision/btc-runtime/runtime/buffer/BytesWriter/BytesWriter#writeU256
     local.get $0
     return
@@ -11882,9 +11897,9 @@
   i64.eqz
   i32.eqz
   if
-   i32.const 15456
+   i32.const 15504
    i32.const 12080
-   i32.const 295
+   i32.const 309
    i32.const 46
    call $~lib/@btc-vision/btc-runtime/runtime/abort/abort/revertOnError
    unreachable
@@ -11949,14 +11964,14 @@
   local.get $2
   call $~lib/@btc-vision/btc-runtime/runtime/storage/StoredU256/StoredU256#set:value
   i32.const 12
-  i32.const 64
+  i32.const 65
   call $~lib/rt/stub/__new
   i32.const 32
   call $~lib/@btc-vision/btc-runtime/runtime/buffer/BytesWriter/BytesWriter#constructor
   local.tee $0
   local.get $2
   call $~lib/@btc-vision/btc-runtime/runtime/buffer/BytesWriter/BytesWriter#writeU256
-  i32.const 15536
+  i32.const 15584
   local.get $0
   call $~lib/@btc-vision/btc-runtime/runtime/events/NetEvent/NetEvent#constructor
   call $~lib/@btc-vision/btc-runtime/runtime/env/BlockchainEnvironment/BlockchainEnvironment#emit
@@ -12067,17 +12082,17 @@
    i32.load
    call $~lib/number/U32#toString
    local.set $0
-   i32.const 15840
+   i32.const 15888
    i32.const 0
-   i32.const 20800
+   i32.const 20848
    call $~lib/staticarray/StaticArray<~lib/string/String>#__uset
-   i32.const 15840
+   i32.const 15888
    i32.const 2
    local.get $0
    call $~lib/staticarray/StaticArray<~lib/string/String>#__uset
-   i32.const 15840
-   call $~lib/staticarray/StaticArray<~lib/string/String>#join
    i32.const 15888
+   call $~lib/staticarray/StaticArray<~lib/string/String>#join
+   i32.const 15936
    i32.const 111
    i32.const 13
    call $~lib/@btc-vision/btc-runtime/runtime/abort/abort/revertOnError
@@ -12340,7 +12355,7 @@
   call $~lib/string/String#get:length
   i32.eqz
   if
-   i32.const 16176
+   i32.const 16224
    i32.const 14256
    i32.const 246
    i32.const 31
@@ -12351,7 +12366,7 @@
   call $~lib/string/String#get:length
   i32.eqz
   if
-   i32.const 16240
+   i32.const 16288
    i32.const 14256
    i32.const 247
    i32.const 33
@@ -12362,7 +12377,7 @@
   call $~lib/string/String#get:length
   i32.eqz
   if
-   i32.const 16304
+   i32.const 16352
    i32.const 14256
    i32.const 248
    i32.const 38
@@ -12373,7 +12388,7 @@
   call $~lib/string/String#get:length
   i32.eqz
   if
-   i32.const 16384
+   i32.const 16432
    i32.const 14256
    i32.const 249
    i32.const 34
@@ -12409,7 +12424,7 @@
   call $~lib/@btc-vision/btc-runtime/runtime/types/Address/Address.zero
   call $~lib/@btc-vision/btc-runtime/runtime/types/Address/Address#equals
   if
-   i32.const 16464
+   i32.const 16512
    i32.const 14256
    i32.const 751
    i32.const 13
@@ -12454,7 +12469,7 @@
   i32.const 0
   i32.const 0
   i32.const 10
-  i32.const 16528
+  i32.const 16576
   call $~lib/rt/__newArray
   call $~lib/@btc-vision/btc-runtime/runtime/types/Address/Address#constructor
   local.set $0
@@ -12496,7 +12511,7 @@
   i64.or
   i64.eqz
   if
-   i32.const 16112
+   i32.const 16160
    i32.const 14256
    i32.const 744
    i32.const 13
@@ -12592,8 +12607,8 @@
   i32.const -1
   i32.eq
   if
-   i32.const 16752
-   i32.const 16832
+   i32.const 16800
+   i32.const 16880
    i32.const 92
    i32.const 13
    call $~lib/@btc-vision/btc-runtime/runtime/abort/abort/revertOnError
@@ -12717,7 +12732,7 @@
   local.tee $1
   i32.eqz
   if
-   i32.const 17040
+   i32.const 17088
    i32.const 14256
    i32.const 925
    i32.const 13
@@ -12743,7 +12758,7 @@
     i32.load offset=52
     i32.ge_u
     if
-     i32.const 17104
+     i32.const 17152
      i32.const 14832
      i32.const 110
      i32.const 13
@@ -12817,7 +12832,7 @@
     i32.load offset=52
     i32.ge_u
     if
-     i32.const 17168
+     i32.const 17216
      i32.const 14832
      i32.const 146
      i32.const 13
@@ -12953,7 +12968,7 @@
    i32.load offset=8
    i32.eqz
    if
-    i32.const 17280
+    i32.const 17328
     i32.const 14832
     i32.const 349
     i32.const 13
@@ -13023,7 +13038,7 @@
    local.get $1
    call $~lib/@btc-vision/btc-runtime/runtime/storage/arrays/StoredPackedArray/StoredPackedArray<~lib/@btc-vision/as-bignum/assembly/integer/u256/u256>#unpackSlot@override
    local.set $1
-   block $__inlined_func$~lib/@btc-vision/btc-runtime/runtime/storage/arrays/StoredPackedArray/StoredPackedArray<~lib/@btc-vision/as-bignum/assembly/integer/u256/u256>#zeroValue@override$1149
+   block $__inlined_func$~lib/@btc-vision/btc-runtime/runtime/storage/arrays/StoredPackedArray/StoredPackedArray<~lib/@btc-vision/as-bignum/assembly/integer/u256/u256>#zeroValue@override$1150
     local.get $4
     i32.const 8
     i32.sub
@@ -13037,7 +13052,7 @@
      i64.const 0
      call $~lib/@btc-vision/as-bignum/assembly/integer/u256/u256#constructor
      local.set $5
-     br $__inlined_func$~lib/@btc-vision/btc-runtime/runtime/storage/arrays/StoredPackedArray/StoredPackedArray<~lib/@btc-vision/as-bignum/assembly/integer/u256/u256>#zeroValue@override$1149
+     br $__inlined_func$~lib/@btc-vision/btc-runtime/runtime/storage/arrays/StoredPackedArray/StoredPackedArray<~lib/@btc-vision/as-bignum/assembly/integer/u256/u256>#zeroValue@override$1150
     end
     unreachable
    end
@@ -13108,7 +13123,7 @@
   local.get $1
   call $~lib/@btc-vision/as-bignum/assembly/integer/u256/u256.lt
   if
-   i32.const 17392
+   i32.const 17440
    i32.const 8464
    i32.const 125
    i32.const 13
@@ -13197,7 +13212,7 @@
   call $~lib/@btc-vision/btc-runtime/runtime/types/Address/Address.zero
   call $~lib/@btc-vision/btc-runtime/runtime/types/Address/Address#equals
   if
-   i32.const 16560
+   i32.const 16608
    i32.const 14256
    i32.const 651
    i32.const 13
@@ -13208,7 +13223,7 @@
   call $~lib/@btc-vision/btc-runtime/runtime/types/Address/Address.zero
   call $~lib/@btc-vision/btc-runtime/runtime/types/Address/Address#equals
   if
-   i32.const 16608
+   i32.const 16656
    i32.const 14256
    i32.const 655
    i32.const 13
@@ -13221,7 +13236,7 @@
   local.get $1
   call $~lib/@btc-vision/btc-runtime/runtime/types/Address/Address#notEquals
   if
-   i32.const 16672
+   i32.const 16720
    i32.const 14256
    i32.const 661
    i32.const 13
@@ -13263,7 +13278,7 @@
      local.get $4
      call $~lib/@btc-vision/btc-runtime/runtime/types/Address/Address#notEquals
      if
-      i32.const 16960
+      i32.const 17008
       i32.const 14256
       i32.const 669
       i32.const 17
@@ -13335,7 +13350,7 @@
     i32.load offset=4
     local.set $4
     i32.const 12
-    i32.const 66
+    i32.const 67
     call $~lib/rt/stub/__new
     i32.const 128
     call $~lib/@btc-vision/btc-runtime/runtime/buffer/BytesWriter/BytesWriter#constructor
@@ -13351,7 +13366,7 @@
     local.get $0
     local.get $3
     call $~lib/@btc-vision/btc-runtime/runtime/buffer/BytesWriter/BytesWriter#writeU256
-    i32.const 17488
+    i32.const 17536
     local.get $0
     call $~lib/@btc-vision/btc-runtime/runtime/events/NetEvent/NetEvent#constructor
     call $~lib/@btc-vision/btc-runtime/runtime/contracts/OP_NET/OP_NET#emitEvent
@@ -13453,7 +13468,7 @@
   local.get $1
   i32.eqz
   if
-   i32.const 17536
+   i32.const 17584
    i32.const 5168
    i32.const 400
    i32.const 13
@@ -13496,7 +13511,7 @@
   call $~lib/@btc-vision/btc-runtime/runtime/buffer/BytesReader/BytesReader#constructor
   local.set $1
   i32.const 8
-  i32.const 67
+  i32.const 68
   call $~lib/rt/stub/__new
   local.tee $2
   local.get $0
@@ -13512,7 +13527,7 @@
   i32.const 4
   i32.lt_s
   if
-   i32.const 17632
+   i32.const 17680
    i32.const 14256
    i32.const 801
    i32.const 13
@@ -13525,7 +13540,7 @@
   i32.const 1397356254
   i32.ne
   if
-   i32.const 17632
+   i32.const 17680
    i32.const 14256
    i32.const 806
    i32.const 13
@@ -13557,7 +13572,7 @@
   call $~lib/@btc-vision/btc-runtime/runtime/types/Address/Address.zero
   call $~lib/@btc-vision/btc-runtime/runtime/types/Address/Address#equals
   if
-   i32.const 17712
+   i32.const 17760
    i32.const 14256
    i32.const 705
    i32.const 42
@@ -13571,7 +13586,7 @@
   local.tee $3
   call $~lib/@btc-vision/btc-runtime/runtime/types/Address/Address#equals
   if
-   i32.const 17792
+   i32.const 17840
    i32.const 14256
    i32.const 708
    i32.const 33
@@ -13615,7 +13630,7 @@
     end
     i32.eqz
     if
-     i32.const 17872
+     i32.const 17920
      i32.const 14256
      i32.const 714
      i32.const 13
@@ -13629,7 +13644,7 @@
     call $~lib/@btc-vision/btc-runtime/runtime/contracts/OP721/OP721#_u256FromAddress
     call $~lib/@btc-vision/btc-runtime/runtime/storage/maps/StoredMapU256/StoredMapU256#set
     i32.const 12
-    i32.const 68
+    i32.const 69
     call $~lib/rt/stub/__new
     i32.const 96
     call $~lib/@btc-vision/btc-runtime/runtime/buffer/BytesWriter/BytesWriter#constructor
@@ -13642,7 +13657,7 @@
     local.get $4
     local.get $2
     call $~lib/@btc-vision/btc-runtime/runtime/buffer/BytesWriter/BytesWriter#writeU256
-    i32.const 17952
+    i32.const 18000
     local.get $4
     call $~lib/@btc-vision/btc-runtime/runtime/events/NetEvent/NetEvent#constructor
     call $~lib/@btc-vision/btc-runtime/runtime/contracts/OP_NET/OP_NET#emitEvent
@@ -13769,15 +13784,15 @@
   i32.const 45
   i32.ne
   if
-   i32.const 18064
-   i32.const 18128
+   i32.const 18112
+   i32.const 18176
    i32.const 26
    i32.const 22
    call $~lib/@btc-vision/btc-runtime/runtime/abort/abort/revertOnError
    unreachable
   end
   i32.const 12
-  i32.const 69
+  i32.const 70
   call $~lib/rt/stub/__new
   i32.const 65
   call $~lib/@btc-vision/btc-runtime/runtime/buffer/BytesWriter/BytesWriter#constructor
@@ -13790,7 +13805,7 @@
   local.get $4
   local.get $3
   call $~lib/@btc-vision/btc-runtime/runtime/buffer/BytesWriter/BytesWriter#writeBoolean
-  i32.const 18272
+  i32.const 18320
   local.get $4
   call $~lib/@btc-vision/btc-runtime/runtime/events/NetEvent/NetEvent#constructor
   call $~lib/@btc-vision/btc-runtime/runtime/contracts/OP_NET/OP_NET#emitEvent
@@ -13866,7 +13881,7 @@
   i32.load offset=48
   i32.eqz
   if
-   i32.const 18528
+   i32.const 18576
    i32.const 5168
    i32.const 264
    i32.const 13
@@ -13893,7 +13908,7 @@
   i32.load offset=40
   i32.eqz
   if
-   i32.const 18608
+   i32.const 18656
    i32.const 5168
    i32.const 231
    i32.const 13
@@ -14012,7 +14027,7 @@
    i32.const 64
    i32.ne
    if
-    i32.const 18688
+    i32.const 18736
     i32.const 5168
     i32.const 1307
     i32.const 38
@@ -14024,7 +14039,7 @@
    i32.const 32
    i32.ne
    if
-    i32.const 18768
+    i32.const 18816
     i32.const 5168
     i32.const 1308
     i32.const 33
@@ -14090,8 +14105,8 @@
     i32.load8_u
     i32.eqz
     if
-     i32.const 19344
-     i32.const 19424
+     i32.const 19392
+     i32.const 19472
      i32.const 377
      i32.const 9
      call $~lib/@btc-vision/btc-runtime/runtime/abort/abort/revertOnError
@@ -14122,7 +14137,7 @@
    i32.const 1312
    i32.ne
    if
-    i32.const 19552
+    i32.const 19600
     i32.const 5168
     i32.const 867
     i32.const 13
@@ -14134,7 +14149,7 @@
    i32.const 2420
    i32.ne
    if
-    i32.const 19648
+    i32.const 19696
     i32.const 5168
     i32.const 871
     i32.const 13
@@ -14146,7 +14161,7 @@
    i32.const 32
    i32.ne
    if
-    i32.const 18768
+    i32.const 18816
     i32.const 5168
     i32.const 875
     i32.const 13
@@ -14187,7 +14202,7 @@
   end
   i32.eqz
   if
-   i32.const 19936
+   i32.const 19984
    i32.const 14256
    i32.const 884
    i32.const 13
@@ -14214,7 +14229,7 @@
   i32.const 64
   i32.ne
   if
-   i32.const 18384
+   i32.const 18432
    i32.const 14256
    i32.const 818
    i32.const 13
@@ -14250,7 +14265,7 @@
   i64.load offset=8
   i64.lt_u
   if
-   i32.const 18464
+   i32.const 18512
    i32.const 14256
    i32.const 821
    i32.const 13
@@ -14360,7 +14375,7 @@
   local.get $2
   call $~lib/@btc-vision/btc-runtime/runtime/types/Address/Address#notEquals
   if
-   i32.const 18320
+   i32.const 18368
    i32.const 14256
    i32.const 429
    i32.const 35
@@ -14389,7 +14404,7 @@
   i32.const 64
   i32.ne
   if
-   i32.const 18384
+   i32.const 18432
    i32.const 14256
    i32.const 848
    i32.const 13
@@ -14425,7 +14440,7 @@
   i64.load offset=8
   i64.lt_u
   if
-   i32.const 18464
+   i32.const 18512
    i32.const 14256
    i32.const 851
    i32.const 13
@@ -14533,7 +14548,7 @@
   local.get $4
   call $~lib/@btc-vision/btc-runtime/runtime/types/Address/Address#equals
   if
-   i32.const 18000
+   i32.const 18048
    i32.const 14256
    i32.const 458
    i32.const 33
@@ -14619,7 +14634,7 @@
      i32.load offset=4
      call $~lib/@btc-vision/btc-runtime/runtime/types/Address/Address#notEquals
      if
-      i32.const 20000
+      i32.const 20048
       i32.const 14256
       i32.const 620
       i32.const 17
@@ -14691,7 +14706,7 @@
     call $~lib/@btc-vision/btc-runtime/runtime/types/SafeMath/SafeMath.sub
     call $~lib/@btc-vision/btc-runtime/runtime/storage/StoredU256/StoredU256#set:value
     i32.const 12
-    i32.const 70
+    i32.const 71
     call $~lib/rt/stub/__new
     i32.const 64
     call $~lib/@btc-vision/btc-runtime/runtime/buffer/BytesWriter/BytesWriter#constructor
@@ -14701,7 +14716,7 @@
     local.get $3
     local.get $1
     call $~lib/@btc-vision/btc-runtime/runtime/buffer/BytesWriter/BytesWriter#writeU256
-    i32.const 20064
+    i32.const 20112
     local.get $3
     call $~lib/@btc-vision/btc-runtime/runtime/events/NetEvent/NetEvent#constructor
     call $~lib/@btc-vision/btc-runtime/runtime/contracts/OP_NET/OP_NET#emitEvent
@@ -14735,7 +14750,7 @@
   call $~lib/@btc-vision/as-bignum/assembly/integer/u256/u256.lt
   i32.eqz
   if
-   i32.const 20096
+   i32.const 20144
    i32.const 14256
    i32.const 493
    i32.const 31
@@ -14754,7 +14769,7 @@
   i32.load offset=52
   i32.ge_u
   if
-   i32.const 17104
+   i32.const 17152
    i32.const 14832
    i32.const 110
    i32.const 13
@@ -14997,7 +15012,7 @@
       i32.const -1345001860
       i32.eq
       if
-       block $__inlined_func$~lib/@btc-vision/btc-runtime/runtime/contracts/OP721/OP721#tokenURI@override$1397
+       block $__inlined_func$~lib/@btc-vision/btc-runtime/runtime/contracts/OP721/OP721#tokenURI@override$1398
         local.get $0
         i32.const 8
         i32.sub
@@ -15009,7 +15024,7 @@
          local.get $2
          call $op721/DopamilioNFT/DopamilioNFT#tokenURI
          local.set $0
-         br $__inlined_func$~lib/@btc-vision/btc-runtime/runtime/contracts/OP721/OP721#tokenURI@override$1397
+         br $__inlined_func$~lib/@btc-vision/btc-runtime/runtime/contracts/OP721/OP721#tokenURI@override$1398
         end
         local.get $0
         local.get $2
@@ -15018,7 +15033,7 @@
         call $~lib/@btc-vision/btc-runtime/runtime/contracts/OP721/OP721#_exists
         i32.eqz
         if
-         i32.const 16112
+         i32.const 16160
          i32.const 14256
          i32.const 212
          i32.const 37
@@ -15245,7 +15260,7 @@
           call $~lib/@btc-vision/btc-runtime/runtime/contracts/OP721/OP721#_exists
           i32.eqz
           if
-           i32.const 16112
+           i32.const 16160
            i32.const 14256
            i32.const 368
            i32.const 37
@@ -15285,7 +15300,7 @@
           i32.load offset=4
           call $~lib/@btc-vision/btc-runtime/runtime/types/Address/Address#equals
           if
-           i32.const 18000
+           i32.const 18048
            i32.const 14256
            i32.const 385
            i32.const 48
@@ -15416,7 +15431,7 @@
           call $~lib/string/String#get:length
           i32.eqz
           if
-           i32.const 20160
+           i32.const 20208
            i32.const 14256
            i32.const 520
            i32.const 34
@@ -15428,7 +15443,7 @@
           i32.const 200
           i32.gt_u
           if
-           i32.const 20240
+           i32.const 20288
            i32.const 14256
            i32.const 522
            i32.const 13
@@ -15541,6 +15556,18 @@
        call $op721/DopamilioNFT/DopamilioNFT#get:_wlMerkleRoot
        local.get $1
        call $~lib/@btc-vision/btc-runtime/runtime/storage/StoredU256/StoredU256#set:value
+       i32.const 12
+       i32.const 64
+       call $~lib/rt/stub/__new
+       i32.const 32
+       call $~lib/@btc-vision/btc-runtime/runtime/buffer/BytesWriter/BytesWriter#constructor
+       local.tee $2
+       local.get $1
+       call $~lib/@btc-vision/btc-runtime/runtime/buffer/BytesWriter/BytesWriter#writeU256
+       i32.const 15456
+       local.get $2
+       call $~lib/@btc-vision/btc-runtime/runtime/events/NetEvent/NetEvent#constructor
+       call $~lib/@btc-vision/btc-runtime/runtime/env/BlockchainEnvironment/BlockchainEnvironment#emit
        br $folding-inner4
       end
       local.get $1
@@ -15583,9 +15610,9 @@
        i64.or
        i64.eqz
        if
-        i32.const 15584
+        i32.const 15632
         i32.const 12080
-        i32.const 311
+        i32.const 325
         i32.const 29
         call $~lib/@btc-vision/btc-runtime/runtime/abort/abort/revertOnError
         unreachable
@@ -15619,9 +15646,9 @@
        call $~lib/string/String#get:length
        i32.eqz
        if
-        i32.const 15680
+        i32.const 15728
         i32.const 12080
-        i32.const 325
+        i32.const 339
         i32.const 32
         call $~lib/@btc-vision/btc-runtime/runtime/abort/abort/revertOnError
         unreachable
@@ -15631,7 +15658,7 @@
        local.get $1
        call $~lib/@btc-vision/btc-runtime/runtime/storage/BaseStoredString/BaseStoredString#set:value
        i32.const 12
-       i32.const 65
+       i32.const 66
        call $~lib/rt/stub/__new
        local.get $1
        call $~lib/string/String#get:length
@@ -15641,7 +15668,7 @@
        local.tee $2
        local.get $1
        call $~lib/@btc-vision/btc-runtime/runtime/buffer/BytesWriter/BytesWriter#writeStringWithLength
-       i32.const 16048
+       i32.const 16096
        local.get $2
        call $~lib/@btc-vision/btc-runtime/runtime/events/NetEvent/NetEvent#constructor
        call $~lib/@btc-vision/btc-runtime/runtime/env/BlockchainEnvironment/BlockchainEnvironment#emit
@@ -15869,7 +15896,7 @@
   i64.eqz
   i32.eqz
   if
-   i32.const 20528
+   i32.const 20576
    i32.const 14256
    i32.const 161
    i32.const 48
@@ -15881,7 +15908,7 @@
   call $~lib/string/String#get:length
   i32.eqz
   if
-   i32.const 20592
+   i32.const 20640
    i32.const 14256
    i32.const 164
    i32.const 38
@@ -15893,7 +15920,7 @@
   call $~lib/string/String#get:length
   i32.eqz
   if
-   i32.const 20656
+   i32.const 20704
    i32.const 14256
    i32.const 165
    i32.const 40
@@ -15915,7 +15942,7 @@
   i64.or
   i64.eqz
   if
-   i32.const 20720
+   i32.const 20768
    i32.const 14256
    i32.const 166
    i32.const 40
@@ -16291,7 +16318,7 @@
   i32.sub
   i32.load
   drop
-  block $"__inlined_func$~lib/@btc-vision/btc-runtime/runtime/generic/Map/Map<~lib/@btc-vision/btc-runtime/runtime/types/Address/Address,~lib/@btc-vision/btc-runtime/runtime/memory/Nested/Nested<~lib/@btc-vision/as-bignum/assembly/integer/u256/u256>>#indexOf$357" (result i32)
+  block $"__inlined_func$~lib/@btc-vision/btc-runtime/runtime/generic/Map/Map<~lib/@btc-vision/btc-runtime/runtime/types/Address/Address,~lib/@btc-vision/btc-runtime/runtime/memory/Nested/Nested<~lib/@btc-vision/as-bignum/assembly/integer/u256/u256>>#indexOf$358" (result i32)
    local.get $0
    i32.load
    i32.load offset=12
@@ -16319,7 +16346,7 @@
     if
      local.get $0
      i32.load offset=8
-     br $"__inlined_func$~lib/@btc-vision/btc-runtime/runtime/generic/Map/Map<~lib/@btc-vision/btc-runtime/runtime/types/Address/Address,~lib/@btc-vision/btc-runtime/runtime/memory/Nested/Nested<~lib/@btc-vision/as-bignum/assembly/integer/u256/u256>>#indexOf$357"
+     br $"__inlined_func$~lib/@btc-vision/btc-runtime/runtime/generic/Map/Map<~lib/@btc-vision/btc-runtime/runtime/types/Address/Address,~lib/@btc-vision/btc-runtime/runtime/memory/Nested/Nested<~lib/@btc-vision/as-bignum/assembly/integer/u256/u256>>#indexOf$358"
     end
    end
    local.get $2
@@ -16342,7 +16369,7 @@
       local.get $2
       i32.store offset=8
       local.get $2
-      br $"__inlined_func$~lib/@btc-vision/btc-runtime/runtime/generic/Map/Map<~lib/@btc-vision/btc-runtime/runtime/types/Address/Address,~lib/@btc-vision/btc-runtime/runtime/memory/Nested/Nested<~lib/@btc-vision/as-bignum/assembly/integer/u256/u256>>#indexOf$357"
+      br $"__inlined_func$~lib/@btc-vision/btc-runtime/runtime/generic/Map/Map<~lib/@btc-vision/btc-runtime/runtime/types/Address/Address,~lib/@btc-vision/btc-runtime/runtime/memory/Nested/Nested<~lib/@btc-vision/as-bignum/assembly/integer/u256/u256>>#indexOf$358"
      end
      local.get $2
      i32.const 1
