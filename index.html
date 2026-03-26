@@ -1075,6 +1075,12 @@ input,textarea{-webkit-user-select:text;-moz-user-select:text;user-select:text;}
 .gal-page-sep{font-size:10px;font-family:'JetBrains Mono',monospace;color:rgba(255,255,255,.4);}
 
 /* ══ MOBILE RESPONSIVE ══════════════════════ */
+/* FIX 3 — Nav height CSS variable */
+@media(max-width:720px){
+  :root{
+    --nav-h-mobile: 96px;
+  }
+}
 @media(max-width:720px){
   #cards-row{grid-template-columns:1fr;height:auto;gap:12px;}
   #page{padding:calc(var(--mac-bar-h) + var(--nav-h) + 16px) 10px 24px;gap:12px;}
@@ -1101,6 +1107,90 @@ input,textarea{-webkit-user-select:text;-moz-user-select:text;user-select:text;}
   button{touch-action:manipulation;}
   /* Marketplace: ensure detail scrolls above ticker */
   .mkt-nft-area{padding-bottom:calc(var(--ticker-h,33px) + 80px);}
+  /* FIX 1 — NFT card carousel height */
+  #nft-card{
+    height: min(75vw, 360px);
+    min-height: 260px;
+  }
+  .nft-viewport{
+    min-height: 200px;
+  }
+  #mint-card{
+    min-height: unset;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    max-height: calc(100vh - min(75vw, 360px) - 160px);
+  }
+  /* FIX 2 — Font sizes and text alignment */
+  .nft-sub{
+    display: block;
+    text-align: center;
+    width: 100%;
+    padding: 0 8px;
+    line-height: 1.8;
+  }
+  .ns{
+    font-size: 6px;
+    padding: 3px 5px;
+  }
+  .sv{
+    font-size: clamp(20px, 5.5vw, 28px) !important;
+  }
+  .sl{
+    font-size: clamp(7px, 2vw, 10px) !important;
+  }
+  .pt-name{
+    font-size: clamp(7px, 2vw, 11px);
+  }
+  .pt-timer{
+    font-size: clamp(7px, 2vw, 10px);
+  }
+  .amt-lbl{
+    font-size: clamp(7px, 2vw, 10px);
+  }
+  .tot{
+    align-items: center;
+    text-align: center;
+  }
+  #totBtc{
+    font-size: clamp(16px, 4.5vw, 24px) !important;
+    text-align: center;
+  }
+  /* FIX 3 — Page padding inside 720px block */
+  #page{
+    padding-top: calc(var(--mac-bar-h) + var(--nav-h-mobile) + 8px) !important;
+    padding-left: 8px !important;
+    padding-right: 8px !important;
+  }
+  #cards-row{
+    width: 100%;
+    max-width: 480px;
+    margin: 0 auto;
+  }
+  #activity{
+    width: 100%;
+    max-width: 480px;
+    margin: 8px auto calc(var(--ticker-h) + 80px) !important;
+  }
+  /* FIX 4 — Mint button sizing */
+  .btn-mint{
+    font-size: clamp(11px, 3vw, 16px) !important;
+    padding: 13px 10px !important;
+    letter-spacing: 1px !important;
+  }
+  /* FIX 5 — Thumbnail sizing */
+  .nft-thumbs{
+    gap: 3px;
+    padding-bottom: 4px;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+  }
+  .thumb{
+    width: 36px;
+    height: 36px;
+    scroll-snap-align: start;
+    flex-shrink: 0;
+  }
 }
 @media(max-width:480px){
   .gallery-grid{grid-template-columns:repeat(3,1fr);gap:6px;}
@@ -1134,6 +1224,27 @@ input,textarea{-webkit-user-select:text;-moz-user-select:text;user-select:text;}
   #galPageInfo,.gal-page-nav button,.gal-btn{min-height:36px;}
   /* Bottom padding for livebar */
   #galleryPage,#lorePage,#marketplacePage{padding-bottom:calc(var(--ticker-h,33px) + 16px);}
+  /* FIX 3 — Page padding inside 480px block */
+  #page{
+    padding-left: 6px !important;
+    padding-right: 6px !important;
+  }
+  #cards-row{
+    max-width: 100%;
+  }
+  #activity{
+    max-width: 100%;
+  }
+  /* FIX 4 — Mint button sizing at 480px */
+  .btn-mint{
+    font-size: clamp(10px, 3vw, 14px) !important;
+    padding: 11px 8px !important;
+  }
+  /* FIX 5 — Thumbnail sizing at 480px */
+  .thumb{
+    width: 30px;
+    height: 30px;
+  }
 }
 /* Extra small: 360px and below */
 @media(max-width:360px){
