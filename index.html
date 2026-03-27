@@ -2604,7 +2604,7 @@ function setPhase(i){curPhase=i;
   const mx=PHASE_MAX_MINT[i]??MAX_MINT;
   const qel=document.getElementById('mintQty');
   if(qel&&Number(qel.textContent||1)>mx)qel.textContent=String(mx);
-  document.querySelectorAll('.ph').forEach((b,idx)=>{b.classList.remove('active');if(idx===i){b.classList.add('active');b.classList.remove('locked');}});
+  document.querySelectorAll('.ph').forEach((b,idx)=>{b.classList.remove('active');if(idx===i){b.classList.add('active');b.classList.remove('locked');}var s=b.querySelector('.phs');if(s){if(idx<i)s.textContent='✓ DONE';else if(idx===i)s.textContent='● ACTIVE';else s.textContent='🔒 SOON';}});
   document.getElementById('sPrice').textContent=String(Number(onChainPrice));
   for(let r=0;r<3;r++){
     const row=document.getElementById('pt'+r);
