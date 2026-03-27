@@ -41,34 +41,11 @@
             ]
         },
         {
-            "name": "setWLRoot",
-            "type": "Function",
-            "payable": false,
-            "onlyOwner": false,
-            "inputs": [
-                {
-                    "name": "root",
-                    "type": "UINT256"
-                }
-            ],
-            "outputs": [
-                {
-                    "name": "success",
-                    "type": "BOOL"
-                }
-            ]
-        },
-        {
             "name": "activateTeam",
             "type": "Function",
             "payable": false,
             "onlyOwner": false,
-            "inputs": [
-                {
-                    "name": "_unused",
-                    "type": "BOOL"
-                }
-            ],
+            "inputs": [],
             "outputs": [
                 {
                     "name": "success",
@@ -81,12 +58,7 @@
             "type": "Function",
             "payable": false,
             "onlyOwner": false,
-            "inputs": [
-                {
-                    "name": "_unused",
-                    "type": "BOOL"
-                }
-            ],
+            "inputs": [],
             "outputs": [
                 {
                     "name": "success",
@@ -99,10 +71,23 @@
             "type": "Function",
             "payable": false,
             "onlyOwner": false,
+            "inputs": [],
+            "outputs": [
+                {
+                    "name": "success",
+                    "type": "BOOL"
+                }
+            ]
+        },
+        {
+            "name": "setWLRoot",
+            "type": "Function",
+            "payable": false,
+            "onlyOwner": false,
             "inputs": [
                 {
-                    "name": "_unused",
-                    "type": "BOOL"
+                    "name": "root",
+                    "type": "UINT256"
                 }
             ],
             "outputs": [
@@ -208,7 +193,20 @@
             "inputs": [],
             "outputs": [
                 {
-                    "name": "root",
+                    "name": "wlRoot",
+                    "type": "UINT256"
+                }
+            ]
+        },
+        {
+            "name": "getTeamMintedTotal",
+            "type": "View",
+            "payable": false,
+            "onlyOwner": false,
+            "inputs": [],
+            "outputs": [
+                {
+                    "name": "total",
                     "type": "UINT256"
                 }
             ]
