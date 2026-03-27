@@ -1824,7 +1824,17 @@ function _updateCostDisplay(){
 }
 
 
+function _applyPreDeployUI(){
+  // All phases SOON, mint button locked
+  var mb=document.getElementById('mintBtn');
+  if(mb){mb.disabled=true;mb.textContent='🔒 COMING SOON';mb.style.opacity='0.45';mb.style.cursor='not-allowed';}
+  ['t0','t1','t2'].forEach(function(id){var e=document.getElementById(id);if(e)e.textContent='SOON';});
+  var badges=document.querySelectorAll('.pt-badge');
+  badges.forEach(function(b){b.className='pt-badge badge-soon';b.textContent='SOON';});
+}
+
 async function _loadContractInfo(){
+  if(CONTRACT_ADDR==='PENDING_DEPLOY'){_applyPreDeployUI();return;}
   try{
     const sdk = await _opnetImport();
     const {JSONRpcProvider,getContract} = sdk;
@@ -1997,6 +2007,7 @@ function _refreshActBodyTxids(){
 }
 
 async function _fetchRecentMints(){
+  if(CONTRACT_ADDR==='PENDING_DEPLOY') return;
   try{
     const sdk = await _opnetImport();
     const {JSONRpcProvider,getContract,ABIDataTypes,BitcoinAbiTypes} = sdk;
@@ -2714,6 +2725,7 @@ function _playSniperEffect(cb) {
   }, 1800);
 }
 async function doMint(){
+  if(CONTRACT_ADDR==='PENDING_DEPLOY'){walletToast('err','Minting not yet open — stay tuned.');return;}
   if(!connected||!walletAddr){doConnect();return;}
   if(!walletPubKey){walletToast('err','Please upgrade OP_Wallet and reconnect.');return;}
   if(_mintPending){walletToast('err','Transaction pending — wait for confirmation.');return;}
@@ -3385,7 +3397,7 @@ function startLoreTyping(){
     '',
     '──────────────────────────────────────────',
     '',
-    '  CONTRACT  : '+CONTRACT_ADDR,
+    '  CONTRACT  : \x00',
     '  BLOCKCHAIN: Bitcoin L1',
     '  STANDARD  : OP-721',
     '',
@@ -3399,11 +3411,32 @@ function startLoreTyping(){
   cursor.className='lore-cursor';cursor.textContent='_';
   var tNode=document.createTextNode('');
   el.appendChild(tNode);el.appendChild(cursor);
+  var _scrSpan=null;
+  function _startScramble(span){
+    var chars='0123456789abcdef';
+    var len=42;
+    setInterval(function(){
+      var s='';for(var i=0;i<len;i++)s+=chars[Math.floor(Math.random()*chars.length)];
+      span.textContent=s;
+    },60);
+  }
   function typeChar(){
     if(lIdx>=LORE.length){cursor.style.display='inline';return;}
     var line=LORE[lIdx];
     if(cIdx<line.length){
-      tNode.textContent+=line[cIdx];cIdx++;
+      var ch=line[cIdx];
+      if(ch==='\x00'){
+        // inject scramble span in-line
+        var scr=document.createElement('span');
+        scr.style.cssText='color:#0cf;letter-spacing:0;';
+        scr.textContent='????????????????????????????????????????????????';
+        el.insertBefore(scr,cursor);
+        _scrSpan=scr;
+        _startScramble(scr);
+        cIdx++;
+      } else {
+        tNode.textContent+=ch;cIdx++;
+      }
       setTimeout(typeChar,4);
     } else {
       tNode.textContent+='\n';lIdx++;cIdx=0;
