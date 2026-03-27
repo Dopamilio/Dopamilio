@@ -2679,11 +2679,12 @@ async function doMint(){
   if(!connected||!walletAddr){doConnect();return;}
   if(!walletPubKey){walletToast('err','Please upgrade OP_Wallet and reconnect.');return;}
 
-  // TEAM phase guard: warn immediately if connected wallet is not the deployer P2TR
+  // TEAM phase guard: normalize walletAddr (0x hex → opt1 bech32m) before comparing with CONTRACT_P2TR
   if(_rawChainPhase===1){
-    const _addrLower=(walletAddr||'').toLowerCase();
-    if(_addrLower!==CONTRACT_P2TR.toLowerCase()){
-      walletToast('err','TEAM phase — only the deployer wallet can mint.<br>Connected: '+_safeText(walletAddr||'none'));
+    const _rawAddr=walletAddr||'';
+    const _walletOpt=_rawAddr.startsWith('0x')?_hexToOpnet(_rawAddr):_rawAddr;
+    if(_walletOpt.toLowerCase()!==CONTRACT_P2TR.toLowerCase()){
+      walletToast('err','TEAM phase — only the deployer wallet can mint.');
       btn.textContent='\uD83D\uDD25 MINT NOW \uD83D\uDD25';btn.disabled=false;
       return;
     }
@@ -2863,6 +2864,7 @@ document.querySelectorAll('.nav-link').forEach(function(l){
 /* DOPA-2: GALLERY */
 var DOPAMILIO_IPFS_CID = 'QmUsxXUnJeUrW64DrxNMn8YUnjmhUDv8nvdf73ppFu2LDC/dopamilio';
 var GAL_BASE = 'https://chocolate-decisive-silverfish-606.mypinata.cloud/ipfs/';
+var GAL_BASE_FALLBACK = 'https://ipfs.io/ipfs/';
 var _imgCids = null;
 var _imgCidsCallbacks = [];
 var _imgCidsFetching = false;
@@ -2885,7 +2887,7 @@ function _loadImgCids(cb) {
       var tid = row.dataset.tokenid;
       if (tid && tid !== '?' && _imgCids[tid]) {
         var img = row.querySelector('.act-thumb img');
-        if (img) img.src = GAL_BASE + _imgCids[tid];
+        if (img) { img.src = GAL_BASE + _imgCids[tid]; img.onerror=function(){this.onerror=null;this.src=GAL_BASE_FALLBACK+_imgCids[tid];}; }
       }
     });
     var pending = _imgCidsCallbacks.slice();
@@ -3100,7 +3102,9 @@ function _openNftDetailFallback(id){
   var traitsEl=document.getElementById('nftDetailTraits');
   var card=document.getElementById('nftDetailCard');
 
-  img.src = _getImgUrl(id);
+  var _imgSrc=_getImgUrl(id);
+  img.src = _imgSrc;
+  img.onerror=function(){this.onerror=null;if(_imgCids&&_imgCids[String(id)])this.src=GAL_BASE_FALLBACK+_imgCids[String(id)];};
   img.alt='Dopamilio #'+id;
   idEl.textContent='Dopamilio #'+id;
 
@@ -3869,11 +3873,11 @@ function mktRenderActivityFeed() {
         +'<div style="width:36px;height:36px;flex-shrink:0;border:1px solid '+(isHot?col:'#1a2a1a')+';overflow:hidden">'+thumbHtml+'</div>'
         +'<div style="flex:1;min-width:0">'
         +'<div style="display:flex;justify-content:space-between;align-items:center">'
-        +'<span style="color:#c8a84b;font-size:11px;font-family:monospace;font-weight:bold">DOPAMILIO #'+a.id+'</span>'
-        +'<span style="color:'+(isHot?'#ff6b00':'#4a6a4a')+';font-size:9px;font-family:monospace">'+(isHot?'🔥 ':'')+a.ago+'</span>'
+        +'<span style="color:#c8a84b;font-size:11px;font-family:monospace;font-weight:bold">DOPAMILIO #'+_safeText(a.id)+'</span>'
+        +'<span style="color:'+(isHot?'#ff6b00':'#4a6a4a')+';font-size:9px;font-family:monospace">'+(isHot?'🔥 ':'')+_safeText(a.ago)+'</span>'
         +'</div>'
-        +'<div style="color:#555;font-size:9px;font-family:monospace;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+a.from+' → '+a.to+'</div>'
-        +'<div style="color:#00ff41;font-size:12px;font-family:monospace;font-weight:bold">&#8383;'+a.price+' <span style="color:#4a6a4a;font-size:9px">'+priceUsd+'</span></div>'
+        +'<div style="color:#555;font-size:9px;font-family:monospace;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+_safeText(a.from)+' → '+_safeText(a.to)+'</div>'
+        +'<div style="color:#00ff41;font-size:12px;font-family:monospace;font-weight:bold">&#8383;'+_safeText(a.price)+' <span style="color:#4a6a4a;font-size:9px">'+priceUsd+'</span></div>'
         +'</div></div>';
     }).join('');
 }
@@ -3908,10 +3912,10 @@ function mktRenderTabContent() {
   if (!related.length) return '<div style="color:#4a6a4a;font-family:monospace;font-size:12px;padding:20px 0">// NO ACTIVITY FOR THIS TOKEN</div>';
   return related.map(function(a){
     return '<div style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid #0f1f0f;font-family:monospace;font-size:12px">'
-      +'<span style="color:#c8a84b">DOPAMILIO #'+a.id+'</span>'
-      +'<span style="color:#4a6a4a">'+a.from+' &#8594; '+a.to+'</span>'
-      +'<span style="color:#00ff41">&#8383;'+a.price+'</span>'
-      +'<span style="color:#4a6a4a">'+a.ago+'</span>'
+      +'<span style="color:#c8a84b">DOPAMILIO #'+_safeText(a.id)+'</span>'
+      +'<span style="color:#4a6a4a">'+_safeText(a.from)+' &#8594; '+_safeText(a.to)+'</span>'
+      +'<span style="color:#00ff41">&#8383;'+_safeText(a.price)+'</span>'
+      +'<span style="color:#4a6a4a">'+_safeText(a.ago)+'</span>'
       +'</div>';
   }).join('');
 }
@@ -3929,10 +3933,10 @@ function mktRenderDetailView(nft) {
     var sc = nft.scores[k]||{c:'N/A',p:'N/A'};
     var full = (i===4) ? ' mkt-trait-full' : '';
     return '<div class="mkt-trait-card'+full+'">'
-      +'<div class="mkt-trait-label">'+k+'</div>'
+      +'<div class="mkt-trait-label">'+_safeText(k)+'</div>'
       +'<div style="display:flex;justify-content:space-between;align-items:center">'
-      +'<span class="mkt-trait-val">'+nft.traits[k]+'</span>'
-      +'<span class="mkt-trait-count">'+sc.c+' ('+sc.p+')</span>'
+      +'<span class="mkt-trait-val">'+_safeText(nft.traits[k])+'</span>'
+      +'<span class="mkt-trait-count">'+_safeText(sc.c)+' ('+_safeText(sc.p)+')</span>'
       +'</div></div>';
   }).join('');
 
@@ -3957,18 +3961,18 @@ function mktRenderDetailView(nft) {
     +'<div class="mkt-detail-right">'
     +'<button onclick="mktCloseDetail()" style="background:none;border:none;color:#4a6a4a;font-family:monospace;font-size:11px;cursor:pointer;padding:0;margin-bottom:8px">&#8592; DOPAMILIO</button>'
     +'<div style="display:flex;align-items:center;gap:10px;margin-bottom:4px">'
-    +'<span style="color:#c8a84b;font-size:22px;font-weight:bold;font-family:monospace">DOPAMILIO #'+nft.id+'</span>'
-    +'<span style="background:'+col+';color:#060d06;font-family:monospace;font-size:10px;font-weight:bold;padding:3px 8px;border-radius:3px">'+nft.rarity+'</span>'
+    +'<span style="color:#c8a84b;font-size:22px;font-weight:bold;font-family:monospace">DOPAMILIO #'+_safeText(nft.id)+'</span>'
+    +'<span style="background:'+col+';color:#060d06;font-family:monospace;font-size:10px;font-weight:bold;padding:3px 8px;border-radius:3px">'+_safeText(nft.rarity)+'</span>'
     +'</div>'
-    +'<div style="color:#4a6a4a;font-size:11px;font-family:monospace;margin-bottom:16px">Owner <a href="'+OPSCAN_ADDR+nft.owner.replace(/…/,'')+OPSCAN_QUERY+'" target="_blank" style="color:#00ff41;text-decoration:none">'+nft.owner+'</a></div>'
+    +'<div style="color:#4a6a4a;font-size:11px;font-family:monospace;margin-bottom:16px">Owner <a href="'+OPSCAN_ADDR+_safeText(nft.owner.replace(/…/,''))+OPSCAN_QUERY+'" target="_blank" style="color:#00ff41;text-decoration:none">'+_safeText(nft.owner)+'</a></div>'
     +'<div class="mkt-price-box">'
     +'<div style="display:flex;justify-content:space-between;margin-bottom:8px">'
-    +'<div><div style="color:#4a6a4a;font-size:10px;letter-spacing:1px">PRICE</div><div style="color:#00ff41;font-size:22px;font-weight:bold;font-family:monospace">&#8383;'+nft.price+'</div><div style="color:#4a6a4a;font-size:11px">~$'+usd.toLocaleString()+' &bull; '+nft.floorDiff+' vs floor</div></div>'
-    +'<div style="text-align:right"><div style="color:#4a6a4a;font-size:10px;letter-spacing:1px">TOP BID</div><div style="color:#c8a84b;font-size:22px;font-weight:bold;font-family:monospace">&#8383;'+nft.topBid+'</div><div style="color:#4a6a4a;font-size:11px">last: &#8383;'+nft.lastSale+'</div></div>'
+    +'<div><div style="color:#4a6a4a;font-size:10px;letter-spacing:1px">PRICE</div><div style="color:#00ff41;font-size:22px;font-weight:bold;font-family:monospace">&#8383;'+_safeText(nft.price)+'</div><div style="color:#4a6a4a;font-size:11px">~$'+usd.toLocaleString()+' &bull; '+_safeText(nft.floorDiff)+' vs floor</div></div>'
+    +'<div style="text-align:right"><div style="color:#4a6a4a;font-size:10px;letter-spacing:1px">TOP BID</div><div style="color:#c8a84b;font-size:22px;font-weight:bold;font-family:monospace">&#8383;'+_safeText(nft.topBid)+'</div><div style="color:#4a6a4a;font-size:11px">last: &#8383;'+_safeText(nft.lastSale)+'</div></div>'
     +'</div>'
     +'<div style="color:#4a6a4a;font-size:10px;font-family:monospace;letter-spacing:1px">OP-721 · BITCOIN L1 · OPNET PROTOCOL</div>'
     +'</div>'
-    +'<button class="mkt-btn-buynow">&#9654; BUY NOW &#8383;'+nft.price+'</button>'
+    +'<button class="mkt-btn-buynow">&#9654; BUY NOW &#8383;'+_safeText(nft.price)+'</button>'
     +'<button class="mkt-btn-bid">&#9672; PLACE BID</button>'
     +'<div style="display:flex;gap:8px">'
     +'<button class="mkt-btn-secondary">&#9014; Copy Link</button>'
