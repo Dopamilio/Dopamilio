@@ -1845,8 +1845,8 @@ async function _loadContractInfo(){
 
     // Fetch supply + price + phase + WL timing + treasury in parallel
     const [totalRes, priceRes, phaseRes, isTestRes, wlStartRes, wlDurRes, treasuryRes] = await Promise.all([
-      contract.totalSupply(),
-      contract.getMintPrice(),
+      contract.totalSupply().catch(()=>null),
+      contract.getMintPrice().catch(()=>null),
       contract.getPhase().catch(()=>null),
       contract.getIsTestnet().catch(()=>null),
       contract.getWlStartTime().catch(()=>null),
@@ -1854,8 +1854,8 @@ async function _loadContractInfo(){
       contract.getTreasuryAddress().catch(()=>null),
     ]);
 
-    const totalMinted    = Number(totalRes?.properties?.total ?? 0n);
-    onChainPrice         = priceRes?.properties?.price ?? FALLBACK_SATS;
+    const totalMinted    = totalRes ? Number(totalRes?.properties?.total ?? 0n) : mintedC;
+    if(priceRes) onChainPrice = priceRes?.properties?.price ?? FALLBACK_SATS;
     const phase          = Number(phaseRes?.properties?.phase ?? 0n);
     const isTestnet      = isTestRes?.properties?.isTestnet ?? false;
     // OPNet node returns timestamps in ms; divide by 1000 to get seconds for countdown math
