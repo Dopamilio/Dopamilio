@@ -60,16 +60,6 @@ export type ActivatePublic = CallResult<
 >;
 
 /**
- * @description Represents the result of the setWLRoot function call.
- */
-export type SetWLRoot = CallResult<
-    {
-        success: boolean;
-    },
-    OPNetEvent<never>[]
->;
-
-/**
  * @description Represents the result of the setMintPrice function call.
  */
 export type SetMintPrice = CallResult<
@@ -130,16 +120,6 @@ export type GetTreasuryAddress = CallResult<
 >;
 
 /**
- * @description Represents the result of the getWLRoot function call.
- */
-export type GetWLRoot = CallResult<
-    {
-        wlRoot: bigint;
-    },
-    OPNetEvent<never>[]
->;
-
-/**
  * @description Represents the result of the getTeamMintedTotal function call.
  */
 export type GetTeamMintedTotal = CallResult<
@@ -164,18 +144,16 @@ export type GetMintedCount = CallResult<
 // ------------------------------------------------------------------
 export interface IDopamilioNFT extends IOP_NETContract {
     tokenURI(tokenId: bigint): Promise<TokenURI>;
-    mint(amount: bigint, proof: bigint[]): Promise<Mint>;
+    mint(amount: bigint): Promise<Mint>;
     activateTeam(): Promise<ActivateTeam>;
     activateWL(): Promise<ActivateWL>;
     activatePublic(): Promise<ActivatePublic>;
-    setWLRoot(root: bigint): Promise<SetWLRoot>;
     setMintPrice(priceSats: bigint): Promise<SetMintPrice>;
     setTreasuryAddress(addr: string): Promise<SetTreasuryAddress>;
     getMintPrice(): Promise<GetMintPrice>;
     getPhase(): Promise<GetPhase>;
     getIsTestnet(): Promise<GetIsTestnet>;
     getTreasuryAddress(): Promise<GetTreasuryAddress>;
-    getWLRoot(): Promise<GetWLRoot>;
     getTeamMintedTotal(): Promise<GetTeamMintedTotal>;
     getMintedCount(addr: Address, phase: number): Promise<GetMintedCount>;
 }

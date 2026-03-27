@@ -1715,7 +1715,7 @@ const NFT_TOKEN_IDS=[1,2,3,4,5,6,14,57,303,2314];
 /* ══════════════════════════════════════════════
    OPNET CONTRACT — testnet
 ══════════════════════════════════════════════ */
-const CONTRACT_ADDR  = 'opt1sqzwrptldz3qrjuq5na2smw74mh6q3tyrp5vparlx';
+const CONTRACT_ADDR  = 'opt1sqpne85g06k49fynyjd7z8rvgcfqtdq5tcur07wgx';
 const CONTRACT_P2TR  = 'opt1pv5z0n6gn0n8szljp7dewl52548zyvt48pt406cl607wen22amalqfpft8p';
 const MINT_PRICE_SATS = 6969n;
 const MAX_SUPPLY      = 3333;
@@ -1737,20 +1737,18 @@ function _getDopamilioAbi(sdk){
   if(_DOPAMILIO_ABI) return _DOPAMILIO_ABI;
   const B=sdk.BitcoinAbiTypes, A=sdk.ABIDataTypes;
   _DOPAMILIO_ABI = [
-    {name:'mint',               type:B.Function,payable:true,  inputs:[{name:'amount',type:A.UINT64},{name:'proof',type:A.ARRAY_OF_UINT256}], outputs:[{name:'firstTokenId',type:A.UINT256}]},
+    {name:'mint',               type:B.Function,payable:true,  inputs:[{name:'amount',type:A.UINT64}],                                       outputs:[{name:'firstTokenId',type:A.UINT256}]},
     {name:'getMintPrice',       type:B.Function,payable:false, inputs:[],                                  outputs:[{name:'price',type:A.UINT256}]},
     {name:'totalSupply',        type:B.Function,payable:false, inputs:[],                                  outputs:[{name:'total',type:A.UINT256}]},
     {name:'tokenURI',           type:B.Function,payable:false, inputs:[{name:'tokenId',type:A.UINT256}],   outputs:[{name:'uri',type:A.STRING}]},
     {name:'getPhase',           type:B.Function,payable:false, inputs:[],                                  outputs:[{name:'phase',type:A.UINT8}]},
     {name:'getIsTestnet',       type:B.Function,payable:false, inputs:[],                                  outputs:[{name:'isTestnet',type:A.BOOL}]},
     {name:'getTeamMintedTotal', type:B.Function,payable:false, inputs:[],                                  outputs:[{name:'total',type:A.UINT256}]},
-    {name:'getWLRoot',          type:B.Function,payable:false, inputs:[],                                  outputs:[{name:'root',type:A.UINT256}]},
     {name:'getTreasuryAddress', type:B.Function,payable:false, inputs:[],                                  outputs:[{name:'addr',type:A.STRING}]},
     {name:'getMintedCount',     type:B.Function,payable:false, inputs:[{name:'addr',type:A.ADDRESS},{name:'phase',type:A.UINT8}], outputs:[{name:'count',type:A.UINT256}]},
     {name:'activateTeam',       type:B.Function,payable:false, inputs:[],                                  outputs:[{name:'success',type:A.BOOL}]},
     {name:'activateWL',         type:B.Function,payable:false, inputs:[],                                  outputs:[{name:'success',type:A.BOOL}]},
     {name:'activatePublic',     type:B.Function,payable:false, inputs:[],                                  outputs:[{name:'success',type:A.BOOL}]},
-    {name:'setWLRoot',          type:B.Function,payable:false, inputs:[{name:'root',type:A.UINT256}],      outputs:[{name:'success',type:A.BOOL}]},
   ];
   return _DOPAMILIO_ABI;
 }
@@ -1873,7 +1871,7 @@ function _buildActivityFromChain(mints){
 // ScanBlock: last block fully scanned
 const _CACHE_KEY   = 'dopa_mint_txids_v2_'+CONTRACT_ADDR.slice(-8);
 const _SCAN_KEY    = 'dopa_scan_block_v2_'+CONTRACT_ADDR.slice(-8);
-const _DEPLOY_BLOCK = 0x2d55; // block where contract was deployed (v5, reveal TX block 11605)
+const _DEPLOY_BLOCK = 0x2d6a; // block where contract was deployed (v6 — update after confirmation)
 var _mintTxCache = {};
 var _scanRunning = false;
 try { _mintTxCache = JSON.parse(localStorage.getItem(_CACHE_KEY)||'{}'); } catch(e){}
@@ -2709,26 +2707,19 @@ async function doMint(){
       ],
     });
 
-    // 5. Fetch WL proof if in WL phase (chain phase 2)
-    let wlProof = [];
+    // 5. WL phase — check frontend whitelist (no on-chain proof required)
     if(_rawChainPhase===2){
-      // Blockchain.tx.sender = MLDSA identity (mldsaBytes, already computed above)
+      const WL_ADDRS=['321736a35eaab38a204c587311cb8f9dc785e5e7ca79cee3a863bfbed0874c68','757adfd7fcb2da6f2de8a43f2e7dbf923a95ef815c68150732daaf9ccd20e6e0','7774b15bbd96752a1558e808113f9b58e292e6cca4c49296323a5110c5681b48','25d43e7ff972568aa72117a48d108cc585aa5fcde283c2601425dd64fb06a5f0'];
       const isNonZero=mldsaBytes.some(function(b){return b!==0;});
       const identityHex=isNonZero
         ?Array.from(mldsaBytes).map(function(x){return x.toString(16).padStart(2,'0');}).join('')
         :walletAddr.replace(/^0x/,'').toLowerCase();
-      try{
-        const pr=await fetch('/api/proof?addr='+encodeURIComponent(identityHex));
-        if(pr.ok){const pd=await pr.json();wlProof=pd.proof||[];}
-        else throw new Error('WL proof not found — wallet not in whitelist');
-      }catch(fe){throw new Error('Not in whitelist: '+fe.message);}
-      if(!wlProof.length)throw new Error('WL proof empty — wallet not whitelisted');
-      wlProof=wlProof.map(function(h){return BigInt(h);});
+      if(!WL_ADDRS.includes(identityHex))throw new Error('NGMI anon — ur not on the list, go touch grass');
     }
 
     // 6. Simulate
     btn.textContent='\u23F3 SIMULATING...';
-    const sim = await contract.mint(BigInt(quantity),wlProof);
+    const sim = await contract.mint(BigInt(quantity));
     if(sim.revert) throw new Error(sim.revert);
 
     // 7. Send — wallet signs, never a keypair

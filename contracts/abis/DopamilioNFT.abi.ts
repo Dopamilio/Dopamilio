@@ -12,10 +12,7 @@ export const DopamilioNFTAbi = [
     },
     {
         name: 'mint',
-        inputs: [
-            { name: 'amount', type: ABIDataTypes.UINT64 },
-            { name: 'proof', type: ABIDataTypes.ARRAY_OF_UINT256 },
-        ],
+        inputs: [{ name: 'amount', type: ABIDataTypes.UINT64 }],
         outputs: [{ name: 'firstTokenId', type: ABIDataTypes.UINT256 }],
         type: BitcoinAbiTypes.Function,
     },
@@ -34,12 +31,6 @@ export const DopamilioNFTAbi = [
     {
         name: 'activatePublic',
         inputs: [],
-        outputs: [{ name: 'success', type: ABIDataTypes.BOOL }],
-        type: BitcoinAbiTypes.Function,
-    },
-    {
-        name: 'setWLRoot',
-        inputs: [{ name: 'root', type: ABIDataTypes.UINT256 }],
         outputs: [{ name: 'success', type: ABIDataTypes.BOOL }],
         type: BitcoinAbiTypes.Function,
     },
@@ -81,13 +72,6 @@ export const DopamilioNFTAbi = [
         constant: true,
         inputs: [],
         outputs: [{ name: 'addr', type: ABIDataTypes.STRING }],
-        type: BitcoinAbiTypes.Function,
-    },
-    {
-        name: 'getWLRoot',
-        constant: true,
-        inputs: [],
-        outputs: [{ name: 'wlRoot', type: ABIDataTypes.UINT256 }],
         type: BitcoinAbiTypes.Function,
     },
     {

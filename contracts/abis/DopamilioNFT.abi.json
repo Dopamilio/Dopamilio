@@ -27,10 +27,6 @@
                 {
                     "name": "amount",
                     "type": "UINT64"
-                },
-                {
-                    "name": "proof",
-                    "type": "ARRAY_OF_UINT256"
                 }
             ],
             "outputs": [
@@ -72,24 +68,6 @@
             "payable": false,
             "onlyOwner": false,
             "inputs": [],
-            "outputs": [
-                {
-                    "name": "success",
-                    "type": "BOOL"
-                }
-            ]
-        },
-        {
-            "name": "setWLRoot",
-            "type": "Function",
-            "payable": false,
-            "onlyOwner": false,
-            "inputs": [
-                {
-                    "name": "root",
-                    "type": "UINT256"
-                }
-            ],
             "outputs": [
                 {
                     "name": "success",
@@ -182,19 +160,6 @@
                 {
                     "name": "addr",
                     "type": "STRING"
-                }
-            ]
-        },
-        {
-            "name": "getWLRoot",
-            "type": "View",
-            "payable": false,
-            "onlyOwner": false,
-            "inputs": [],
-            "outputs": [
-                {
-                    "name": "wlRoot",
-                    "type": "UINT256"
                 }
             ]
         },
