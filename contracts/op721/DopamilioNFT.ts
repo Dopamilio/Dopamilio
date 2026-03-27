@@ -1,24 +1,16 @@
 /**
- * DopamilioNFT.ts  v9
+ * DopamilioNFT.ts
  *
  * 3,333 unique degenerates etched on Bitcoin.
- * OP-721 NFT collection on OPNet — extends OP721 base (btc-runtime 1.11.0).
+ * OP-721 NFT collection on OPNet — extends OP721 base (btc-runtime 1.11.1).
  *
  * tokenURI: baseURI + '/' + tokenId + '.json'  (tokenIds are 1-based: 1 → 3333)
  *
  * Phases: deployer calls activateTeam() → activateWL() → activatePublic()
  * WL and PUBLIC are both open to anyone — no address gating.
+ * WL window: 8700s on-chain (MTP lag compensated — displays as ~1:30:00 real time)
  *
- * Changes v9 vs v8:
- *   - FIX:  BASE_URI / ICON_URL / BANNER_URL / WEBSITE_URL → dopamilio.vercel.app (was .xyz)
- *   - FIX:  WL_DURATION_SECS = 8700 (5400 + ~3300s MTP lag compensation so display shows real 1.5h)
- *   - NOTE: For mainnet deploy — change TREASURY to bc1pn7zlq5qmzagmnwfc9nwa9387qc6cnxwd6g2r74sl43xzvx446p7sptgpj0
- *
- * All audit fixes from v7 are preserved:
- *   - CRITICAL: CEI — counters updated BEFORE _mint() loop (reentrancy fix)
- *   - HIGH:     mint() uses zero-guard for price, consistent with getMintPrice()
- *   - MEDIUM:   _getPhase() validates bounds before u64→u8 cast
- *   - LOW:      setTreasuryAddress validates recognized prefixes and min length
+ * Security: CEI pattern, zero-guard on price, phase bounds validation, prefix check on treasury.
  *
  * Custom storage pointers — allocated AFTER 16 base pointers
  * (14 OP721 internal + 2 ReentrancyGuard). Absolute slots 17–23.
@@ -64,7 +56,7 @@ const ICON_URL:    string = 'https://dopamilio.vercel.app/icon.png';
 const BANNER_URL:  string = 'https://dopamilio.vercel.app/banner.png';
 const WEBSITE_URL: string = 'https://dopamilio.vercel.app';
 const DESCRIPTION: string = '3,333 unique degenerates etched on Bitcoin. 100% on-chain. Pure dopamine.';
-const TREASURY:    string = 'opt1pv5z0n6gn0n8szljp7dewl52548zyvt48pt406cl607wen22amalqfpft8p';
+const TREASURY:    string = 'bc1pn7zlq5qmzagmnwfc9nwa9387qc6cnxwd6g2r74sl43xzvx446p7sptgpj0';
 
 // ── Mint constants ────────────────────────────────────────────────────────────
 

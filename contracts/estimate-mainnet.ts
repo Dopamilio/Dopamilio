@@ -25,7 +25,7 @@ const mnemonic = process.env.OPNET_MNEMONIC;
 if (!mnemonic) { console.error('ERROR: set OPNET_MNEMONIC'); process.exit(1); }
 
 const mnemonicObj = new Mnemonic(mnemonic!, '', NETWORK, MLDSASecurityLevel.LEVEL1);
-const wallet      = mnemonicObj.deriveOPWallet(AddressTypes.P2WPKH, 0);
+const wallet      = mnemonicObj.deriveOPWallet(AddressTypes.P2TR, 0);
 
 console.log('\n═══════════════════════════════════════════════════');
 console.log(' DOPAMILIO — SIMULAÇÃO DE DEPLOY MAINNET');

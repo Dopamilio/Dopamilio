@@ -9,7 +9,8 @@
 import { networks } from '@btc-vision/bitcoin';
 import { Mnemonic, MLDSASecurityLevel, AddressTypes } from '@btc-vision/transaction';
 
-const NETWORK = networks.opnetTestnet;
+const IS_MAINNET = process.argv.includes('--mainnet');
+const NETWORK    = IS_MAINNET ? networks.bitcoin : networks.opnetTestnet;
 
 const mnemonic = process.env.OPNET_MNEMONIC;
 if (!mnemonic) {
@@ -18,7 +19,7 @@ if (!mnemonic) {
 }
 
 const mnemonicObj = new Mnemonic(mnemonic!, '', NETWORK, MLDSASecurityLevel.LEVEL1);
-const wallet      = mnemonicObj.deriveOPWallet(AddressTypes.P2WPKH, 0);
+const wallet      = mnemonicObj.deriveOPWallet(AddressTypes.P2TR, 0);
 
 // P2TR pubkey = 32-byte x-only tweaked pubkey (what Blockchain.tx.sender returns in-contract)
 const pubkey = wallet.keypair.publicKey as Uint8Array;

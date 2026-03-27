@@ -83,7 +83,12 @@ export const OP721Abi = [
     },
     {
         name: 'changeMetadata',
-        inputs: [],
+        inputs: [
+            { name: 'icon', type: ABIDataTypes.STRING },
+            { name: 'banner', type: ABIDataTypes.STRING },
+            { name: 'description', type: ABIDataTypes.STRING },
+            { name: 'website', type: ABIDataTypes.STRING },
+        ],
         outputs: [],
         type: BitcoinAbiTypes.Function,
     },

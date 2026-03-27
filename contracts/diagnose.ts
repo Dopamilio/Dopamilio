@@ -2,22 +2,26 @@ import { networks } from '@btc-vision/bitcoin';
 import { ABIDataTypes, Mnemonic, MLDSASecurityLevel, AddressTypes, Address } from '@btc-vision/transaction';
 import { BitcoinAbiTypes, getContract, JSONRpcProvider } from 'opnet';
 
-const NETWORK = networks.opnetTestnet;
+const IS_MAINNET = process.argv.includes('--mainnet');
+const NETWORK    = IS_MAINNET ? networks.bitcoin : networks.opnetTestnet;
+const RPC_URL    = IS_MAINNET ? 'https://mainnet.opnet.org' : 'https://testnet.opnet.org';
 const mn = new Mnemonic(process.env.OPNET_MNEMONIC!, '', NETWORK, MLDSASecurityLevel.LEVEL1);
-const w  = mn.deriveOPWallet(AddressTypes.P2WPKH, 0);
+const w  = mn.deriveOPWallet(AddressTypes.P2TR, 0);
 const hex = (b: Uint8Array) => Array.from(b).map(x => x.toString(16).padStart(2,'0')).join('');
 const sender = Address.fromString(w.address.toString(), hex(w.keypair.publicKey as Uint8Array));
-const provider = new JSONRpcProvider({ url: 'https://testnet.opnet.org', network: NETWORK });
+const provider = new JSONRpcProvider({ url: RPC_URL, network: NETWORK });
+
+const CONTRACT_ARG = process.argv.find(a => a.startsWith('bc1') || a.startsWith('opt1')) || '';
+if (!CONTRACT_ARG) { console.error('Usage: OPNET_MNEMONIC="..." npx tsx diagnose.ts <contractAddr> [--mainnet]'); process.exit(1); }
 
 const ABI = [
     { name:'getPhase',      inputs:[], outputs:[{name:'phase',     type:ABIDataTypes.UINT8}],   type: BitcoinAbiTypes.Function },
     { name:'getStartTime',  inputs:[], outputs:[{name:'startTime', type:ABIDataTypes.UINT256}],  type: BitcoinAbiTypes.Function },
-    { name:'getWLRoot',     inputs:[], outputs:[{name:'root',      type:ABIDataTypes.UINT256}],  type: BitcoinAbiTypes.Function },
     { name:'getIsTestnet',  inputs:[], outputs:[{name:'isTestnet', type:ABIDataTypes.BOOL}],     type: BitcoinAbiTypes.Function },
     { name:'getWlDuration', inputs:[], outputs:[{name:'dur',       type:ABIDataTypes.UINT64}],   type: BitcoinAbiTypes.Function },
 ];
 
-const c = getContract('opt1sqrurzx45lsdm62q0ejjhru55kukj253a7u60xmgx', ABI, provider, NETWORK, sender);
+const c = getContract(CONTRACT_ARG, ABI, provider, NETWORK, sender);
 
 async function main() {
     const [ph, st, rt, it, wd] = await Promise.all([

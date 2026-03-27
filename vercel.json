@@ -68,7 +68,7 @@
         { "key": "X-Frame-Options", "value": "SAMEORIGIN" },
         { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" },
         { "key": "Permissions-Policy", "value": "camera=(), microphone=(), geolocation=(), payment=()" },
-        { "key": "Content-Security-Policy", "value": "default-src 'self' 'unsafe-inline' https: data: blob:; script-src 'self' 'unsafe-inline' https://esm.sh https://cdn.esm.sh; img-src 'self' https: data: blob:; connect-src 'self' https://api.binance.com https://testnet.opnet.org https://mainnet.opnet.org https://esm.sh https://cdn.esm.sh https://api.twelvedata.com; font-src 'self' data:; style-src 'self' 'unsafe-inline'; media-src 'self' https: data: blob:;" }
+        { "key": "Content-Security-Policy", "value": "default-src 'self' 'unsafe-inline' https: data: blob:; script-src 'self' 'unsafe-inline' https://esm.sh https://cdn.esm.sh; img-src 'self' https: data: blob:; connect-src 'self' https://api.binance.com https://mainnet.opnet.org https://esm.sh https://cdn.esm.sh https://api.twelvedata.com; font-src 'self' data:; style-src 'self' 'unsafe-inline'; media-src 'self' https: data: blob:;" }
       ]
     }
   ]

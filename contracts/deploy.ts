@@ -31,7 +31,7 @@ if (!mnemonic) {
 }
 
 const mnemonicObj = new Mnemonic(mnemonic!, '', NETWORK, MLDSASecurityLevel.LEVEL1);
-const wallet      = mnemonicObj.deriveOPWallet(AddressTypes.P2WPKH, 0);
+const wallet      = mnemonicObj.deriveOPWallet(AddressTypes.P2TR, 0);
 
 console.log('Deployer P2TR   :', wallet.p2tr);
 console.log('Deployer OPNet  :', wallet.address.toString());

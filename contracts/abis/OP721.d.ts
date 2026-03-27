@@ -237,7 +237,7 @@ export interface IOP721 extends IOP_NETContract {
     symbol(): Promise<Symbol>;
     maxSupply(): Promise<MaxSupply>;
     tokenURI(tokenId: bigint): Promise<TokenURI>;
-    changeMetadata(): Promise<ChangeMetadata>;
+    changeMetadata(icon: string, banner: string, description: string, website: string): Promise<ChangeMetadata>;
     totalSupply(): Promise<TotalSupply>;
     balanceOf(owner: Address): Promise<BalanceOf>;
     ownerOf(tokenId: bigint): Promise<OwnerOf>;

@@ -1,8 +1,8 @@
 # Dopamilio — Project Context
 
 ## What this is
-Dopamilio is an OP-721 NFT collection on Bitcoin L1 (OPNet testnet).
-3,333 supply. Mint price: 6,969 sats. Max 5 per wallet.
+Dopamilio is an OP-721 NFT collection on Bitcoin L1 (OPNet mainnet).
+3,333 supply. Mint price: 6,969 sats. WL: max 5/wallet. Public: max 3/wallet.
 Live at: https://dopamilio.vercel.app
 
 ## Folder structure
@@ -35,28 +35,32 @@ vercel deploy --prod --yes
 ```
 
 ## Contract
-- **Address (CURRENT v9): opt1sqzy55n46ye3ehzedjkzuwcnq4ks8v0msfv2wqssm**
-- Funding TX: 5b1e3f9c69a89e71010f25df319e964a10fac283703772bd26e998034d0780ad
-- Reveal TX:  d689bf091fbb4b515a97ffc408acb56ea9464b9f0a864eaf7be4f0cec4c805a9
+- **Address: PENDING_DEPLOY (set after mainnet deploy)**
+- Deployer: bc1pr0hqrfe2gl0dpaq4epx0ac7f35vgfayh09snnvv5u4nt64lx7xgqx62pd6
+- Treasury: bc1pn7zlq5qmzagmnwfc9nwa9387qc6cnxwd6g2r74sl43xzvx446p7sptgpj0
 - BaseURI: https://dopamilio.vercel.app/api/metadata
 - Icon:    https://dopamilio.vercel.app/icon.png
 - Banner:  https://dopamilio.vercel.app/banner.png
-- Standard: OP-721 | Network: OPNet testnet (Bitcoin L1)
-- MAX_SUPPLY = 3333 | MINT_PRICE = 6969 sats | MAX_MINT_PUBLIC = 5
+- Standard: OP-721 | Network: OPNet mainnet (Bitcoin L1)
+- MAX_SUPPLY = 3333 | MINT_PRICE = 6969 sats | WL = max 5 | PUBLIC = max 3
 
-## Contract deploy workflow
+## Contract deploy workflow (mainnet)
 ```bash
 cd contracts
 npm run build && npm run verify   # must print schnorr_gone=true chainErr_gone=true
-OPNET_MNEMONIC="..." npx tsx deploy.ts
-OPNET_MNEMONIC="..." npx tsx setup-v2.ts <addr>
-# Update CONTRACT_ADDR in index.html, then git push
+OPNET_MNEMONIC="..." npx tsx deploy.ts --mainnet
+# Save CONTRACT_ADDR + deploy block from output
+OPNET_MNEMONIC="..." npx tsx activate-team.ts <addr> --mainnet
+OPNET_MNEMONIC="..." npx tsx team-mint.ts <addr> 10 --mainnet
+OPNET_MNEMONIC="..." npx tsx activate-wl.ts <addr> --mainnet
+# After 1.5h WL window:
+OPNET_MNEMONIC="..." npx tsx activate-public.ts <addr> --mainnet
+# Update CONTRACT_ADDR + _DEPLOY_BLOCK in index.html, then git push
 ```
 
 ## Critical rules — NEVER touch
 - mint() function logic
-- MINT_PRICE_SATS, MAX_MINT_PUBLIC, MAX_SUPPLY constants
-- CONTRACT_ADDR in index.html
+- MINT_PRICE_SATS, MAX_SUPPLY constants
 - Any wallet/RPC/OPNet connection logic
 - Any ABI references
 

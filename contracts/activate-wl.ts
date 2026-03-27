@@ -39,7 +39,7 @@ if (!mnemonic) {
 }
 
 const mnemonicObj = new Mnemonic(mnemonic!, '', NETWORK, MLDSASecurityLevel.LEVEL1);
-const wallet      = mnemonicObj.deriveOPWallet(AddressTypes.P2WPKH, 0);
+const wallet      = mnemonicObj.deriveOPWallet(AddressTypes.P2TR, 0);
 
 function bytesToHex(b: Uint8Array): string {
     return Array.from(b).map(x => x.toString(16).padStart(2, '0')).join('');

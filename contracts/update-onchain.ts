@@ -21,14 +21,15 @@ import {
 } from '@btc-vision/transaction';
 import { BitcoinAbiTypes, BitcoinInterfaceAbi, getContract, JSONRpcProvider } from 'opnet';
 
-const RPC_URL = 'https://testnet.opnet.org';
-const NETWORK = networks.opnetTestnet;
+const IS_MAINNET = process.argv.includes('--mainnet');
+const RPC_URL    = IS_MAINNET ? 'https://mainnet.opnet.org' : 'https://testnet.opnet.org';
+const NETWORK    = IS_MAINNET ? networks.bitcoin : networks.opnetTestnet;
 
-const ICON_URL    = 'https://dopamilio.xyz/icon.png';
-const BANNER_URL  = 'https://dopamilio.xyz/banner.png';
-const BASE_URI    = 'https://dopamilio.xyz/api/metadata';
+const ICON_URL    = 'https://dopamilio.vercel.app/icon.png';
+const BANNER_URL  = 'https://dopamilio.vercel.app/banner.png';
+const BASE_URI    = 'https://dopamilio.vercel.app/api/metadata';
 const DESCRIPTION = '3,333 unique degenerates etched on Bitcoin. 100% on-chain. Pure dopamine.';
-const WEBSITE_URL = 'https://dopamilio.xyz';
+const WEBSITE_URL = 'https://dopamilio.vercel.app';
 
 const args = process.argv.slice(2);
 if (args.length < 1) { console.error('Usage: OPNET_MNEMONIC="..." npx tsx update-onchain.ts <contractAddr>'); process.exit(1); }
@@ -38,7 +39,7 @@ const mnemonic = process.env.OPNET_MNEMONIC;
 if (!mnemonic) { console.error('ERROR: set OPNET_MNEMONIC env var'); process.exit(1); }
 
 const mnemonicObj = new Mnemonic(mnemonic!, '', NETWORK, MLDSASecurityLevel.LEVEL1);
-const wallet      = mnemonicObj.deriveOPWallet(AddressTypes.P2WPKH, 0);
+const wallet      = mnemonicObj.deriveOPWallet(AddressTypes.P2TR, 0);
 const provider    = new JSONRpcProvider({ url: RPC_URL, network: NETWORK });
 
 function bytesToHex(b: Uint8Array): string {

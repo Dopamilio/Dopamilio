@@ -62,7 +62,24 @@
             "type": "Function",
             "payable": false,
             "onlyOwner": false,
-            "inputs": [],
+            "inputs": [
+                {
+                    "name": "icon",
+                    "type": "STRING"
+                },
+                {
+                    "name": "banner",
+                    "type": "STRING"
+                },
+                {
+                    "name": "description",
+                    "type": "STRING"
+                },
+                {
+                    "name": "website",
+                    "type": "STRING"
+                }
+            ],
             "outputs": []
         },
         {

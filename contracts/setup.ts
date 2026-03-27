@@ -20,14 +20,15 @@ import {
 } from '@btc-vision/transaction';
 import { BitcoinAbiTypes, BitcoinInterfaceAbi, getContract, JSONRpcProvider } from 'opnet';
 
-const RPC_URL = 'https://testnet.opnet.org';
-const NETWORK = networks.opnetTestnet;
+const IS_MAINNET = process.argv.includes('--mainnet');
+const RPC_URL    = IS_MAINNET ? 'https://mainnet.opnet.org' : 'https://testnet.opnet.org';
+const NETWORK    = IS_MAINNET ? networks.bitcoin : networks.opnetTestnet;
 
 // Collection values (must match DopamilioNFT.ts constants — plain URLs, no HTML)
-const BASE_URI    = 'https://dopamilio.xyz/api/metadata';
-const ICON_URL    = 'https://dopamilio.xyz/icon.png';
-const BANNER_URL  = 'https://dopamilio.xyz/banner.png';
-const WEBSITE_URL = 'https://dopamilio.xyz';
+const BASE_URI    = 'https://dopamilio.vercel.app/api/metadata';
+const ICON_URL    = 'https://dopamilio.vercel.app/icon.png';
+const BANNER_URL  = 'https://dopamilio.vercel.app/banner.png';
+const WEBSITE_URL = 'https://dopamilio.vercel.app';
 const DESCRIPTION = '3,333 unique degenerates etched on Bitcoin. 100% on-chain. Pure dopamine.';
 
 const args = process.argv.slice(2);
@@ -44,7 +45,7 @@ if (!mnemonic) {
 }
 
 const mnemonicObj = new Mnemonic(mnemonic!, '', NETWORK, MLDSASecurityLevel.LEVEL1);
-const wallet      = mnemonicObj.deriveOPWallet(AddressTypes.P2WPKH, 0);
+const wallet      = mnemonicObj.deriveOPWallet(AddressTypes.P2TR, 0);
 
 console.log('Deployer P2TR   :', wallet.p2tr);
 console.log('Deployer OPNet  :', wallet.address.toString());

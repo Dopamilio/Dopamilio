@@ -6,7 +6,7 @@
 <title>DOPAMILIO — MINT</title>
 <link rel="icon" type="image/png" href="/favicon.png" sizes="64x64">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
-<link rel="preconnect" href="https://testnet.opnet.org">
+<link rel="preconnect" href="https://mainnet.opnet.org">
 <link rel="stylesheet" href="/fonts/fonts.css">
 <link rel="preload" as="image" href="nft_preview/1.webp" fetchpriority="high">
 <style>
@@ -1698,6 +1698,15 @@ input,textarea{-webkit-user-select:text;-moz-user-select:text;user-select:text;}
 </div>
 <audio id="sniper-audio" src="./memes_mlg/sniper/sniperaudio.mp3" preload="none"></audio>
 <script>
+// Disable devtools shortcuts
+(function(){
+  document.addEventListener('keydown',function(e){
+    if(e.key==='F12'||(e.ctrlKey&&e.shiftKey&&(e.key==='I'||e.key==='i'||e.key==='J'||e.key==='j'||e.key==='C'||e.key==='c'))||(e.ctrlKey&&(e.key==='U'||e.key==='u'))){
+      e.preventDefault();e.stopPropagation();return false;
+    }
+  },true);
+  document.addEventListener('contextmenu',function(e){e.preventDefault();return false;});
+})();
 const NFT_IMGS=[
   'nft_preview/1.webp',
   'nft_preview/2.webp',
@@ -1713,24 +1722,23 @@ const NFT_IMGS=[
 const NFT_TOKEN_IDS=[1,2,3,4,5,6,14,57,303,2314];
 
 /* ══════════════════════════════════════════════
-   OPNET CONTRACT — testnet
+   OPNET CONTRACT — mainnet
 ══════════════════════════════════════════════ */
-const CONTRACT_ADDR  = 'opt1sqzy55n46ye3ehzedjkzuwcnq4ks8v0msfv2wqssm'; // v9 — vercel.app URLs, WL_DURATION=8700
-const CONTRACT_P2TR  = 'opt1pv5z0n6gn0n8szljp7dewl52548zyvt48pt406cl607wen22amalqfpft8p'; // treasury
-const DEPLOYER_OPT   = 'opt1p2kzr2ngyxj0qg65rtz7ajewk8m3j93rxl3lxsuc55y99qc339znqf3wc77'; // deployer wallet
+const CONTRACT_ADDR  = 'PENDING_DEPLOY'; // set after mainnet deploy
+const CONTRACT_P2TR  = 'bc1pn7zlq5qmzagmnwfc9nwa9387qc6cnxwd6g2r74sl43xzvx446p7sptgpj0'; // treasury
+const DEPLOYER_OPT   = 'bc1pr0hqrfe2gl0dpaq4epx0ac7f35vgfayh09snnvv5u4nt64lx7xgqx62pd6'; // deployer wallet
 const MINT_PRICE_SATS = 6969n;
 const MAX_SUPPLY      = 3333;
 const MAX_MINT        = 3; // fallback — most restrictive phase cap (PUBLIC)
-const RPC_URL        = 'https://testnet.opnet.org';
+const RPC_URL        = 'https://mainnet.opnet.org';
 const OPSCAN_BASE    = 'https://opscan.org/transactions/';
 const OPSCAN_ADDR    = 'https://opscan.org/accounts/';
-const OPSCAN_QUERY   = '?network=op_testnet';
+const OPSCAN_QUERY   = '';
 const NETWORK_OBJ    = {
   messagePrefix:'\x18Bitcoin Signed Message:\n',
-  bech32:'opt', bech32Opnet:'opt',
-  bip32:{public:70617039,private:70615956},
-  pubKeyHash:111, scriptHash:196, wif:239,
-  isTestnet:true,
+  bech32:'bc', bech32Opnet:'op',
+  bip32:{public:76067358,private:76066276},
+  pubKeyHash:0, scriptHash:5, wif:128,
 };
 const FALLBACK_SATS  = MINT_PRICE_SATS;
 
@@ -1891,7 +1899,7 @@ function _buildActivityFromChain(mints){
 // ScanBlock: last block fully scanned
 const _CACHE_KEY   = 'dopa_mint_txids_v2_'+CONTRACT_ADDR.slice(-8);
 const _SCAN_KEY    = 'dopa_scan_block_v2_'+CONTRACT_ADDR.slice(-8);
-const _DEPLOY_BLOCK = 0x2d70; // block where contract was deployed (v8, reveal TX ~block 11632)
+const _DEPLOY_BLOCK = 0x0; // PENDING_DEPLOY — set to mainnet reveal block after deploy
 var _mintTxCache = {};
 var _scanRunning = false;
 try { _mintTxCache = JSON.parse(localStorage.getItem(_CACHE_KEY)||'{}'); } catch(e){}
@@ -1945,10 +1953,17 @@ async function _scanMintsForTxids(fromBlock, toBlock){
                   var byt = bin.charCodeAt(bi)&0xff;
                   tokenIdHex += (byt<16?'0':'')+byt.toString(16);
                 }
-                var tokenId = String(parseInt(tokenIdHex,16));
-                if(!_mintTxCache[tokenId] && _txh){
-                  _mintTxCache[tokenId] = _txh;
-                  changed = true;
+                var firstId = parseInt(tokenIdHex,16);
+                // Read amount (8 bytes at offset 64) — maps every token in batch to same txid
+                var mintAmt = 1;
+                if(bin.length >= 72){
+                  var amtHex='';
+                  for(var ai=64;ai<72;ai++){amtHex+=(bin.charCodeAt(ai)&0xff).toString(16).padStart(2,'0');}
+                  mintAmt = parseInt(amtHex,16)||1;
+                }
+                for(var ki=0;ki<mintAmt;ki++){
+                  var tid = String(firstId+ki);
+                  if(!_mintTxCache[tid] && _txh){ _mintTxCache[tid]=_txh; changed=true; }
                 }
               }
             }catch(err){}
