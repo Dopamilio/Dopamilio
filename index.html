@@ -2816,7 +2816,7 @@ async function doMint(){
       refundTo:walletAddr,
       network:NETWORK_OBJ,
       feeRate:3,
-      maximumAllowedSatToSpend:totalCost+2000n,
+      maximumAllowedSatToSpend:totalCost+1000n,
       extraOutputs:[{address:CONTRACT_P2TR,value:mintCost}],
     });
     const txid = receipt?.transactionId || receipt?.hash || receipt?.txid || '';
