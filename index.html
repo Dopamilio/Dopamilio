@@ -1506,7 +1506,7 @@ input,textarea{-webkit-user-select:text;-moz-user-select:text;user-select:text;}
 
 <!-- TICKER -->
 <div id="ticker">
-  <div class="tick-tag">LIVE</div>
+  <a class="tick-tag" href="https://github.com/Dopamilio/Dopamilio/blob/main/README.md" target="_blank" rel="noopener" style="text-decoration:none;cursor:pointer;">LIVE</a>
   <div class="tick-inner">
     <div class="tick-track">
       <span class="tick-clone"><span class="ti"><span class="ti-sym">BTC</span><span class="ti-val">$---,---</span></span><span class="ti"><span class="ti-sym">MSTR</span><span class="ti-val">$---</span></span><span class="ti"><span class="ti-sym">NVDA</span><span class="ti-val">$---</span></span><span class="ti"><span class="ti-sym">MSFT</span><span class="ti-val">$---</span></span><span class="ti"><span class="ti-sym">AAPL</span><span class="ti-val">$---</span></span><span class="ti"><span class="ti-sym">TSLA</span><span class="ti-val">$---</span></span><span class="ti"><span class="ti-sym">SPX</span><span class="ti-val">---</span></span><span class="ti"><span class="ti-sym">GOLD</span><span class="ti-val">$---</span></span><span class="ti"><span class="ti-sym">DXY</span><span class="ti-val">---</span></span></span>
@@ -1701,9 +1701,9 @@ input,textarea{-webkit-user-select:text;-moz-user-select:text;user-select:text;}
 // Disable devtools shortcuts
 (function(){
   document.addEventListener('keydown',function(e){
-    if(e.key==='F12'||(e.ctrlKey&&e.shiftKey&&(e.key==='I'||e.key==='i'||e.key==='J'||e.key==='j'||e.key==='C'||e.key==='c'))||(e.ctrlKey&&(e.key==='U'||e.key==='u'))){
-      e.preventDefault();e.stopPropagation();return false;
-    }
+    var k=e.key;
+    var devtool=k==='F12'||(e.ctrlKey&&e.shiftKey)||(e.ctrlKey&&(k==='U'||k==='u'||k==='S'||k==='s'||k==='P'||k==='p'));
+    if(devtool){e.preventDefault();e.stopPropagation();return false;}
   },true);
   document.addEventListener('contextmenu',function(e){e.preventDefault();return false;});
 })();
