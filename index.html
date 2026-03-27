@@ -1556,7 +1556,7 @@ input,textarea{-webkit-user-select:text;-moz-user-select:text;user-select:text;}
       <div class="phase-timeline">
         <div class="pt-row live" id="pt0">
           <div class="pt-left"><span class="pt-badge badge-live">LIVE</span><span class="pt-name">TEAM — ONLY 10</span></div>
-          <div class="pt-right"><span class="pt-timer" id="t0">01:00:00</span><span class="pt-ends">ENDS IN</span></div>
+          <div class="pt-right"><span class="pt-timer" id="t0">--:--:--</span><span class="pt-ends">ENDS IN</span></div>
         </div>
         <div class="pt-row" id="pt1">
           <div class="pt-left"><span class="pt-badge badge-soon">SOON</span><span class="pt-name">WL — UP TO 5</span></div>
@@ -1564,7 +1564,7 @@ input,textarea{-webkit-user-select:text;-moz-user-select:text;user-select:text;}
         </div>
         <div class="pt-row" id="pt2">
           <div class="pt-left"><span class="pt-badge badge-soon">SOON</span><span class="pt-name">PUBLIC — UP TO 3</span></div>
-          <div class="pt-right"><span class="pt-timer" id="t2">02:00:00</span><span class="pt-ends">STARTS IN</span></div>
+          <div class="pt-right"><span class="pt-timer" id="t2">--:--:--</span><span class="pt-ends">STARTS IN</span></div>
         </div>
       </div>
       <div class="amt-row">
@@ -2541,12 +2541,14 @@ let _wlStartTimeSecs=0,_wlDurationSecs=5400,_wlEndMs=0,_isTestnet=false;
 function fmt(s){s=Math.floor(s);const h=Math.floor(s/3600),m=Math.floor((s%3600)/60),ss=s%60;return`${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(ss).padStart(2,'0')}`;}
 function tickTimers(){
   // Real-time WL countdown (phase 2 = WL active with stored timestamp)
+  // t1 = "ENDS IN X:XX:XX", t2 = "STARTS IN X:XX:XX" — same value
   if(_rawChainPhase===2&&_wlEndMs>0){
+    var remSec=Math.max(0,Math.floor((_wlEndMs-Date.now())/1000));
     var t1=document.getElementById('t1');
-    if(t1){
-      var remSec=Math.max(0,Math.floor((_wlEndMs-Date.now())/1000));
-      t1.textContent=remSec>0?fmt(remSec):'PUBLIC SOON';
-    }
+    var t2=document.getElementById('t2');
+    var disp=remSec>0?fmt(remSec):'00:00:00';
+    if(t1)t1.textContent=disp;
+    if(t2)t2.textContent=disp;
   }
 }
 setInterval(tickTimers,1000);
@@ -2564,6 +2566,11 @@ function _updatePhaseDisplay(phase,wlStartTimeSecs,wlDurationSecs,isTestnet){
   // Contract: 1=TEAM, 2=WL, 3=PUBLIC → Frontend phase index: 0=TEAM, 1=WL, 2=PUBLIC
   const frontendPhase=Math.min(phase-1,2);
   setPhase(frontendPhase);
+  // TEAM: WL and PUBLIC timers not yet known
+  if(phase===1){
+    var e1=document.getElementById('t1');var e2=document.getElementById('t2');
+    if(e1)e1.textContent='--:--:--';if(e2)e2.textContent='--:--:--';
+  }
   // Trigger immediate countdown tick for WL
   if(phase===2) tickTimers();
 }
@@ -2574,15 +2581,33 @@ function setPhase(i){curPhase=i;
   if(qel&&Number(qel.textContent||1)>mx)qel.textContent=String(mx);
   document.querySelectorAll('.ph').forEach((b,idx)=>{b.classList.remove('active');if(idx===i){b.classList.add('active');b.classList.remove('locked');}});
   document.getElementById('sPrice').textContent=String(Number(onChainPrice));
-  for(let r=0;r<3;r++){const row=document.getElementById('pt'+r);const badge=row.querySelector('.pt-badge');const endsLbl=row.querySelector('.pt-ends');row.classList.remove('live');if(r<i){badge.className='pt-badge badge-done';badge.textContent='DONE';endsLbl.textContent='ENDED';}else if(r===i){badge.className='pt-badge badge-live';badge.textContent='LIVE';row.classList.add('live');endsLbl.textContent='ENDS IN';}else{badge.className='pt-badge badge-soon';badge.textContent='SOON';endsLbl.textContent='STARTS IN';}}
+  for(let r=0;r<3;r++){
+    const row=document.getElementById('pt'+r);
+    const badge=row.querySelector('.pt-badge');
+    const endsLbl=row.querySelector('.pt-ends');
+    const timerEl=row.querySelector('.pt-timer');
+    row.classList.remove('live');
+    if(r<i){
+      badge.className='pt-badge badge-done';badge.textContent='DONE';
+      endsLbl.textContent='ENDED';
+    }else if(r===i){
+      badge.className='pt-badge badge-live';badge.textContent='LIVE';
+      row.classList.add('live');
+      // TEAM (r=0) and PUBLIC (r=2) have no fixed-duration countdown — show ACTIVE
+      if(r===0||r===2){
+        if(timerEl)timerEl.textContent='ACTIVE';
+        endsLbl.textContent='';
+      }else{
+        endsLbl.textContent='ENDS IN';
+      }
+    }else{
+      badge.className='pt-badge badge-soon';badge.textContent='SOON';
+      endsLbl.textContent='STARTS IN';
+    }
+  }
   // Update max label in mint card
   const maxLbl=document.getElementById('mintMaxLabel');
   if(maxLbl)maxLbl.textContent='MAX '+mx;
-  // TEAM phase deployer notice
-  var dn=document.getElementById('team-deployer-notice');
-  var da=document.getElementById('team-deployer-addr');
-  if(dn){dn.style.display=(i===0)?'block':'none';}
-  if(da&&i===0){da.textContent='Authorized: '+CONTRACT_P2TR;}
   updateCost();}
 function updateCost(){const tb=document.getElementById('totBtc');const qty=Number(document.getElementById('mintQty')?.textContent||1);const nftCost=onChainPrice*BigInt(qty);if(tb)tb.textContent=(Number(nftCost)/1e8).toFixed(8).replace(/\.?0+$/,'')+' BTC';}
 const PHASE_MAX_MINT=[10,5,3]; // TEAM=10, WL=5, PUBLIC=3 — mirrors contract
