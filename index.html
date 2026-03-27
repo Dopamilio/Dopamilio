@@ -3428,13 +3428,17 @@ function startLoreTyping(){
     if(cIdx<line.length){
       var ch=line[cIdx];
       if(ch==='\x00'){
-        // inject scramble span in-line
+        // inject static contract address + copy button
         var scr=document.createElement('span');
-        scr.style.cssText='color:#0f0;letter-spacing:0;';
-        scr.textContent='????????????????????????????????????????????????';
+        scr.style.cssText='color:#0f0;letter-spacing:0;user-select:text;';
+        scr.textContent=CONTRACT_ADDR;
         el.insertBefore(scr,cursor);
-        _scrSpan=scr;
-        _startScramble(scr);
+        var cpyBtn=document.createElement('button');
+        cpyBtn.textContent=' ⧉';
+        cpyBtn.title='Copy contract address';
+        cpyBtn.style.cssText='background:none;border:none;color:#0f0;cursor:pointer;font-size:inherit;padding:0 0 0 4px;opacity:.7;';
+        cpyBtn.onclick=function(){navigator.clipboard?.writeText(CONTRACT_ADDR);cpyBtn.textContent=' ✓';setTimeout(function(){cpyBtn.textContent=' ⧉';},1500);};
+        el.insertBefore(cpyBtn,cursor);
         tNode=document.createTextNode('');
         el.insertBefore(tNode,cursor);
         cIdx++;
