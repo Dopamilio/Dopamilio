@@ -2585,7 +2585,7 @@ function _updatePhaseDisplay(phase,wlStartTimeSecs,wlDurationSecs,isTestnet){
   _wlStartTimeSecs=wlStartTimeSecs||0;
   _wlDurationSecs=wlDurationSecs||5400;
   // wlEndMs derived from on-chain wlStartTime (seconds) + duration
-  _wlEndMs=_wlStartTimeSecs>0?(_wlStartTimeSecs*1000)+(_wlDurationSecs*1000):0;
+  _wlEndMs=_wlStartTimeSecs>0?(_wlStartTimeSecs*1000)+(_wlDurationSecs*1000)+1800000:0; // +30min extension
   if(phase===0){
     ['t0','t1','t2'].forEach(function(id){var e=document.getElementById(id);if(e)e.textContent='SOON';});
     return;
