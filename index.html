@@ -1871,7 +1871,7 @@ function _buildActivityFromChain(mints){
 // ScanBlock: last block fully scanned
 const _CACHE_KEY   = 'dopa_mint_txids_v2_'+CONTRACT_ADDR.slice(-8);
 const _SCAN_KEY    = 'dopa_scan_block_v2_'+CONTRACT_ADDR.slice(-8);
-const _DEPLOY_BLOCK = 0x2d6a; // block where contract was deployed (v6 — update after confirmation)
+const _DEPLOY_BLOCK = 0x2d5d; // block where contract was deployed (v6, reveal TX block 11613)
 var _mintTxCache = {};
 var _scanRunning = false;
 try { _mintTxCache = JSON.parse(localStorage.getItem(_CACHE_KEY)||'{}'); } catch(e){}
