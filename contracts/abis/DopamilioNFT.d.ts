@@ -30,16 +30,6 @@ export type Mint = CallResult<
 >;
 
 /**
- * @description Represents the result of the setWLRoot function call.
- */
-export type SetWLRoot = CallResult<
-    {
-        success: boolean;
-    },
-    OPNetEvent<never>[]
->;
-
-/**
  * @description Represents the result of the activateTeam function call.
  */
 export type ActivateTeam = CallResult<
@@ -63,6 +53,16 @@ export type ActivateWL = CallResult<
  * @description Represents the result of the activatePublic function call.
  */
 export type ActivatePublic = CallResult<
+    {
+        success: boolean;
+    },
+    OPNetEvent<never>[]
+>;
+
+/**
+ * @description Represents the result of the setWLRoot function call.
+ */
+export type SetWLRoot = CallResult<
     {
         success: boolean;
     },
@@ -134,7 +134,17 @@ export type GetTreasuryAddress = CallResult<
  */
 export type GetWLRoot = CallResult<
     {
-        root: bigint;
+        wlRoot: bigint;
+    },
+    OPNetEvent<never>[]
+>;
+
+/**
+ * @description Represents the result of the getTeamMintedTotal function call.
+ */
+export type GetTeamMintedTotal = CallResult<
+    {
+        total: bigint;
     },
     OPNetEvent<never>[]
 >;
@@ -155,10 +165,10 @@ export type GetMintedCount = CallResult<
 export interface IDopamilioNFT extends IOP_NETContract {
     tokenURI(tokenId: bigint): Promise<TokenURI>;
     mint(amount: bigint, proof: bigint[]): Promise<Mint>;
+    activateTeam(): Promise<ActivateTeam>;
+    activateWL(): Promise<ActivateWL>;
+    activatePublic(): Promise<ActivatePublic>;
     setWLRoot(root: bigint): Promise<SetWLRoot>;
-    activateTeam(_unused: boolean): Promise<ActivateTeam>;
-    activateWL(_unused: boolean): Promise<ActivateWL>;
-    activatePublic(_unused: boolean): Promise<ActivatePublic>;
     setMintPrice(priceSats: bigint): Promise<SetMintPrice>;
     setTreasuryAddress(addr: string): Promise<SetTreasuryAddress>;
     getMintPrice(): Promise<GetMintPrice>;
@@ -166,5 +176,6 @@ export interface IDopamilioNFT extends IOP_NETContract {
     getIsTestnet(): Promise<GetIsTestnet>;
     getTreasuryAddress(): Promise<GetTreasuryAddress>;
     getWLRoot(): Promise<GetWLRoot>;
+    getTeamMintedTotal(): Promise<GetTeamMintedTotal>;
     getMintedCount(addr: Address, phase: number): Promise<GetMintedCount>;
 }
