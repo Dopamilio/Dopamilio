@@ -4,7 +4,7 @@
 const path = require('path');
 const fs   = require('fs');
 
-const PINATA = 'ipfs://';
+const PINATA = 'https://chocolate-decisive-silverfish-606.mypinata.cloud/ipfs/';
 const DESCRIPTION = '3,333 unique degenerates etched on Bitcoin. 100% on-chain. Pure dopamine.';
 const TRAIT_TYPES = ['Background','Classes','Eyes','Eye Brows','Cloths','Hair','Mouths','Head gear','Specials','Weapons','Acessories'];
 
