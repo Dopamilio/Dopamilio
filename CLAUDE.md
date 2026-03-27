@@ -35,9 +35,9 @@ vercel deploy --prod --yes
 ```
 
 ## Contract
-- **Address (CURRENT v5): opt1sqzwrptldz3qrjuq5na2smw74mh6q3tyrp5vparlx**
-- Funding TX: bca5ecfc82f0170f5c561b0a514024de357ce526bcdc6e2d3ba1d5317ca6531c
-- Reveal TX:  4f48cb557fa1c76b94d559976ee7807c632c3f62c7138a8b1b09898a2dc3e405
+- **Address (CURRENT v9): opt1sqzy55n46ye3ehzedjkzuwcnq4ks8v0msfv2wqssm**
+- Funding TX: 5b1e3f9c69a89e71010f25df319e964a10fac283703772bd26e998034d0780ad
+- Reveal TX:  d689bf091fbb4b515a97ffc408acb56ea9464b9f0a864eaf7be4f0cec4c805a9
 - BaseURI: https://dopamilio.vercel.app/api/metadata
 - Icon:    https://dopamilio.vercel.app/icon.png
 - Banner:  https://dopamilio.vercel.app/banner.png

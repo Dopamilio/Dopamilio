@@ -1,5 +1,5 @@
 /**
- * DopamilioNFT.ts  v8
+ * DopamilioNFT.ts  v9
  *
  * 3,333 unique degenerates etched on Bitcoin.
  * OP-721 NFT collection on OPNet — extends OP721 base (btc-runtime 1.11.0).
@@ -9,11 +9,10 @@
  * Phases: deployer calls activateTeam() → activateWL() → activatePublic()
  * WL and PUBLIC are both open to anyone — no address gating.
  *
- * Changes v8 vs v7:
- *   - NEW:  activateWL() now stores Blockchain.block.medianTimestamp in slot 23 (wlStartTime)
- *   - NEW:  getWlStartTime() view — returns wlStartTime (u64); 0 = WL not yet activated
- *   - NEW:  getWlDuration() view  — returns WL_DURATION_SECS (5400 = 1.5 hours)
- *   - FIX:  setTreasuryAddress() accepts both 'opt1' (testnet) and 'bc1p' (mainnet) prefixes
+ * Changes v9 vs v8:
+ *   - FIX:  BASE_URI / ICON_URL / BANNER_URL / WEBSITE_URL → dopamilio.vercel.app (was .xyz)
+ *   - FIX:  WL_DURATION_SECS = 8700 (5400 + ~3300s MTP lag compensation so display shows real 1.5h)
+ *   - NOTE: For mainnet deploy — change TREASURY to bc1pn7zlq5qmzagmnwfc9nwa9387qc6cnxwd6g2r74sl43xzvx446p7sptgpj0
  *
  * All audit fixes from v7 are preserved:
  *   - CRITICAL: CEI — counters updated BEFORE _mint() loop (reentrancy fix)
@@ -60,10 +59,10 @@ const IS_TESTNET: bool = false;
 
 // ── Collection constants ─────────────────────────────────────────────────────
 
-const BASE_URI:    string = 'https://dopamilio.xyz/api/metadata';
-const ICON_URL:    string = 'https://dopamilio.xyz/icon.png';
-const BANNER_URL:  string = 'https://dopamilio.xyz/banner.png';
-const WEBSITE_URL: string = 'https://dopamilio.xyz';
+const BASE_URI:    string = 'https://dopamilio.vercel.app/api/metadata';
+const ICON_URL:    string = 'https://dopamilio.vercel.app/icon.png';
+const BANNER_URL:  string = 'https://dopamilio.vercel.app/banner.png';
+const WEBSITE_URL: string = 'https://dopamilio.vercel.app';
 const DESCRIPTION: string = '3,333 unique degenerates etched on Bitcoin. 100% on-chain. Pure dopamine.';
 const TREASURY:    string = 'opt1pv5z0n6gn0n8szljp7dewl52548zyvt48pt406cl607wen22amalqfpft8p';
 
@@ -77,7 +76,9 @@ const MAX_MINT_PUBLIC:    u64  = 3;
 
 // ── WL timing ─────────────────────────────────────────────────────────────────
 
-const WL_DURATION_SECS: u64 = 5400; // 1.5 hours
+// 8700 = 5400 (1.5h) + ~3300 (MTP lag compensation — Bitcoin medianTimestamp lags ~55min behind real time)
+// This ensures the frontend countdown correctly shows ~1.5h from the moment WL is activated.
+const WL_DURATION_SECS: u64 = 8700;
 
 // ── Phase IDs ─────────────────────────────────────────────────────────────────
 

@@ -2,7 +2,7 @@
  * deploy.ts — DopamilioNFT deployment script
  *
  * Usage (from contracts/ folder):
- *   OPNET_MNEMONIC="..." npx tsx deploy.ts
+ *   OPNET_MNEMONIC="..." npx tsx deploy.ts [--mainnet]
  *
  * SECURITY: mnemonic only via env var — NEVER hardcoded.
  */
@@ -17,10 +17,11 @@ import {
 } from '@btc-vision/transaction';
 import { JSONRpcProvider } from 'opnet';
 
-const RPC_URL   = 'https://testnet.opnet.org';
-const WASM_PATH = './build/DopamilioNFT.wasm';
-const NETWORK   = networks.opnetTestnet;
-const FEE_RATE  = 5;      // sat/vbyte
+const IS_MAINNET  = process.argv.includes('--mainnet');
+const RPC_URL     = IS_MAINNET ? 'https://mainnet.opnet.org' : 'https://testnet.opnet.org';
+const WASM_PATH   = './build/DopamilioNFT.wasm';
+const NETWORK     = IS_MAINNET ? networks.bitcoin : networks.opnetTestnet;
+const FEE_RATE    = 5;      // sat/vbyte
 const GAS_SAT_FEE = 15_000n;
 
 const mnemonic = process.env.OPNET_MNEMONIC;
