@@ -1,13 +1,19 @@
 /**
- * DopamilioNFT.ts  v6
+ * DopamilioNFT.ts  v7
  *
  * 3,333 unique degenerates etched on Bitcoin.
  * OP-721 NFT collection on OPNet — extends OP721 base (btc-runtime 1.11.0).
  *
  * tokenURI: baseURI + '/' + tokenId + '.json'  (tokenIds are 1-based: 1 → 3333)
  *
- * Phases (mainnet): deployer calls activateTeam() → activateWL() → activatePublic()
- * WL gating is frontend-only — no Merkle proof required on-chain.
+ * Phases: deployer calls activateTeam() → activateWL() → activatePublic()
+ * WL and PUBLIC are both open to anyone — no address gating.
+ *
+ * Audit fixes (v7 vs v6):
+ *   - CRITICAL: CEI — counters updated BEFORE _mint() loop (reentrancy fix)
+ *   - HIGH:     mint() uses zero-guard for price, consistent with getMintPrice()
+ *   - MEDIUM:   _getPhase() validates bounds before u64→u8 cast
+ *   - LOW:      setTreasuryAddress validates 'opt1' prefix and min length
  *
  * Custom storage pointers — allocated AFTER 16 base pointers
  * (14 OP721 internal + 2 ReentrancyGuard). Absolute slots 17–22.
@@ -17,7 +23,7 @@
  *   19  treasury          StoredString (lazy)
  *   20  mintedWlMap       AddressMemoryMap (eager)
  *   21  mintedPubMap      AddressMemoryMap (eager)
- *   22  teamMintedTotal   StoredU256   (lazy)  — global team counter
+ *   22  teamMintedTotal   StoredU256   (lazy)
  */
 
 import { u256 } from '@btc-vision/as-bignum/assembly';
@@ -58,8 +64,8 @@ const TREASURY:    string = 'opt1pv5z0n6gn0n8szljp7dewl52548zyvt48pt406cl607wen2
 const DEFAULT_MINT_PRICE: u64  = 6969;
 const MAX_SUPPLY:         u256 = u256.fromU64(3333);
 const MAX_MINT_TEAM:      u64  = 10;
-const MAX_MINT_WL:        u64  = 3;
-const MAX_MINT_PUBLIC:    u64  = 5;
+const MAX_MINT_WL:        u64  = 5;
+const MAX_MINT_PUBLIC:    u64  = 3;
 
 // ── Phase IDs ─────────────────────────────────────────────────────────────────
 
@@ -128,7 +134,7 @@ export class DopamilioNFT extends OP721 {
         return this.__teamMintedTotal!;
     }
 
-    // ── Eager AddressMemoryMaps (safe in constructor — no encodePointer) ──────
+    // ── Eager AddressMemoryMaps ───────────────────────────────────────────────
 
     private readonly _mintedWlMap:  AddressMemoryMap = new AddressMemoryMap(mintedWlPointer);
     private readonly _mintedPubMap: AddressMemoryMap = new AddressMemoryMap(mintedPubPointer);
@@ -160,7 +166,7 @@ export class DopamilioNFT extends OP721 {
 
     public onUpdate(_calldata: Calldata): void {}
 
-    // ── tokenURI override (append /id.json to base) ───────────────────────────
+    // ── tokenURI override ─────────────────────────────────────────────────────
 
     @view
     @method({ name: 'tokenId', type: ABIDataTypes.UINT256 })
@@ -184,7 +190,6 @@ export class DopamilioNFT extends OP721 {
         const sender = Blockchain.tx.sender;
         const origin = Blockchain.tx.origin;
 
-        // Direct wallet calls only — reject contract-to-contract
         if (!sender.equals(origin)) {
             throw new Revert('DopamilioNFT: direct calls only');
         }
@@ -195,26 +200,29 @@ export class DopamilioNFT extends OP721 {
 
         const phase = this._getPhase();
 
-        // ── Phase + wallet cap checks ──────────────────────────────────────────
+        // ── Checks ────────────────────────────────────────────────────────────
         if (phase === PHASE_NOT_STARTED) throw new Revert('DopamilioNFT: mint not started');
+
+        let prevTeam: u64 = 0;
+        let prevWl:   u64 = 0;
+        let prevPub:  u64 = 0;
 
         if (phase === PHASE_TEAM) {
             if (!Blockchain.contractDeployer.equals(sender)) {
                 throw new Revert('DopamilioNFT: team phase — deployer only');
             }
-            const total = this._teamMintedTotal.value.toU64();
-            if (SafeMath.add64(total, amount) > MAX_MINT_TEAM) {
+            prevTeam = this._teamMintedTotal.value.toU64();
+            if (SafeMath.add64(prevTeam, amount) > MAX_MINT_TEAM) {
                 throw new Revert('DopamilioNFT: team cap exceeded (max 10 total)');
             }
         } else if (phase === PHASE_WL) {
-            const minted = this._mintedWlMap.get(sender).toU64();
-            if (SafeMath.add64(minted, amount) > MAX_MINT_WL)
-                throw new Revert('greedy anon — 3 is enough, u already minted ur bag');
+            prevWl = this._mintedWlMap.get(sender).toU64();
+            if (SafeMath.add64(prevWl, amount) > MAX_MINT_WL)
+                throw new Revert('DopamilioNFT: WL cap exceeded (max 5 per wallet)');
         } else {
-            // PUBLIC — independent cap
-            const minted = this._mintedPubMap.get(sender).toU64();
-            if (SafeMath.add64(minted, amount) > MAX_MINT_PUBLIC)
-                throw new Revert('DopamilioNFT: public cap exceeded');
+            prevPub = this._mintedPubMap.get(sender).toU64();
+            if (SafeMath.add64(prevPub, amount) > MAX_MINT_PUBLIC)
+                throw new Revert('DopamilioNFT: public cap exceeded (max 3 per wallet)');
         }
 
         // ── Supply check ──────────────────────────────────────────────────────
@@ -223,8 +231,10 @@ export class DopamilioNFT extends OP721 {
             throw new Revert('DopamilioNFT: supply exhausted');
         }
 
-        // ── Payment check ─────────────────────────────────────────────────────
-        const required: u64 = SafeMath.mul64(this._mintPrice.value.toU64(), amount);
+        // ── Payment check (HIGH fix: use zero-guard for price) ────────────────
+        const priceVal  = this._mintPrice.value;
+        const unitPrice: u64 = priceVal.isZero() ? DEFAULT_MINT_PRICE : priceVal.toU64();
+        const required: u64  = SafeMath.mul64(unitPrice, amount);
         if (!IS_TESTNET || Blockchain.tx.outputs.length > 0) {
             if (!IS_TESTNET && Blockchain.tx.outputs.length === 0) {
                 throw new Revert('DopamilioNFT: missing outputs');
@@ -236,24 +246,21 @@ export class DopamilioNFT extends OP721 {
             }
         }
 
-        // ── Mint each token via OP721 base ────────────────────────────────────
+        // ── Effects BEFORE interactions (CRITICAL CEI fix) ────────────────────
+        this._nextTokenId.value = SafeMath.add(firstTokenId, u256.fromU64(amount));
+
+        if (phase === PHASE_TEAM) {
+            this._teamMintedTotal.value = u256.fromU64(SafeMath.add64(prevTeam, amount));
+        } else if (phase === PHASE_WL) {
+            this._mintedWlMap.set(sender, u256.fromU64(SafeMath.add64(prevWl, amount)));
+        } else {
+            this._mintedPubMap.set(sender, u256.fromU64(SafeMath.add64(prevPub, amount)));
+        }
+
+        // ── Interactions: mint each token via OP721 base ──────────────────────
         for (let i: u64 = 0; i < amount; i++) {
             const tokenId = SafeMath.add(firstTokenId, u256.fromU64(i));
             this._mint(sender, tokenId);
-        }
-
-        this._nextTokenId.value = SafeMath.add(firstTokenId, u256.fromU64(amount));
-
-        // ── Update per-phase minted counters ──────────────────────────────────
-        if (phase === PHASE_TEAM) {
-            const prev = this._teamMintedTotal.value.toU64();
-            this._teamMintedTotal.value = u256.fromU64(SafeMath.add64(prev, amount));
-        } else if (phase === PHASE_WL) {
-            const prev = this._mintedWlMap.get(sender).toU64();
-            this._mintedWlMap.set(sender, u256.fromU64(SafeMath.add64(prev, amount)));
-        } else {
-            const prev = this._mintedPubMap.get(sender).toU64();
-            this._mintedPubMap.set(sender, u256.fromU64(SafeMath.add64(prev, amount)));
         }
 
         const result = new BytesWriter(U256_BYTE_LENGTH);
@@ -317,14 +324,15 @@ export class DopamilioNFT extends OP721 {
         return result;
     }
 
-    // ── Admin: setTreasuryAddress ─────────────────────────────────────────────
+    // ── Admin: setTreasuryAddress (LOW fix: validate opt1 prefix + length) ────
 
     @method({ name: 'addr', type: ABIDataTypes.STRING })
     @returns({ name: 'success', type: ABIDataTypes.BOOL })
     public setTreasuryAddress(calldata: Calldata): BytesWriter {
         this.onlyDeployer(Blockchain.tx.sender);
         const addr = calldata.readStringWithLength();
-        if (addr.length === 0) throw new Revert('DopamilioNFT: empty address');
+        if (addr.length < 10) throw new Revert('DopamilioNFT: address too short');
+        if (!addr.startsWith('opt1')) throw new Revert('DopamilioNFT: address must start with opt1');
         this._treasury.value = addr;
         Blockchain.emit(new TreasuryUpdatedEvent(addr));
         const result = new BytesWriter(1);
@@ -395,13 +403,15 @@ export class DopamilioNFT extends OP721 {
         return result;
     }
 
-    // ── Internal: current phase ───────────────────────────────────────────────
+    // ── Internal: current phase (MEDIUM fix: bounds check before cast) ─────────
 
     private _getPhase(): u8 {
-        return this._currentPhase.value.toU64() as u8;
+        const v = this._currentPhase.value.toU64();
+        if (v > 3) throw new Revert('DopamilioNFT: invalid phase state');
+        return v as u8;
     }
 
-    // ── Internal: sum of BTC sent to treasury in tx outputs ──────────────────
+    // ── Internal: payment to treasury ────────────────────────────────────────
 
     private _getPaymentToTreasury(): u64 {
         const outputs  = Blockchain.tx.outputs;

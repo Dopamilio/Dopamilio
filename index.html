@@ -1715,7 +1715,7 @@ const NFT_TOKEN_IDS=[1,2,3,4,5,6,14,57,303,2314];
 /* ══════════════════════════════════════════════
    OPNET CONTRACT — testnet
 ══════════════════════════════════════════════ */
-const CONTRACT_ADDR  = 'opt1sqpne85g06k49fynyjd7z8rvgcfqtdq5tcur07wgx';
+const CONTRACT_ADDR  = 'opt1sqpd7w022d9xyhyyna9dezpm7kxjwazqd3uxc77ls';
 const CONTRACT_P2TR  = 'opt1pv5z0n6gn0n8szljp7dewl52548zyvt48pt406cl607wen22amalqfpft8p';
 const MINT_PRICE_SATS = 6969n;
 const MAX_SUPPLY      = 3333;
@@ -1871,7 +1871,7 @@ function _buildActivityFromChain(mints){
 // ScanBlock: last block fully scanned
 const _CACHE_KEY   = 'dopa_mint_txids_v2_'+CONTRACT_ADDR.slice(-8);
 const _SCAN_KEY    = 'dopa_scan_block_v2_'+CONTRACT_ADDR.slice(-8);
-const _DEPLOY_BLOCK = 0x2d5d; // block where contract was deployed (v6, reveal TX block 11613)
+const _DEPLOY_BLOCK = 0x2d70; // block where contract was deployed (v7 — update after confirmation)
 var _mintTxCache = {};
 var _scanRunning = false;
 try { _mintTxCache = JSON.parse(localStorage.getItem(_CACHE_KEY)||'{}'); } catch(e){}
@@ -2558,7 +2558,7 @@ function setPhase(i){curPhase=i;
   if(maxLbl)maxLbl.textContent='MAX '+mx;
   updateCost();}
 function updateCost(){const tb=document.getElementById('totBtc');const qty=Number(document.getElementById('mintQty')?.textContent||1);const nftCost=onChainPrice*BigInt(qty);if(tb)tb.textContent=(Number(nftCost)/1e8).toFixed(8).replace(/\.?0+$/,'')+' BTC';}
-const PHASE_MAX_MINT=[10,3,5]; // TEAM=10, WL=3, PUBLIC=5 — mirrors contract
+const PHASE_MAX_MINT=[10,5,3]; // TEAM=10, WL=5, PUBLIC=3 — mirrors contract
 function _getPhaseMax(){return PHASE_MAX_MINT[curPhase]??MAX_MINT;}
 function changeQty(d){const el=document.getElementById('mintQty');if(!el)return;let v=Number(el.textContent||1)+d;if(v<1)v=1;const mx=_getPhaseMax();if(v>mx)v=mx;el.textContent=v;updateCost();_updateCostDisplay();}
 function _setGalleryLocked(flag){
