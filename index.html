@@ -1725,6 +1725,7 @@ const NFT_TOKEN_IDS=[1,2,3,4,5,6,14,57,303,2314];
    OPNET CONTRACT — mainnet
 ══════════════════════════════════════════════ */
 const CONTRACT_ADDR  = '0xd3d2a7f92284b5d1e300675d6a944adca21a3feced25dd23e6c3565232d87d3a';
+const CONTRACT_BECH32 = 'op1sqz8eh7xfqpr48dld2y9w4ecp2lkfptuqws4m9xrs'; // bech32 — used for block scan matching
 const CONTRACT_P2TR  = 'bc1pn7zlq5qmzagmnwfc9nwa9387qc6cnxwd6g2r74sl43xzvx446p7sptgpj0'; // treasury
 const DEPLOYER_OPT   = 'bc1pr0hqrfe2gl0dpaq4epx0ac7f35vgfayh09snnvv5u4nt64lx7xgqx62pd6'; // deployer wallet
 const MINT_PRICE_SATS = 6969n;
@@ -1938,7 +1939,7 @@ async function _scanMintsForTxids(fromBlock, toBlock){
       const txs = results[i]?.result?.transactions || [];
       for(const tx of txs){
         if(tx.OPNetType !== 'Interaction') continue;
-        if(tx.contractAddress !== CONTRACT_ADDR) continue;
+        if(tx.contractAddress !== CONTRACT_ADDR && tx.contractAddress !== CONTRACT_BECH32) continue;
         // Normalize events: can be {[addr]:evArr} or flat array
         var _evList = [];
         if(tx.events){
@@ -1946,7 +1947,7 @@ async function _scanMintsForTxids(fromBlock, toBlock){
             _evList = tx.events;
           } else {
             // keyed by contract address
-            var _evArr = tx.events[CONTRACT_ADDR] || tx.events[CONTRACT_ADDR.toLowerCase()] || [];
+            var _evArr = tx.events[CONTRACT_ADDR] || tx.events[CONTRACT_BECH32] || tx.events[CONTRACT_ADDR.toLowerCase()] || [];
             if(Array.isArray(_evArr)) _evList = _evArr;
             else Object.values(tx.events).forEach(function(a){if(Array.isArray(a))_evList=_evList.concat(a);});
           }
