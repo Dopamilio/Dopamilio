@@ -59,11 +59,52 @@
             ]
         },
         {
-            "name": "startMint",
+            "name": "activateTeam",
             "type": "Function",
             "payable": false,
             "onlyOwner": false,
-            "inputs": [],
+            "inputs": [
+                {
+                    "name": "_unused",
+                    "type": "BOOL"
+                }
+            ],
+            "outputs": [
+                {
+                    "name": "success",
+                    "type": "BOOL"
+                }
+            ]
+        },
+        {
+            "name": "activateWL",
+            "type": "Function",
+            "payable": false,
+            "onlyOwner": false,
+            "inputs": [
+                {
+                    "name": "_unused",
+                    "type": "BOOL"
+                }
+            ],
+            "outputs": [
+                {
+                    "name": "success",
+                    "type": "BOOL"
+                }
+            ]
+        },
+        {
+            "name": "activatePublic",
+            "type": "Function",
+            "payable": false,
+            "onlyOwner": false,
+            "inputs": [
+                {
+                    "name": "_unused",
+                    "type": "BOOL"
+                }
+            ],
             "outputs": [
                 {
                     "name": "success",
@@ -130,45 +171,6 @@
                 {
                     "name": "phase",
                     "type": "UINT8"
-                }
-            ]
-        },
-        {
-            "name": "getStartTime",
-            "type": "View",
-            "payable": false,
-            "onlyOwner": false,
-            "inputs": [],
-            "outputs": [
-                {
-                    "name": "startTime",
-                    "type": "UINT256"
-                }
-            ]
-        },
-        {
-            "name": "getTeamDuration",
-            "type": "View",
-            "payable": false,
-            "onlyOwner": false,
-            "inputs": [],
-            "outputs": [
-                {
-                    "name": "teamDuration",
-                    "type": "UINT64"
-                }
-            ]
-        },
-        {
-            "name": "getWlDuration",
-            "type": "View",
-            "payable": false,
-            "onlyOwner": false,
-            "inputs": [],
-            "outputs": [
-                {
-                    "name": "wlDuration",
-                    "type": "UINT64"
                 }
             ]
         },

@@ -1,13 +1,14 @@
 /**
- * init-wl.ts — Initialize WL phase on deployed DopamilioNFT v3 (Merkle WL)
+ * init-wl.ts — Initialize WL phase on deployed DopamilioNFT (manual phases)
  *
  * Usage (from contracts/ folder):
  *   OPNET_MNEMONIC="..." npx tsx init-wl.ts <contractAddress>
  *
  * Reads wl-root.txt (64-char hex Merkle root) and calls:
- *   1. setWLRoot(root) — stores the Merkle root on-chain
- *   2. startMint()     — activates the TEAM→WL phase clock
- * Two separate transactions. Verifies getPhase() == 1 (TEAM) at end.
+ *   1. setWLRoot(root)  — stores the Merkle root on-chain
+ *   2. activateTeam()   — phase 0 → 1 (TEAM)
+ *   3. activateWL()     — phase 1 → 2 (WL)
+ * Three separate transactions. Verifies getPhase() == 2 (WL) at end.
  *
  * SECURITY: mnemonic only via env var — NEVER hardcoded.
  */
@@ -74,8 +75,14 @@ const ABI: BitcoinInterfaceAbi = [
         type: BitcoinAbiTypes.Function,
     },
     {
-        name: 'startMint',
-        inputs:  [],
+        name: 'activateTeam',
+        inputs:  [{ name: '_unused', type: ABIDataTypes.BOOL }],
+        outputs: [{ name: 'success', type: ABIDataTypes.BOOL }],
+        type: BitcoinAbiTypes.Function,
+    },
+    {
+        name: 'activateWL',
+        inputs:  [{ name: '_unused', type: ABIDataTypes.BOOL }],
         outputs: [{ name: 'success', type: ABIDataTypes.BOOL }],
         type: BitcoinAbiTypes.Function,
     },
@@ -107,7 +114,7 @@ async function main(): Promise<void> {
     const phase = Number(phaseSim.properties?.phase ?? phaseSim);
     console.log('\nCurrent phase:', phase, '(expected 0 = INACTIVE)');
     if (phase !== 0) {
-        console.warn('WARNING: Phase is not 0. startMint may revert if already initialized.');
+        console.warn('WARNING: Phase is not 0. activateTeam may revert if already initialized.');
     }
 
     // Step 1: Call setWLRoot(rootBigInt)
@@ -131,34 +138,55 @@ async function main(): Promise<void> {
     console.log('  Waiting 12s for indexer...');
     await sleep(12_000);
 
-    // Step 2: Call startMint()
-    console.log('\n--- Step 2: startMint ---');
-    const startSim = await (contract as any).startMint();
-    if (startSim.revert) {
-        throw new Error(`startMint simulation reverted: ${startSim.revert}`);
+    // Step 2: Call activateTeam()
+    console.log('\n--- Step 2: activateTeam ---');
+    const teamSim = await (contract as any).activateTeam(false);
+    if (teamSim.revert) {
+        throw new Error(`activateTeam simulation reverted: ${teamSim.revert}`);
     }
 
-    const startReceipt = await startSim.sendTransaction({
+    const teamReceipt = await teamSim.sendTransaction({
         signer:      wallet.keypair,
         mldsaSigner: wallet.mldsaKeypair,
         refundTo:    wallet.p2tr,
         network:     NETWORK,
         maximumAllowedSatToSpend: 100_000n,
     });
-    if (!startReceipt) throw new Error('startMint: no receipt');
-    console.log('  OK startMint TX:', startReceipt.transactionId ?? '');
+    if (!teamReceipt) throw new Error('activateTeam: no receipt');
+    console.log('  OK activateTeam TX:', teamReceipt.transactionId ?? '');
+
+    // Wait for indexer
+    console.log('  Waiting 12s for indexer...');
+    await sleep(12_000);
+
+    // Step 3: Call activateWL()
+    console.log('\n--- Step 3: activateWL ---');
+    const wlSim = await (contract as any).activateWL(false);
+    if (wlSim.revert) {
+        throw new Error(`activateWL simulation reverted: ${wlSim.revert}`);
+    }
+
+    const wlReceipt = await wlSim.sendTransaction({
+        signer:      wallet.keypair,
+        mldsaSigner: wallet.mldsaKeypair,
+        refundTo:    wallet.p2tr,
+        network:     NETWORK,
+        maximumAllowedSatToSpend: 100_000n,
+    });
+    if (!wlReceipt) throw new Error('activateWL: no receipt');
+    console.log('  OK activateWL TX:', wlReceipt.transactionId ?? '');
 
     // Wait for indexer
     console.log('  Waiting 15s for indexer...');
     await sleep(15_000);
 
-    // Verify phase moved to TEAM (1)
+    // Verify phase moved to WL (2)
     const phaseAfterSim = await (contract as any).getPhase();
     const phaseAfter = Number(phaseAfterSim.properties?.phase ?? phaseAfterSim);
-    console.log('Phase after startMint:', phaseAfter, '(expected 1 = TEAM)');
+    console.log('Phase after activateWL:', phaseAfter, '(expected 2 = WL)');
 
-    if (phaseAfter !== 1) {
-        console.warn('WARNING: Expected phase 1 (TEAM) but got', phaseAfter);
+    if (phaseAfter !== 2) {
+        console.warn('WARNING: Expected phase 2 (WL) but got', phaseAfter);
     }
 
     // Verify WL root stored
@@ -172,8 +200,8 @@ async function main(): Promise<void> {
     console.log(' init-wl complete!');
     console.log(' Contract :', CONTRACT_ADDR);
     console.log(' WL root  : 0x' + rootHex);
-    console.log(' Phase    :', phaseAfter, '(1=TEAM 15min → 2=WL 1hr → 3=PUBLIC)');
-    console.log(' Next: update CONTRACT_ADDR + CONTRACT_P2TR in index.html, then git push');
+    console.log(' Phase    :', phaseAfter, '(2=WL — ready for whitelist minting)');
+    console.log(' Next: run activatePublic() when WL window is over');
     console.log('=================================================================');
 }
 
