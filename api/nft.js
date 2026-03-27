@@ -8,6 +8,19 @@ const PINATA = 'ipfs://';
 const DESCRIPTION = '3,333 unique degenerates etched on Bitcoin. 100% on-chain. Pure dopamine.';
 const TRAIT_TYPES = ['Background','Classes','Eyes','Eye Brows','Cloths','Hair','Mouths','Head gear','Specials','Weapons','Acessories'];
 
+// Per-IP rate limit: max 60 requests per 60s per serverless instance
+const _ipMap = new Map();
+const IP_WINDOW_MS = 60_000;
+const IP_MAX_REQS  = 60;
+function _isRateLimited(ip) {
+  const now = Date.now();
+  const e = _ipMap.get(ip);
+  if (!e || now - e.t > IP_WINDOW_MS) { _ipMap.set(ip, { n: 1, t: now }); return false; }
+  if (e.n >= IP_MAX_REQS) return true;
+  e.n++;
+  return false;
+}
+
 let _imgs  = null;
 let _attrs = null;
 
@@ -18,6 +31,11 @@ function loadData() {
 }
 
 module.exports = function handler(req, res) {
+  // Rate limit check
+  const ip = ((req.headers['x-forwarded-for'] || '') + '').split(',')[0].trim() || 'unknown';
+  if (_isRateLimited(ip)) {
+    return res.status(429).json({ error: 'RATE_LIMITED' });
+  }
   try {
     loadData();
     // Strip .json suffix if present, then parse

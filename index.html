@@ -1583,6 +1583,10 @@ input,textarea{-webkit-user-select:text;-moz-user-select:text;user-select:text;}
       </div>
       <button class="btn-mint" id="mintBtn" onclick="doMint()">&#128293; MINT NOW &#128293;</button>
       <div class="w-st" id="wSt">NO WALLET CONNECTED</div>
+      <div id="team-deployer-notice" style="display:none;margin-top:10px;padding:10px 14px;border:1px solid rgba(255,165,0,0.45);border-radius:4px;font-size:9px;letter-spacing:1px;color:rgba(255,165,0,0.9);text-align:center;line-height:1.8;">
+        &#9888; TEAM PHASE — DEPLOYER ONLY<br>
+        <span style="font-size:8px;opacity:0.75;word-break:break-all;" id="team-deployer-addr"></span>
+      </div>
       </div>
       <!-- SOLD OUT overlay — shown when totalMinted >= 3333 -->
     </div><!-- /mint-card -->
@@ -1719,7 +1723,7 @@ const CONTRACT_ADDR  = 'opt1sqq3jmun4zm2h08mfjq6shw8a24n7yr2qfuwwks34';
 const CONTRACT_P2TR  = 'opt1pv5z0n6gn0n8szljp7dewl52548zyvt48pt406cl607wen22amalqfpft8p';
 const MINT_PRICE_SATS = 6969n;
 const MAX_SUPPLY      = 3333;
-const MAX_MINT        = 5;
+const MAX_MINT        = 3; // fallback — most restrictive phase cap (PUBLIC)
 const RPC_URL        = 'https://testnet.opnet.org';
 const OPSCAN_BASE    = 'https://opscan.org/transactions/';
 const OPSCAN_ADDR    = 'https://opscan.org/accounts/';
@@ -1822,14 +1826,15 @@ async function _loadContractInfo(){
     // Read-only: no sender needed (getMintPrice/totalSupply don't check caller)
     const contract = getContract(CONTRACT_ADDR,_getDopamilioAbi(sdk),provider,NETWORK_OBJ);
 
-    // Fetch supply + price + phase + WL timing in parallel
-    const [totalRes, priceRes, phaseRes, isTestRes, wlStartRes, wlDurRes] = await Promise.all([
+    // Fetch supply + price + phase + WL timing + treasury in parallel
+    const [totalRes, priceRes, phaseRes, isTestRes, wlStartRes, wlDurRes, treasuryRes] = await Promise.all([
       contract.totalSupply(),
       contract.getMintPrice(),
       contract.getPhase().catch(()=>null),
       contract.getIsTestnet().catch(()=>null),
       contract.getWlStartTime().catch(()=>null),
       contract.getWlDuration().catch(()=>null),
+      contract.getTreasuryAddress().catch(()=>null),
     ]);
 
     const totalMinted    = Number(totalRes?.properties?.total ?? 0n);
@@ -1838,6 +1843,13 @@ async function _loadContractInfo(){
     const isTestnet      = isTestRes?.properties?.isTestnet ?? false;
     const wlStartTime    = Number(wlStartRes?.properties?.startTime ?? 0n);
     const wlDuration     = Number(wlDurRes?.properties?.durationSecs ?? 5400n);
+
+    // D-01: treasury sync check — frontend CONTRACT_P2TR must match on-chain treasury
+    const onChainTreasury = treasuryRes?.properties?.addr ?? '';
+    if(onChainTreasury && onChainTreasury.toLowerCase() !== CONTRACT_P2TR.toLowerCase()){
+      console.error('[dopamilio] TREASURY MISMATCH — on-chain:',onChainTreasury,'frontend:',CONTRACT_P2TR,
+        '— mints will fail. Update CONTRACT_P2TR in index.html to match.');
+    }
 
     mintedC = totalMinted;
     updateProg(totalMinted);
@@ -2536,6 +2548,8 @@ function tickTimers(){
   }
 }
 setInterval(tickTimers,1000);
+// Auto-refresh phase/supply from chain every 30s (catches phase transitions without page reload)
+setInterval(function(){if(typeof _opnetImport==='function') _loadContractInfo();},30000);
 function _updatePhaseDisplay(phase,wlStartTimeSecs,wlDurationSecs,isTestnet){
   _isTestnet=isTestnet;_rawChainPhase=phase;
   _wlStartTimeSecs=wlStartTimeSecs||0;
@@ -2564,6 +2578,11 @@ function setPhase(i){curPhase=i;
   // Update max label in mint card
   const maxLbl=document.getElementById('mintMaxLabel');
   if(maxLbl)maxLbl.textContent='MAX '+mx;
+  // TEAM phase deployer notice
+  var dn=document.getElementById('team-deployer-notice');
+  var da=document.getElementById('team-deployer-addr');
+  if(dn){dn.style.display=(i===0)?'block':'none';}
+  if(da&&i===0){da.textContent='Authorized: '+CONTRACT_P2TR;}
   updateCost();}
 function updateCost(){const tb=document.getElementById('totBtc');const qty=Number(document.getElementById('mintQty')?.textContent||1);const nftCost=onChainPrice*BigInt(qty);if(tb)tb.textContent=(Number(nftCost)/1e8).toFixed(8).replace(/\.?0+$/,'')+' BTC';}
 const PHASE_MAX_MINT=[10,5,3]; // TEAM=10, WL=5, PUBLIC=3 — mirrors contract
@@ -2660,6 +2679,15 @@ async function doMint(){
   if(!connected||!walletAddr){doConnect();return;}
   if(!walletPubKey){walletToast('err','Please upgrade OP_Wallet and reconnect.');return;}
 
+  // TEAM phase guard: warn immediately if connected wallet is not the deployer P2TR
+  if(_rawChainPhase===1){
+    const _addrLower=(walletAddr||'').toLowerCase();
+    if(_addrLower!==CONTRACT_P2TR.toLowerCase()){
+      walletToast('err','TEAM phase — only the deployer wallet can mint.<br>Connected: '+_safeText(walletAddr||'none'));
+      btn.textContent='\uD83D\uDD25 MINT NOW \uD83D\uDD25';btn.disabled=false;
+      return;
+    }
+  }
   const _rawQty = parseInt(document.getElementById('mintQty')?.textContent || '1', 10);
   const quantity = Math.max(1, Math.min(_getPhaseMax(), isNaN(_rawQty) ? 1 : _rawQty));
   const mintCost  = onChainPrice * BigInt(quantity); // NFT price → treasury (on-chain value)
