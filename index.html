@@ -2537,7 +2537,7 @@ function goNft(i,rst){
 /* ── ACTIVITY (real on-chain data via _fetchRecentMints) ── */
 
 /* ── PHASES ── */
-let curPhase=0,connected=false,mintedC=0,_rawChainPhase=0;
+let curPhase=0,connected=false,mintedC=0,_rawChainPhase=0,_mintPending=false;
 const SUPPLY=MAX_SUPPLY;
 let _wlStartTimeSecs=0,_wlDurationSecs=5400,_wlEndMs=0,_isTestnet=false;
 function fmt(s){s=Math.floor(s);const h=Math.floor(s/3600),m=Math.floor((s%3600)/60),ss=s%60;return`${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(ss).padStart(2,'0')}`;}
@@ -2701,6 +2701,7 @@ function _playSniperEffect(cb) {
 async function doMint(){
   if(!connected||!walletAddr){doConnect();return;}
   if(!walletPubKey){walletToast('err','Please upgrade OP_Wallet and reconnect.');return;}
+  if(_mintPending){walletToast('err','Transaction pending — wait for confirmation.');return;}
 
   const btn=document.getElementById('mintBtn');
 
@@ -2716,9 +2717,10 @@ async function doMint(){
   }
   const _rawQty = parseInt(document.getElementById('mintQty')?.textContent || '1', 10);
   const quantity = Math.max(1, Math.min(_getPhaseMax(), isNaN(_rawQty) ? 1 : _rawQty));
-  const mintCost  = onChainPrice * BigInt(quantity); // NFT price → treasury (on-chain value)
-  const totalCost = mintCost + gasSats;                  // NFT + gas → maximumAllowedSatToSpend
+  const mintCost  = onChainPrice * BigInt(quantity);
+  const totalCost = mintCost + gasSats;
 
+  _mintPending=true;
   btn.textContent='\u23F3 SIGNING...';btn.disabled=true;
   try{
     const sdk = await _opnetImport();
@@ -2754,6 +2756,21 @@ async function doMint(){
     const totalRes = await contract.totalSupply();
     const currentTotal = Number(totalRes?.properties?.total ?? 0n);
     if(currentTotal + quantity > MAX_SUPPLY) throw new Error('Not enough tokens remaining!');
+
+    // 3b. Check per-wallet cap on-chain before simulating (prevents fee loss on reverts)
+    if(_rawChainPhase===2||_rawChainPhase===3){
+      const phaseForCap = _rawChainPhase;
+      const capRes = await contract.getMintedCount(toAddr, phaseForCap);
+      const alreadyMinted = Number(capRes?.properties?.count ?? 0n);
+      const phaseMax = PHASE_MAX_MINT[curPhase] ?? MAX_MINT;
+      const remaining = phaseMax - alreadyMinted;
+      if(remaining <= 0){
+        throw new Error('You have reached the mint limit for this phase ('+phaseMax+'/'+phaseMax+').');
+      }
+      if(alreadyMinted + quantity > phaseMax){
+        throw new Error('Exceeds your limit: you minted '+alreadyMinted+', cap is '+phaseMax+'. Max '+remaining+' more.');
+      }
+    }
 
     // 4. setTransactionDetails BEFORE simulate (includes OP_RETURN label)
     const _firstId = currentTotal + 1;
@@ -2809,10 +2826,12 @@ async function doMint(){
     const msg=e?.message??String(e);
     const isInsufficientSats=(msg&&(msg.toLowerCase().includes('insufficient')||msg.toLowerCase().includes('not enough')||msg.toLowerCase().includes('balance')||msg.toLowerCase().includes('funds')));
     if(isInsufficientSats){showRektModal();}
-    else if(msg.includes('cap exceeded')||msg.includes('team cap')){walletToast('err','Already minted enough for this phase.');}
+    else if(msg.includes('cap exceeded')||msg.includes('team cap')||msg.includes('mint limit')||msg.includes('Exceeds your limit')){walletToast('err',msg.slice(0,140));}
+    else if(msg.includes('MLDSA')||msg.includes('mldsa')){walletToast('err','Wallet key conflict — use a different wallet to mint.');}
     else if(!msg.includes('User rejected')) walletToast('err','Mint error: '+msg.slice(0,120));
     console.error('doMint:',e?.message??e);
   }finally{
+    _mintPending=false;
     btn.textContent='\uD83D\uDD25 MINT NOW \uD83D\uDD25';btn.disabled=false;
   }
 }
