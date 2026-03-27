@@ -2824,7 +2824,8 @@ async function doMint(){
       mldsaSigner:null,
       refundTo:walletAddr,
       network:NETWORK_OBJ,
-      maximumAllowedSatToSpend:totalCost+3000n,
+      feeRate:5,
+      maximumAllowedSatToSpend:totalCost+5000n,
       extraOutputs:[{address:CONTRACT_P2TR,value:mintCost}],
     });
     const txid = receipt?.transactionId || receipt?.hash || receipt?.txid || '';
