@@ -1823,13 +1823,11 @@ async function _loadContractInfo(){
     const contract = getContract(CONTRACT_ADDR,_getDopamilioAbi(sdk),provider,NETWORK_OBJ);
 
     // Fetch supply + price + phase in parallel
-    const [totalRes, priceRes, phaseRes, startRes, isTestRes, wlDurRes] = await Promise.all([
+    const [totalRes, priceRes, phaseRes, isTestRes] = await Promise.all([
       contract.totalSupply(),
       contract.getMintPrice(),
       contract.getPhase().catch(()=>null),
-      contract.getStartTime().catch(()=>null),
       contract.getIsTestnet().catch(()=>null),
-      contract.getWlDuration().catch(()=>null),
     ]);
 
     const totalMinted = Number(totalRes?.properties?.total ?? 0n);
@@ -1839,15 +1837,10 @@ async function _loadContractInfo(){
     updateProg(totalMinted);
     _updatePriceDisplay(onChainPrice);
 
-    // Update durations from chain (in ms, same as medianTimestamp)
-    const wlDurMs = Number(wlDurRes?.properties?.dur ?? 0n);
-    if(wlDurMs > 0) _wlDur = wlDurMs;
-
-    // Update phase display from onchain data
+    // Update phase display from onchain data (v5 manual phases — no startTime/wlDuration)
     const phase     = Number(phaseRes?.properties?.phase ?? 0n);
-    const startTime = Number(startRes?.properties?.startTime ?? 0n);
     const isTestnet = isTestRes?.properties?.isTestnet ?? false;
-    _updatePhaseDisplay(phase, startTime, isTestnet);
+    _updatePhaseDisplay(phase, 0, isTestnet);
   }catch(e){ console.warn('[dopamilio] loadContractInfo:', e?.message); }
 }
 
@@ -2540,14 +2533,15 @@ setInterval(tickTimers,1000);
 function _updatePhaseDisplay(phase,startTime,isTestnet){
   _isTestnet=isTestnet;_chainStartTime=startTime;_rawChainPhase=phase;
   if(isTestnet){setPhase(2);['t0','t1','t2'].forEach(function(id){var e=document.getElementById(id);if(e)e.textContent='TESTNET';});return;}
-  if(startTime===0||phase===0){return;} // not started — keep default "SOON" display
+  if(phase===0){return;} // not started — keep default "SOON" display
+  // Contract: 1=TEAM, 2=WL, 3=PUBLIC → Frontend: 0=TEAM, 1=WL, 2=PUBLIC
+  const frontendPhase=Math.min(phase-1,2);
+  if(startTime===0){setPhase(frontendPhase);return;} // manual phase mode — no timers
   // startTime and _wlDur are in ms (medianTimestamp units); convert elapsed to seconds for timers
   const nowMs=Date.now();
   const elapsedSec=Math.max(0,(nowMs-startTime)/1000);
   const wlDurSec=Math.max(1,_wlDur/1000);
   const teamDurSec=Math.max(0,_teamDur/1000);
-  // Contract: 1=TEAM, 2=WL, 3=PUBLIC → Frontend: 0=TEAM, 1=WL, 2=PUBLIC
-  const frontendPhase=Math.min(phase-1,2);
   if(phase===1){phaseTimers[0]=Math.max(0,teamDurSec-elapsedSec);phaseTimers[1]=wlDurSec;phaseTimers[2]=0;}
   else if(phase===2){phaseTimers[0]=0;phaseTimers[1]=Math.max(0,wlDurSec-elapsedSec);phaseTimers[2]=0;}
   else{phaseTimers=[0,0,0];}
