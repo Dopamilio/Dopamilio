@@ -40,9 +40,29 @@ export type SetWLRoot = CallResult<
 >;
 
 /**
- * @description Represents the result of the startMint function call.
+ * @description Represents the result of the activateTeam function call.
  */
-export type StartMint = CallResult<
+export type ActivateTeam = CallResult<
+    {
+        success: boolean;
+    },
+    OPNetEvent<never>[]
+>;
+
+/**
+ * @description Represents the result of the activateWL function call.
+ */
+export type ActivateWL = CallResult<
+    {
+        success: boolean;
+    },
+    OPNetEvent<never>[]
+>;
+
+/**
+ * @description Represents the result of the activatePublic function call.
+ */
+export type ActivatePublic = CallResult<
     {
         success: boolean;
     },
@@ -85,36 +105,6 @@ export type GetMintPrice = CallResult<
 export type GetPhase = CallResult<
     {
         phase: number;
-    },
-    OPNetEvent<never>[]
->;
-
-/**
- * @description Represents the result of the getStartTime function call.
- */
-export type GetStartTime = CallResult<
-    {
-        startTime: bigint;
-    },
-    OPNetEvent<never>[]
->;
-
-/**
- * @description Represents the result of the getTeamDuration function call.
- */
-export type GetTeamDuration = CallResult<
-    {
-        teamDuration: bigint;
-    },
-    OPNetEvent<never>[]
->;
-
-/**
- * @description Represents the result of the getWlDuration function call.
- */
-export type GetWlDuration = CallResult<
-    {
-        wlDuration: bigint;
     },
     OPNetEvent<never>[]
 >;
@@ -166,14 +156,13 @@ export interface IDopamilioNFT extends IOP_NETContract {
     tokenURI(tokenId: bigint): Promise<TokenURI>;
     mint(amount: bigint, proof: bigint[]): Promise<Mint>;
     setWLRoot(root: bigint): Promise<SetWLRoot>;
-    startMint(): Promise<StartMint>;
+    activateTeam(_unused: boolean): Promise<ActivateTeam>;
+    activateWL(_unused: boolean): Promise<ActivateWL>;
+    activatePublic(_unused: boolean): Promise<ActivatePublic>;
     setMintPrice(priceSats: bigint): Promise<SetMintPrice>;
     setTreasuryAddress(addr: string): Promise<SetTreasuryAddress>;
     getMintPrice(): Promise<GetMintPrice>;
     getPhase(): Promise<GetPhase>;
-    getStartTime(): Promise<GetStartTime>;
-    getTeamDuration(): Promise<GetTeamDuration>;
-    getWlDuration(): Promise<GetWlDuration>;
     getIsTestnet(): Promise<GetIsTestnet>;
     getTreasuryAddress(): Promise<GetTreasuryAddress>;
     getWLRoot(): Promise<GetWLRoot>;

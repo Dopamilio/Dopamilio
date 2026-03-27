@@ -1866,7 +1866,7 @@ const NFT_TOKEN_IDS=[1,2,3,4,5,6,14,57,303,2314];
 /* ══════════════════════════════════════════════
    OPNET CONTRACT
 ══════════════════════════════════════════════ */
-const CONTRACT_ADDR = 'opt1sqqen3dq2r7fyaxe44v6tl69prtejg3mxxyuuluyq';
+const CONTRACT_ADDR = 'opt1sqpr3hdly0n3xvz9cf99n79fe7ztum2j79yvtchaw';
 const CONTRACT_P2TR  = 'opt1pv5z0n6gn0n8szljp7dewl52548zyvt48pt406cl607wen22amalqfpft8p';
 const MINT_PRICE_SATS = 6969n;
 const MAX_SUPPLY      = 3333;
@@ -1892,11 +1892,11 @@ function _getDopamilioAbi(sdk){
     {name:'getMintPrice',   type:B.Function,payable:false, inputs:[],                                  outputs:[{name:'price',type:A.UINT256}]},
     {name:'totalSupply',    type:B.Function,payable:false, inputs:[],                                  outputs:[{name:'total',type:A.UINT256}]},
     {name:'tokenURI',       type:B.Function,payable:false, inputs:[{name:'tokenId',type:A.UINT256}],   outputs:[{name:'uri',type:A.STRING}]},
-    {name:'getStartTime',   type:B.Function,payable:false, inputs:[],                                  outputs:[{name:'startTime',type:A.UINT256}]},
-    {name:'getPhase',       type:B.Function,payable:false, inputs:[],                                  outputs:[{name:'phase',type:A.UINT8}]},
-    {name:'getTeamDuration',type:B.Function,payable:false, inputs:[],                                  outputs:[{name:'dur',type:A.UINT64}]},
-    {name:'getWlDuration',  type:B.Function,payable:false, inputs:[],                                  outputs:[{name:'dur',type:A.UINT64}]},
-    {name:'getIsTestnet',   type:B.Function,payable:false, inputs:[],                                  outputs:[{name:'isTestnet',type:A.BOOL}]},
+    {name:'getPhase',       type:B.Function,payable:false, inputs:[],                                                outputs:[{name:'phase',type:A.UINT8}]},
+    {name:'getIsTestnet',   type:B.Function,payable:false, inputs:[],                                                outputs:[{name:'isTestnet',type:A.BOOL}]},
+    {name:'activateTeam',   type:B.Function,payable:false, inputs:[{name:'_unused',type:A.BOOL}],                   outputs:[{name:'success',type:A.BOOL}]},
+    {name:'activateWL',     type:B.Function,payable:false, inputs:[{name:'_unused',type:A.BOOL}],                   outputs:[{name:'success',type:A.BOOL}]},
+    {name:'activatePublic', type:B.Function,payable:false, inputs:[{name:'_unused',type:A.BOOL}],                   outputs:[{name:'success',type:A.BOOL}]},
   ];
   return _DOPAMILIO_ABI;
 }
@@ -1968,14 +1968,11 @@ async function _loadContractInfo(){
     const contract = getContract(CONTRACT_ADDR,_getDopamilioAbi(sdk),provider,NETWORK_OBJ);
 
     // Fetch supply + price + phase in parallel
-    const [totalRes, priceRes, phaseRes, startRes, isTestRes, wlDurRes, teamDurRes] = await Promise.all([
+    const [totalRes, priceRes, phaseRes, isTestRes] = await Promise.all([
       contract.totalSupply(),
       contract.getMintPrice(),
       contract.getPhase().catch(()=>null),
-      contract.getStartTime().catch(()=>null),
       contract.getIsTestnet().catch(()=>null),
-      contract.getWlDuration().catch(()=>null),
-      contract.getTeamDuration().catch(()=>null),
     ]);
 
     const totalMinted = Number(totalRes?.properties?.total ?? 0n);
@@ -1985,17 +1982,10 @@ async function _loadContractInfo(){
     updateProg(totalMinted);
     _updatePriceDisplay(onChainPrice);
 
-    // Update durations from chain (in ms, same as medianTimestamp)
-    const wlDurMs = Number(wlDurRes?.properties?.dur ?? 0n);
-    if(wlDurMs > 0) _wlDur = wlDurMs;
-    const teamDurMs = Number(teamDurRes?.properties?.dur ?? 0n);
-    if(teamDurMs > 0) _teamDur = teamDurMs;
-
     // Update phase display from onchain data
     const phase     = Number(phaseRes?.properties?.phase ?? 0n);
-    const startTime = Number(startRes?.properties?.startTime ?? 0n);
     const isTestnet = isTestRes?.properties?.isTestnet ?? false;
-    _updatePhaseDisplay(phase, startTime, isTestnet);
+    _updatePhaseDisplay(phase, isTestnet);
   }catch(e){}
 }
 
@@ -2028,7 +2018,7 @@ function _buildActivityFromChain(mints){
 // ScanBlock: last block fully scanned
 const _CACHE_KEY   = 'dopa_mint_txids_v2_'+CONTRACT_ADDR.slice(-8);
 const _SCAN_KEY    = 'dopa_scan_block_v2_'+CONTRACT_ADDR.slice(-8);
-const _DEPLOY_BLOCK = 0x2d45; // block where contract was deployed
+const _DEPLOY_BLOCK = 0x2d55; // block where v4 contract was deployed (approx)
 var _mintTxCache = {};
 var _scanRunning = false;
 try { _mintTxCache = JSON.parse(localStorage.getItem(_CACHE_KEY)||'{}'); } catch(e){}
@@ -2680,30 +2670,19 @@ function goNft(i,rst){
 /* ── PHASES ── */
 let curPhase=0,connected=false,mintedC=0,_rawChainPhase=0;
 const SUPPLY=MAX_SUPPLY;
-let phaseTimers=[0,0,0];
-let _chainStartTime=0,_isTestnet=false,_teamDur=900000,_wlDur=3600000; // updated from chain
-function fmt(s){s=Math.floor(s);const d=Math.floor(s/86400),h=Math.floor((s%86400)/3600),m=Math.floor((s%3600)/60),ss=s%60;return d>0?`${d}d ${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(ss).padStart(2,'0')}`:`${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(ss).padStart(2,'0')}`;}
+let _isTestnet=false;
 function tickTimers(){
   if(_isTestnet){['t0','t1','t2'].forEach(function(id){var e=document.getElementById(id);if(e)e.textContent='TESTNET';});return;}
-  if(_chainStartTime===0){['t0','t1','t2'].forEach(function(id){var e=document.getElementById(id);if(e)e.textContent='SOON';});return;}
-  for(let i=0;i<3;i++){if(phaseTimers[i]>0)phaseTimers[i]--;var e=document.getElementById('t'+i);if(e)e.textContent=fmt(phaseTimers[i]);}
+  // Manual phases: show ACTIVE for current, — for others
+  ['t0','t1','t2'].forEach(function(id,idx){var e=document.getElementById(id);if(e)e.textContent=idx===curPhase?'ACTIVE':'\u2014';});
 }
 setInterval(tickTimers,1000);
-function _updatePhaseDisplay(phase,startTime,isTestnet){
-  _isTestnet=isTestnet;_chainStartTime=startTime;_rawChainPhase=phase;
+function _updatePhaseDisplay(phase,isTestnet){
+  _isTestnet=isTestnet;_rawChainPhase=phase;
   if(isTestnet){setPhase(2);['t0','t1','t2'].forEach(function(id){var e=document.getElementById(id);if(e)e.textContent='TESTNET';});return;}
-  if(startTime===0||phase===0){return;} // not started — keep default "SOON" display
-  // startTime and _wlDur are in ms (medianTimestamp units); convert elapsed to seconds for timers
-  const nowMs=Date.now();
-  const elapsedSec=Math.max(0,(nowMs-startTime)/1000);
-  const wlDurSec=Math.max(1,_wlDur/1000);
-  const teamDurSec=Math.max(0,_teamDur/1000);
+  if(phase===0){return;} // not started — keep default display
   // Contract: 1=TEAM, 2=WL, 3=PUBLIC → Frontend: 0=TEAM, 1=WL, 2=PUBLIC
-  const frontendPhase=Math.min(phase-1,2);
-  if(phase===1){phaseTimers[0]=Math.max(0,teamDurSec-elapsedSec);phaseTimers[1]=wlDurSec;phaseTimers[2]=0;}
-  else if(phase===2){phaseTimers[0]=0;phaseTimers[1]=Math.max(0,wlDurSec-elapsedSec);phaseTimers[2]=0;}
-  else{phaseTimers=[0,0,0];}
-  setPhase(frontendPhase);
+  setPhase(Math.min(phase-1,2));
 }
 function setPhase(i){curPhase=i;
   // Clamp mintQty to new phase max

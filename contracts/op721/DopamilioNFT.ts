@@ -6,8 +6,13 @@
  *
  * tokenURI: baseURI + '/' + tokenId + '.json'  (tokenIds are 1-based: 1 → 3333)
  *
- * Phases: TEAM (15 min, deployer only) → WL (1 hour, Merkle proof) → PUBLIC
- * WL: setWLRoot(root) then startMint() — two separate admin transactions.
+ * Phases: TEAM (deployer only) → WL (Merkle proof) → PUBLIC
+ * Phases are activated manually by owner:
+ *   activateTeam()   — phase 0 → 1
+ *   activateWL()     — phase 1 → 2 (requires WL root set)
+ *   activatePublic() — phase 2 → 3
+ *
+ * WL: setWLRoot(root) then activateTeam() → activateWL() — separate admin txs.
  * WL proof: double-keccak256 leaf, sorted-pair nodes (Merkle tree).
  *
  * Deployer bypass: deployer can mint in ANY phase, only supply check applies.
@@ -16,7 +21,7 @@
  * (14 OP721 internal + 2 ReentrancyGuard). Absolute slots 17–22.
  * Order is FIXED — never insert, only append:
  *   17  mintPrice      StoredU256  (lazy)
- *   18  startTime      StoredU256  (lazy)
+ *   18  currentPhase   StoredU256  (lazy)
  *   19  treasury       StoredString (lazy)
  *   20  wlMerkleRoot   StoredU256  (lazy)
  *   21  mintedWlMap    AddressMemoryMap (eager)
@@ -38,7 +43,6 @@ import {
     SafeMath,
     EMPTY_POINTER,
     U8_BYTE_LENGTH,
-    U64_BYTE_LENGTH,
     U256_BYTE_LENGTH,
     U32_BYTE_LENGTH,
 } from '@btc-vision/btc-runtime/runtime';
@@ -47,9 +51,7 @@ import { keccak256 } from '@btc-vision/btc-runtime/runtime/hashing/keccak256';
 
 // Compile-time config
 
-const IS_TESTNET:    bool = false;
-const TEAM_DURATION: u64 = 900_000;      // 15 minutes in ms
-const WL_DURATION:   u64 = 3_600_000;   // 1 hour in ms
+const IS_TESTNET: bool = true;
 
 // Collection constants
 
@@ -77,7 +79,7 @@ const PHASE_PUBLIC:      u8 = 3;
 // Custom storage pointers (AFTER OP721 base's 16 internal pointers)
 
 const mintPricePointer:    u16 = Blockchain.nextPointer;  // slot 17
-const startTimePointer:    u16 = Blockchain.nextPointer;  // slot 18
+const currentPhasePointer: u16 = Blockchain.nextPointer;  // slot 18
 const treasuryPointer:     u16 = Blockchain.nextPointer;  // slot 19
 const wlMerkleRootPointer: u16 = Blockchain.nextPointer;  // slot 20
 const mintedWlPointer:     u16 = Blockchain.nextPointer;  // slot 21
@@ -86,11 +88,11 @@ const mintedPubPointer:    u16 = Blockchain.nextPointer;  // slot 22
 // Events
 
 @final
-class MintStartedEvent extends NetEvent {
-    constructor(startTime: u256) {
-        const data = new BytesWriter(U256_BYTE_LENGTH);
-        data.writeU256(startTime);
-        super('MintStarted', data);
+class PhaseActivatedEvent extends NetEvent {
+    constructor(phase: u8) {
+        const data = new BytesWriter(U8_BYTE_LENGTH);
+        data.writeU8(phase);
+        super('PhaseActivated', data);
     }
 }
 
@@ -125,10 +127,10 @@ export class DopamilioNFT extends OP721 {
         return this.__mintPrice as StoredU256;
     }
 
-    private __startTime: StoredU256 | null = null;
-    private get _startTime(): StoredU256 {
-        if (!this.__startTime) this.__startTime = new StoredU256(startTimePointer, EMPTY_POINTER);
-        return this.__startTime as StoredU256;
+    private __currentPhase: StoredU256 | null = null;
+    private get _currentPhase(): StoredU256 {
+        if (!this.__currentPhase) this.__currentPhase = new StoredU256(currentPhasePointer, EMPTY_POINTER);
+        return this.__currentPhase as StoredU256;
     }
 
     private __treasury: StoredString | null = null;
@@ -300,16 +302,44 @@ export class DopamilioNFT extends OP721 {
         return result;
     }
 
-    // Admin: startMint — activate the phase clock
+    // Admin: activateTeam — phase 0 → 1
 
-    @method()
+    @method({ name: '_unused', type: ABIDataTypes.BOOL })
     @returns({ name: 'success', type: ABIDataTypes.BOOL })
-    public startMint(_calldata: Calldata): BytesWriter {
+    public activateTeam(_calldata: Calldata): BytesWriter {
         this.onlyDeployer(Blockchain.tx.sender);
-        if (!this._startTime.value.isZero()) throw new Revert('DopamilioNFT: already started');
-        const ts = u256.fromU64(Blockchain.block.medianTimestamp);
-        this._startTime.value = ts;
-        Blockchain.emit(new MintStartedEvent(ts));
+        if (this._currentPhase.value.toU64() !== 0) throw new Revert('DopamilioNFT: not in phase 0');
+        this._currentPhase.value = u256.fromU64(PHASE_TEAM as u64);
+        Blockchain.emit(new PhaseActivatedEvent(PHASE_TEAM));
+        const result = new BytesWriter(1);
+        result.writeBoolean(true);
+        return result;
+    }
+
+    // Admin: activateWL — phase 1 → 2 (requires WL root)
+
+    @method({ name: '_unused', type: ABIDataTypes.BOOL })
+    @returns({ name: 'success', type: ABIDataTypes.BOOL })
+    public activateWL(_calldata: Calldata): BytesWriter {
+        this.onlyDeployer(Blockchain.tx.sender);
+        if (this._currentPhase.value.toU64() !== 1) throw new Revert('DopamilioNFT: not in phase 1');
+        if (this._wlMerkleRoot.value.isZero()) throw new Revert('DopamilioNFT: WL root not set');
+        this._currentPhase.value = u256.fromU64(PHASE_WL as u64);
+        Blockchain.emit(new PhaseActivatedEvent(PHASE_WL));
+        const result = new BytesWriter(1);
+        result.writeBoolean(true);
+        return result;
+    }
+
+    // Admin: activatePublic — phase 2 → 3
+
+    @method({ name: '_unused', type: ABIDataTypes.BOOL })
+    @returns({ name: 'success', type: ABIDataTypes.BOOL })
+    public activatePublic(_calldata: Calldata): BytesWriter {
+        this.onlyDeployer(Blockchain.tx.sender);
+        if (this._currentPhase.value.toU64() !== 2) throw new Revert('DopamilioNFT: not in phase 2');
+        this._currentPhase.value = u256.fromU64(PHASE_PUBLIC as u64);
+        Blockchain.emit(new PhaseActivatedEvent(PHASE_PUBLIC));
         const result = new BytesWriter(1);
         result.writeBoolean(true);
         return result;
@@ -366,30 +396,6 @@ export class DopamilioNFT extends OP721 {
     }
 
     @view
-    @returns({ name: 'startTime', type: ABIDataTypes.UINT256 })
-    public getStartTime(_calldata: Calldata): BytesWriter {
-        const result = new BytesWriter(U256_BYTE_LENGTH);
-        result.writeU256(this._startTime.value);
-        return result;
-    }
-
-    @view
-    @returns({ name: 'teamDuration', type: ABIDataTypes.UINT64 })
-    public getTeamDuration(_calldata: Calldata): BytesWriter {
-        const result = new BytesWriter(U64_BYTE_LENGTH);
-        result.writeU64(TEAM_DURATION);
-        return result;
-    }
-
-    @view
-    @returns({ name: 'wlDuration', type: ABIDataTypes.UINT64 })
-    public getWlDuration(_calldata: Calldata): BytesWriter {
-        const result = new BytesWriter(U64_BYTE_LENGTH);
-        result.writeU64(WL_DURATION);
-        return result;
-    }
-
-    @view
     @returns({ name: 'isTestnet', type: ABIDataTypes.BOOL })
     public getIsTestnet(_calldata: Calldata): BytesWriter {
         const result = new BytesWriter(1);
@@ -435,13 +441,7 @@ export class DopamilioNFT extends OP721 {
 
     private _getPhase(): u8 {
         if (IS_TESTNET) return PHASE_PUBLIC;
-        const start = this._startTime.value.toU64();
-        if (start === 0) return PHASE_NOT_STARTED;
-        const now     = Blockchain.block.medianTimestamp;
-        const elapsed = now > start ? now - start : 0;
-        if (elapsed < TEAM_DURATION)              return PHASE_TEAM;
-        if (elapsed < TEAM_DURATION + WL_DURATION) return PHASE_WL;
-        return PHASE_PUBLIC;
+        return this._currentPhase.value.toU64() as u8;
     }
 
     // Internal: sum of BTC sent to treasury in tx outputs
