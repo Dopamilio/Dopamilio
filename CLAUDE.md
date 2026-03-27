@@ -35,7 +35,7 @@ vercel deploy --prod --yes
 ```
 
 ## Contract
-- **Address: PENDING_DEPLOY (set after mainnet deploy)**
+- **Address: 0xd3d2a7f92284b5d1e300675d6a944adca21a3feced25dd23e6c3565232d87d3a**
 - Deployer: bc1pr0hqrfe2gl0dpaq4epx0ac7f35vgfayh09snnvv5u4nt64lx7xgqx62pd6
 - Treasury: bc1pn7zlq5qmzagmnwfc9nwa9387qc6cnxwd6g2r74sl43xzvx446p7sptgpj0
 - BaseURI: https://dopamilio.vercel.app/api/metadata

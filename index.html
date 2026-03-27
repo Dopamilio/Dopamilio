@@ -1458,7 +1458,7 @@ input,textarea{-webkit-user-select:text;-moz-user-select:text;user-select:text;}
   <span class="mac-window-title">dopamilio@bitcoin:~ mint-terminal</span>
   <div class="mac-topbar-right">
     <span class="mac-status-dot"></span>
-    <span class="mac-status-txt">OPNet Testnet</span>
+    <span class="mac-status-txt">OPNet Mainnet</span>
   </div>
 </div>
 <!-- LOADER -->
@@ -1724,7 +1724,7 @@ const NFT_TOKEN_IDS=[1,2,3,4,5,6,14,57,303,2314];
 /* ══════════════════════════════════════════════
    OPNET CONTRACT — mainnet
 ══════════════════════════════════════════════ */
-const CONTRACT_ADDR  = 'PENDING_DEPLOY'; // set after mainnet deploy
+const CONTRACT_ADDR  = '0xd3d2a7f92284b5d1e300675d6a944adca21a3feced25dd23e6c3565232d87d3a';
 const CONTRACT_P2TR  = 'bc1pn7zlq5qmzagmnwfc9nwa9387qc6cnxwd6g2r74sl43xzvx446p7sptgpj0'; // treasury
 const DEPLOYER_OPT   = 'bc1pr0hqrfe2gl0dpaq4epx0ac7f35vgfayh09snnvv5u4nt64lx7xgqx62pd6'; // deployer wallet
 const MINT_PRICE_SATS = 6969n;
@@ -1909,7 +1909,7 @@ function _buildActivityFromChain(mints){
 // ScanBlock: last block fully scanned
 const _CACHE_KEY   = 'dopa_mint_txids_v2_'+CONTRACT_ADDR.slice(-8);
 const _SCAN_KEY    = 'dopa_scan_block_v2_'+CONTRACT_ADDR.slice(-8);
-const _DEPLOY_BLOCK = 0x0; // PENDING_DEPLOY — set to mainnet reveal block after deploy
+const _DEPLOY_BLOCK = 0xE6189; // block #942,473 — mainnet deploy TX
 var _mintTxCache = {};
 var _scanRunning = false;
 try { _mintTxCache = JSON.parse(localStorage.getItem(_CACHE_KEY)||'{}'); } catch(e){}
@@ -2274,7 +2274,7 @@ const STICKERS=[
     ctx.font = `9px 'JetBrains Mono','SF Mono',monospace`;
     ctx.letterSpacing = '0.5px';
     ctx.fillStyle = '#28c840';
-    const rightText = '● OPNet Testnet';
+    const rightText = '● OPNet Mainnet';
     const tw = ctx.measureText(rightText).width;
     ctx.fillText(rightText, W - tw - 34, titleH/2 + 3);
     ctx.letterSpacing = '0px';
@@ -4090,7 +4090,7 @@ function mktRenderDetailView(nft) {
     +'<div class="mkt-meta-row"><span class="mkt-meta-label">Standard</span><span class="mkt-meta-val" style="color:#00ff41">OP-721 · Bitcoin L1</span></div>'
     +'<div class="mkt-meta-row"><span class="mkt-meta-label">Owner</span><span class="mkt-meta-val"><a href="'+OPSCAN_ADDR+_safeText(nft.owner.replace(/…/,''))+OPSCAN_QUERY+'" target="_blank" style="color:#3b9eff;text-decoration:none">'+_safeText(nft.owner)+'</a><button class="mkt-copy-btn">&#9014;</button></span></div>'
     +'<div class="mkt-meta-row"><span class="mkt-meta-label">Mint TX</span><span class="mkt-meta-val" style="font-size:10px"><a href="'+OPSCAN_BASE+_safeText(nft.mintTx.slice(0,32))+'…'+OPSCAN_QUERY+'" target="_blank" style="color:#3b9eff;text-decoration:none">'+_safeText(nft.mintTx.slice(0,12))+'…'+_safeText(nft.mintTx.slice(-8))+'</a><button class="mkt-copy-btn">&#9014;</button></span></div>'
-    +'<div class="mkt-meta-row"><span class="mkt-meta-label">Network</span><span class="mkt-meta-val" style="color:#c8a84b">Bitcoin · OPNet Testnet</span></div>'
+    +'<div class="mkt-meta-row"><span class="mkt-meta-label">Network</span><span class="mkt-meta-val" style="color:#c8a84b">Bitcoin · OPNet Mainnet</span></div>'
     +'<div class="mkt-meta-row" style="border-bottom:none"><span class="mkt-meta-label">Metadata</span><span class="mkt-meta-val"><a href="/api/metadata/'+_safeText(String(nft.tokenId))+'" target="_blank" style="color:#3b9eff;text-decoration:none;font-size:10px">View JSON ↗</a></span></div>'
     +'<div class="mkt-tabs">'
     +'<button class="mkt-tab'+(isOffersActive?' active':'')+'" data-tab="offers" onclick="mktSetTab(\'offers\')">Offers 0</button>'
