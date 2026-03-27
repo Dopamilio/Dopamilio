@@ -1,14 +1,15 @@
 /**
- * init-wl.ts — Initialize WL phase on deployed DopamilioNFT v8+
+ * activate-wl.ts — Activate WL phase on DopamilioNFT
  *
  * Usage (from contracts/ folder):
- *   OPNET_MNEMONIC="..." npx tsx init-wl.ts <contractAddress>
+ *   OPNET_MNEMONIC="..." npx tsx activate-wl.ts <contractAddress> [--mainnet]
  *
  * Calls:
- *   1. activateTeam()   — phase 0 → 1 (TEAM)
- *   2. activateWL()     — phase 1 → 2 (WL) — stores on-chain timestamp for countdown
- * Two separate transactions. Verifies getPhase() == 2 and getWlStartTime() > 0.
+ *   activateWL() — phase 1 (TEAM) → 2 (WL)
+ *   Stores on-chain medianTimestamp → wlStartTime (used by frontend for 1.5h countdown)
  *
+ * Run this AFTER verifying deployer mints in TEAM phase.
+ * After 1.5h WL window, run activate-public.ts.
  * SECURITY: mnemonic only via env var — NEVER hardcoded.
  */
 import { networks } from '@btc-vision/bitcoin';
@@ -26,7 +27,7 @@ const NETWORK    = IS_MAINNET ? networks.bitcoin : networks.opnetTestnet;
 
 const args = process.argv.slice(2).filter(a => !a.startsWith('--'));
 if (args.length < 1) {
-    console.error('Usage: OPNET_MNEMONIC="..." npx tsx init-wl.ts <contractAddress> [--mainnet]');
+    console.error('Usage: OPNET_MNEMONIC="..." npx tsx activate-wl.ts <contractAddress> [--mainnet]');
     process.exit(1);
 }
 const CONTRACT_ADDR = args[0];
@@ -37,7 +38,6 @@ if (!mnemonic) {
     process.exit(1);
 }
 
-// Wallet setup
 const mnemonicObj = new Mnemonic(mnemonic!, '', NETWORK, MLDSASecurityLevel.LEVEL1);
 const wallet      = mnemonicObj.deriveOPWallet(AddressTypes.P2WPKH, 0);
 
@@ -50,18 +50,7 @@ const senderAddr = Address.fromString(
     bytesToHex(wallet.keypair.publicKey as Uint8Array),
 );
 
-console.log('\nDeployer P2TR  :', wallet.p2tr);
-console.log('Deployer OPNet :', wallet.address.toString());
-console.log('Contract       :', CONTRACT_ADDR);
-
-// ABI
 const ABI: BitcoinInterfaceAbi = [
-    {
-        name: 'activateTeam',
-        inputs:  [],
-        outputs: [{ name: 'success', type: ABIDataTypes.BOOL }],
-        type: BitcoinAbiTypes.Function,
-    },
     {
         name: 'activateWL',
         inputs:  [],
@@ -107,80 +96,61 @@ async function waitForConfirmation(txId: string, label: string): Promise<void> {
 async function main(): Promise<void> {
     const contract = getContract(CONTRACT_ADDR, ABI, provider, NETWORK, senderAddr);
 
-    // Pre-check: contract should be in phase 0 (INACTIVE)
+    console.log('\nNetwork        :', IS_MAINNET ? 'MAINNET' : 'testnet');
+    console.log('Deployer P2TR  :', wallet.p2tr);
+    console.log('Deployer OPNet :', wallet.address.toString());
+    console.log('Contract       :', CONTRACT_ADDR);
+
+    // Pre-check: must be in phase 1 (TEAM)
     const phaseSim = await (contract as any).getPhase();
     const phase = Number(phaseSim.properties?.phase ?? phaseSim);
-    console.log('\nCurrent phase:', phase, '(expected 0 = INACTIVE)');
-    if (phase !== 0) {
-        console.warn('WARNING: Phase is not 0. activateTeam may revert if already initialized.');
+    console.log('\nCurrent phase:', phase, '(must be 1 = TEAM)');
+    if (phase !== 1) {
+        throw new Error(`Cannot activate WL: current phase is ${phase}, expected 1 (TEAM)`);
     }
 
-    // Step 1: Call activateTeam()
-    console.log('\n--- Step 1: activateTeam ---');
-    const teamSim = await (contract as any).activateTeam();
-    if (teamSim.revert) {
-        throw new Error(`activateTeam simulation reverted: ${teamSim.revert}`);
-    }
+    console.log('\n--- activateWL ---');
+    const sim = await (contract as any).activateWL();
+    if (sim.revert) throw new Error(`activateWL simulation reverted: ${sim.revert}`);
 
-    const teamReceipt = await teamSim.sendTransaction({
+    const receipt = await sim.sendTransaction({
         signer:      wallet.keypair,
         mldsaSigner: wallet.mldsaKeypair,
         refundTo:    wallet.p2tr,
         network:     NETWORK,
         maximumAllowedSatToSpend: 100_000n,
     });
-    if (!teamReceipt) throw new Error('activateTeam: no receipt');
-    const teamTxId = teamReceipt.transactionId ?? '';
-    console.log('  OK activateTeam TX:', teamTxId);
+    if (!receipt) throw new Error('activateWL: no receipt');
+    const txId = receipt.transactionId ?? '';
+    console.log('  OK activateWL TX:', txId);
 
-    await waitForConfirmation(teamTxId, 'activateTeam');
+    await waitForConfirmation(txId, 'activateWL');
 
-    // Step 2: Call activateWL()
-    console.log('\n--- Step 2: activateWL ---');
-    const wlSim = await (contract as any).activateWL();
-    if (wlSim.revert) {
-        throw new Error(`activateWL simulation reverted: ${wlSim.revert}`);
-    }
-
-    const wlReceipt = await wlSim.sendTransaction({
-        signer:      wallet.keypair,
-        mldsaSigner: wallet.mldsaKeypair,
-        refundTo:    wallet.p2tr,
-        network:     NETWORK,
-        maximumAllowedSatToSpend: 100_000n,
-    });
-    if (!wlReceipt) throw new Error('activateWL: no receipt');
-    const wlTxId = wlReceipt.transactionId ?? '';
-    console.log('  OK activateWL TX:', wlTxId);
-
-    await waitForConfirmation(wlTxId, 'activateWL');
-
-    // Verify final phase and WL start time
     const phaseAfterSim = await (contract as any).getPhase();
     const phaseAfter = Number(phaseAfterSim.properties?.phase ?? phaseAfterSim);
-    console.log('\nPhase after activateWL:', phaseAfter, '(expected 2 = WL)');
 
-    const wlStartSim = await (contract as any).getWlStartTime();
+    const wlStartSim  = await (contract as any).getWlStartTime();
     const wlStartTime = Number(wlStartSim.properties?.startTime ?? 0n);
     const wlEndTime   = wlStartTime + 5400;
-    console.log('WL start time (secs)  :', wlStartTime, wlStartTime > 0 ? '✓' : '⚠ WARNING: 0');
-    console.log('WL end time (secs)    :', wlEndTime, '→', new Date(wlEndTime * 1000).toISOString());
 
-    if (phaseAfter !== 2) {
-        console.warn('WARNING: Expected phase 2 (WL) but got', phaseAfter);
-    }
+    console.log('\nPhase after activateWL:', phaseAfter, '(expected 2 = WL)');
+    console.log('WL start time  :', wlStartTime, wlStartTime > 0 ? '✓' : '⚠ WARNING: 0');
+    console.log('WL end time    :', wlEndTime, '→', wlStartTime > 0 ? new Date(wlEndTime * 1000).toISOString() : 'N/A');
 
     console.log('\n=================================================================');
-    console.log(' init-wl complete!');
-    console.log(' Contract    :', CONTRACT_ADDR);
-    console.log(' Phase       :', phaseAfter, '(2=WL — open to all wallets, max 5)');
-    console.log(' WL starts   :', wlStartTime > 0 ? new Date(wlStartTime * 1000).toISOString() : 'N/A');
-    console.log(' WL ends     :', wlStartTime > 0 ? new Date(wlEndTime * 1000).toISOString() : 'N/A (1.5h from WL activation)');
-    console.log(' Next        : run activate-public.ts when 1.5h WL window is over');
+    console.log(' activate-wl complete!');
+    console.log(' Network  :', IS_MAINNET ? 'MAINNET' : 'testnet');
+    console.log(' Contract :', CONTRACT_ADDR);
+    console.log(' Phase    :', phaseAfter, '(2=WL — open to all wallets, max 5 per wallet)');
+    console.log(' WL ends  :', wlStartTime > 0 ? new Date(wlEndTime * 1000).toISOString() : 'N/A');
+    console.log('');
+    console.log(' Next steps:');
+    console.log('   1. Frontend will auto-detect WL phase and show 1.5h countdown');
+    console.log('   2. After 1.5h, run: npx tsx activate-public.ts', CONTRACT_ADDR, IS_MAINNET ? '--mainnet' : '');
     console.log('=================================================================');
 }
 
 main().catch((err) => {
-    console.error('init-wl failed:', err);
+    console.error('activate-wl failed:', err);
     process.exit(1);
 });

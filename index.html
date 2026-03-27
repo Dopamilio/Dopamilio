@@ -1733,6 +1733,7 @@ const NETWORK_OBJ    = {
   bech32:'opt', bech32Opnet:'opt',
   bip32:{public:70617039,private:70615956},
   pubKeyHash:111, scriptHash:196, wif:239,
+  isTestnet:true,
 };
 const FALLBACK_SATS  = MINT_PRICE_SATS;
 
@@ -2548,8 +2549,6 @@ function tickTimers(){
   }
 }
 setInterval(tickTimers,1000);
-// Auto-refresh phase/supply from chain every 30s (catches phase transitions without page reload)
-setInterval(function(){if(typeof _opnetImport==='function') _loadContractInfo();},30000);
 function _updatePhaseDisplay(phase,wlStartTimeSecs,wlDurationSecs,isTestnet){
   _isTestnet=isTestnet;_rawChainPhase=phase;
   _wlStartTimeSecs=wlStartTimeSecs||0;
@@ -2679,6 +2678,8 @@ async function doMint(){
   if(!connected||!walletAddr){doConnect();return;}
   if(!walletPubKey){walletToast('err','Please upgrade OP_Wallet and reconnect.');return;}
 
+  const btn=document.getElementById('mintBtn');
+
   // TEAM phase guard: normalize walletAddr (0x hex → opt1 bech32m) before comparing with CONTRACT_P2TR
   if(_rawChainPhase===1){
     const _rawAddr=walletAddr||'';
@@ -2694,7 +2695,6 @@ async function doMint(){
   const mintCost  = onChainPrice * BigInt(quantity); // NFT price → treasury (on-chain value)
   const totalCost = mintCost + gasSats;                  // NFT + gas → maximumAllowedSatToSpend
 
-  const btn=document.getElementById('mintBtn');
   btn.textContent='\u23F3 SIGNING...';btn.disabled=true;
   try{
     const sdk = await _opnetImport();

@@ -1,13 +1,13 @@
 /**
- * activate-public.ts — Transition DopamilioNFT to PUBLIC phase
+ * activate-team.ts — Activate TEAM phase on DopamilioNFT
  *
  * Usage (from contracts/ folder):
- *   OPNET_MNEMONIC="..." npx tsx activate-public.ts <contractAddress>
+ *   OPNET_MNEMONIC="..." npx tsx activate-team.ts <contractAddress> [--mainnet]
  *
  * Calls:
- *   activatePublic() — phase 2 (WL) → 3 (PUBLIC)
+ *   activateTeam() — phase 0 (INACTIVE) → 1 (TEAM)
  *
- * Run this after the 1.5h WL window has passed.
+ * Run this first. After verifying deployer minted successfully, run activate-wl.ts.
  * SECURITY: mnemonic only via env var — NEVER hardcoded.
  */
 import { networks } from '@btc-vision/bitcoin';
@@ -25,7 +25,7 @@ const NETWORK    = IS_MAINNET ? networks.bitcoin : networks.opnetTestnet;
 
 const args = process.argv.slice(2).filter(a => !a.startsWith('--'));
 if (args.length < 1) {
-    console.error('Usage: OPNET_MNEMONIC="..." npx tsx activate-public.ts <contractAddress> [--mainnet]');
+    console.error('Usage: OPNET_MNEMONIC="..." npx tsx activate-team.ts <contractAddress> [--mainnet]');
     process.exit(1);
 }
 const CONTRACT_ADDR = args[0];
@@ -50,7 +50,7 @@ const senderAddr = Address.fromString(
 
 const ABI: BitcoinInterfaceAbi = [
     {
-        name: 'activatePublic',
+        name: 'activateTeam',
         inputs:  [],
         outputs: [{ name: 'success', type: ABIDataTypes.BOOL }],
         type: BitcoinAbiTypes.Function,
@@ -88,21 +88,22 @@ async function waitForConfirmation(txId: string, label: string): Promise<void> {
 async function main(): Promise<void> {
     const contract = getContract(CONTRACT_ADDR, ABI, provider, NETWORK, senderAddr);
 
-    console.log('\nDeployer P2TR  :', wallet.p2tr);
+    console.log('\nNetwork        :', IS_MAINNET ? 'MAINNET' : 'testnet');
+    console.log('Deployer P2TR  :', wallet.p2tr);
     console.log('Deployer OPNet :', wallet.address.toString());
     console.log('Contract       :', CONTRACT_ADDR);
 
-    // Pre-check: must be in phase 2 (WL)
+    // Pre-check: must be in phase 0 (INACTIVE)
     const phaseSim = await (contract as any).getPhase();
     const phase = Number(phaseSim.properties?.phase ?? phaseSim);
-    console.log('\nCurrent phase:', phase, '(must be 2 = WL)');
-    if (phase !== 2) {
-        throw new Error(`Cannot activate PUBLIC: current phase is ${phase}, expected 2 (WL)`);
+    console.log('\nCurrent phase:', phase, '(must be 0 = INACTIVE)');
+    if (phase !== 0) {
+        throw new Error(`Cannot activate TEAM: current phase is ${phase}, expected 0 (INACTIVE)`);
     }
 
-    console.log('\n--- activatePublic ---');
-    const sim = await (contract as any).activatePublic();
-    if (sim.revert) throw new Error(`activatePublic simulation reverted: ${sim.revert}`);
+    console.log('\n--- activateTeam ---');
+    const sim = await (contract as any).activateTeam();
+    if (sim.revert) throw new Error(`activateTeam simulation reverted: ${sim.revert}`);
 
     const receipt = await sim.sendTransaction({
         signer:      wallet.keypair,
@@ -111,24 +112,30 @@ async function main(): Promise<void> {
         network:     NETWORK,
         maximumAllowedSatToSpend: 100_000n,
     });
-    if (!receipt) throw new Error('activatePublic: no receipt');
+    if (!receipt) throw new Error('activateTeam: no receipt');
     const txId = receipt.transactionId ?? '';
-    console.log('  OK activatePublic TX:', txId);
+    console.log('  OK activateTeam TX:', txId);
 
-    await waitForConfirmation(txId, 'activatePublic');
+    await waitForConfirmation(txId, 'activateTeam');
 
     const phaseAfterSim = await (contract as any).getPhase();
     const phaseAfter = Number(phaseAfterSim.properties?.phase ?? phaseAfterSim);
-    console.log('\nPhase after activatePublic:', phaseAfter, '(expected 3 = PUBLIC)');
+    console.log('\nPhase after activateTeam:', phaseAfter, '(expected 1 = TEAM)');
 
     console.log('\n=================================================================');
-    console.log(' activate-public complete!');
+    console.log(' activate-team complete!');
+    console.log(' Network  :', IS_MAINNET ? 'MAINNET' : 'testnet');
     console.log(' Contract :', CONTRACT_ADDR);
-    console.log(' Phase    :', phaseAfter, '(3=PUBLIC — open to all wallets, max 3)');
+    console.log(' Phase    :', phaseAfter, '(1=TEAM — deployer can mint up to 10)');
+    console.log('');
+    console.log(' Next steps:');
+    console.log('   1. Mint up to 10 tokens as deployer via the frontend');
+    console.log('   2. Verify tokens arrived correctly in deployer wallet');
+    console.log('   3. When ready, run: npx tsx activate-wl.ts', CONTRACT_ADDR, IS_MAINNET ? '--mainnet' : '');
     console.log('=================================================================');
 }
 
 main().catch((err) => {
-    console.error('activate-public failed:', err);
+    console.error('activate-team failed:', err);
     process.exit(1);
 });
