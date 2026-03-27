@@ -1,5 +1,5 @@
 /**
- * DopamilioNFT.ts  v7
+ * DopamilioNFT.ts  v8
  *
  * 3,333 unique degenerates etched on Bitcoin.
  * OP-721 NFT collection on OPNet — extends OP721 base (btc-runtime 1.11.0).
@@ -9,14 +9,20 @@
  * Phases: deployer calls activateTeam() → activateWL() → activatePublic()
  * WL and PUBLIC are both open to anyone — no address gating.
  *
- * Audit fixes (v7 vs v6):
+ * Changes v8 vs v7:
+ *   - NEW:  activateWL() now stores Blockchain.block.medianTimestamp in slot 23 (wlStartTime)
+ *   - NEW:  getWlStartTime() view — returns wlStartTime (u64); 0 = WL not yet activated
+ *   - NEW:  getWlDuration() view  — returns WL_DURATION_SECS (5400 = 1.5 hours)
+ *   - FIX:  setTreasuryAddress() accepts both 'opt1' (testnet) and 'bc1p' (mainnet) prefixes
+ *
+ * All audit fixes from v7 are preserved:
  *   - CRITICAL: CEI — counters updated BEFORE _mint() loop (reentrancy fix)
  *   - HIGH:     mint() uses zero-guard for price, consistent with getMintPrice()
  *   - MEDIUM:   _getPhase() validates bounds before u64→u8 cast
- *   - LOW:      setTreasuryAddress validates 'opt1' prefix and min length
+ *   - LOW:      setTreasuryAddress validates recognized prefixes and min length
  *
  * Custom storage pointers — allocated AFTER 16 base pointers
- * (14 OP721 internal + 2 ReentrancyGuard). Absolute slots 17–22.
+ * (14 OP721 internal + 2 ReentrancyGuard). Absolute slots 17–23.
  * Order is FIXED — never insert, only append:
  *   17  mintPrice         StoredU256   (lazy)
  *   18  currentPhase      StoredU256   (lazy)
@@ -24,6 +30,7 @@
  *   20  mintedWlMap       AddressMemoryMap (eager)
  *   21  mintedPubMap      AddressMemoryMap (eager)
  *   22  teamMintedTotal   StoredU256   (lazy)
+ *   23  wlStartTime       StoredU256   (lazy) — medianTimestamp of activateWL tx block
  */
 
 import { u256 } from '@btc-vision/as-bignum/assembly';
@@ -41,6 +48,7 @@ import {
     SafeMath,
     EMPTY_POINTER,
     U8_BYTE_LENGTH,
+    U64_BYTE_LENGTH,
     U256_BYTE_LENGTH,
     U32_BYTE_LENGTH,
 } from '@btc-vision/btc-runtime/runtime';
@@ -61,11 +69,15 @@ const TREASURY:    string = 'opt1pv5z0n6gn0n8szljp7dewl52548zyvt48pt406cl607wen2
 
 // ── Mint constants ────────────────────────────────────────────────────────────
 
-const DEFAULT_MINT_PRICE: u64  = 6969;
+const DEFAULT_MINT_PRICE: u64 = 6969;
 const MAX_SUPPLY:         u256 = u256.fromU64(3333);
 const MAX_MINT_TEAM:      u64  = 10;
 const MAX_MINT_WL:        u64  = 5;
 const MAX_MINT_PUBLIC:    u64  = 3;
+
+// ── WL timing ─────────────────────────────────────────────────────────────────
+
+const WL_DURATION_SECS: u64 = 5400; // 1.5 hours
 
 // ── Phase IDs ─────────────────────────────────────────────────────────────────
 
@@ -76,12 +88,13 @@ const PHASE_PUBLIC:      u8 = 3;
 
 // ── Custom storage pointers (AFTER OP721 base's 16 internal pointers) ─────────
 
-const mintPricePointer:        u16 = Blockchain.nextPointer;  // slot 17
-const currentPhasePointer:     u16 = Blockchain.nextPointer;  // slot 18
-const treasuryPointer:         u16 = Blockchain.nextPointer;  // slot 19
-const mintedWlPointer:         u16 = Blockchain.nextPointer;  // slot 20
-const mintedPubPointer:        u16 = Blockchain.nextPointer;  // slot 21
-const teamMintedTotalPointer:  u16 = Blockchain.nextPointer;  // slot 22
+const mintPricePointer:       u16 = Blockchain.nextPointer;  // slot 17
+const currentPhasePointer:    u16 = Blockchain.nextPointer;  // slot 18
+const treasuryPointer:        u16 = Blockchain.nextPointer;  // slot 19
+const mintedWlPointer:        u16 = Blockchain.nextPointer;  // slot 20
+const mintedPubPointer:       u16 = Blockchain.nextPointer;  // slot 21
+const teamMintedTotalPointer: u16 = Blockchain.nextPointer;  // slot 22
+const wlStartTimePointer:     u16 = Blockchain.nextPointer;  // slot 23
 
 // ── Events ────────────────────────────────────────────────────────────────────
 
@@ -134,6 +147,12 @@ export class DopamilioNFT extends OP721 {
         return this.__teamMintedTotal!;
     }
 
+    private __wlStartTime: StoredU256 | null = null;
+    private get _wlStartTime(): StoredU256 {
+        if (!this.__wlStartTime) this.__wlStartTime = new StoredU256(wlStartTimePointer, EMPTY_POINTER);
+        return this.__wlStartTime!;
+    }
+
     // ── Eager AddressMemoryMaps ───────────────────────────────────────────────
 
     private readonly _mintedWlMap:  AddressMemoryMap = new AddressMemoryMap(mintedWlPointer);
@@ -162,6 +181,7 @@ export class DopamilioNFT extends OP721 {
 
         this._mintPrice.value = u256.fromU64(DEFAULT_MINT_PRICE);
         this._treasury.value  = TREASURY;
+        // _nextTokenId initialized to u256.One by OP721.instantiate() — tokens start at #1
     }
 
     public onUpdate(_calldata: Calldata): void {}
@@ -290,6 +310,8 @@ export class DopamilioNFT extends OP721 {
         this.onlyDeployer(Blockchain.tx.sender);
         if (this._currentPhase.value.toU64() !== 1) throw new Revert('DopamilioNFT: must be in TEAM phase');
         this._currentPhase.value = u256.fromU64(2);
+        // Store block medianTimestamp so frontend can display real-time 1.5h countdown
+        this._wlStartTime.value = u256.fromU64(Blockchain.block.medianTimestamp);
         Blockchain.emit(new PhaseActivatedEvent(PHASE_WL));
         const result = new BytesWriter(1);
         result.writeBoolean(true);
@@ -324,7 +346,7 @@ export class DopamilioNFT extends OP721 {
         return result;
     }
 
-    // ── Admin: setTreasuryAddress (LOW fix: validate opt1 prefix + length) ────
+    // ── Admin: setTreasuryAddress (accepts opt1 testnet OR bc1p mainnet) ───────
 
     @method({ name: 'addr', type: ABIDataTypes.STRING })
     @returns({ name: 'success', type: ABIDataTypes.BOOL })
@@ -332,7 +354,9 @@ export class DopamilioNFT extends OP721 {
         this.onlyDeployer(Blockchain.tx.sender);
         const addr = calldata.readStringWithLength();
         if (addr.length < 10) throw new Revert('DopamilioNFT: address too short');
-        if (!addr.startsWith('opt1')) throw new Revert('DopamilioNFT: address must start with opt1');
+        if (!addr.startsWith('opt1') && !addr.startsWith('bc1p')) {
+            throw new Revert('DopamilioNFT: address must start with opt1 or bc1p');
+        }
         this._treasury.value = addr;
         Blockchain.emit(new TreasuryUpdatedEvent(addr));
         const result = new BytesWriter(1);
@@ -400,6 +424,22 @@ export class DopamilioNFT extends OP721 {
         else if (phase === 3) count = this._mintedPubMap.get(addr);
         const result = new BytesWriter(U256_BYTE_LENGTH);
         result.writeU256(count);
+        return result;
+    }
+
+    @view
+    @returns({ name: 'startTime', type: ABIDataTypes.UINT64 })
+    public getWlStartTime(_calldata: Calldata): BytesWriter {
+        const result = new BytesWriter(U64_BYTE_LENGTH);
+        result.writeU64(this._wlStartTime.value.toU64());
+        return result;
+    }
+
+    @view
+    @returns({ name: 'durationSecs', type: ABIDataTypes.UINT64 })
+    public getWlDuration(_calldata: Calldata): BytesWriter {
+        const result = new BytesWriter(U64_BYTE_LENGTH);
+        result.writeU64(WL_DURATION_SECS);
         return result;
     }
 

@@ -1541,8 +1541,8 @@ input,textarea{-webkit-user-select:text;-moz-user-select:text;user-select:text;}
     <div class="card" id="mint-card" style="flex:1;min-height:0;">
       <div class="phases">
         <button class="ph active" style="cursor:default;pointer-events:none"><span class="phn">TEAM <span style="opacity:.55;font-size:.8em">×10</span></span><span class="phs">&#9679; ACTIVE</span></button>
-        <button class="ph locked" style="cursor:default;pointer-events:none"><span class="phn">WL <span style="opacity:.55;font-size:.8em">×3</span></span><span class="phs">&#128274; SOON</span></button>
-        <button class="ph locked" style="cursor:default;pointer-events:none"><span class="phn">PUBLIC <span style="opacity:.55;font-size:.8em">×5</span></span><span class="phs">&#128274; SOON</span></button>
+        <button class="ph locked" style="cursor:default;pointer-events:none"><span class="phn">WL <span style="opacity:.55;font-size:.8em">×5</span></span><span class="phs">&#128274; SOON</span></button>
+        <button class="ph locked" style="cursor:default;pointer-events:none"><span class="phn">PUBLIC <span style="opacity:.55;font-size:.8em">×3</span></span><span class="phs">&#128274; SOON</span></button>
       </div>
       <div class="stats">
         <div class="sb sbb"><span class="sv" id="sSupply">3333</span><span class="sl">SUPPLY</span></div>
@@ -1559,11 +1559,11 @@ input,textarea{-webkit-user-select:text;-moz-user-select:text;user-select:text;}
           <div class="pt-right"><span class="pt-timer" id="t0">01:00:00</span><span class="pt-ends">ENDS IN</span></div>
         </div>
         <div class="pt-row" id="pt1">
-          <div class="pt-left"><span class="pt-badge badge-soon">SOON</span><span class="pt-name">WL — ONLY 3</span></div>
-          <div class="pt-right"><span class="pt-timer" id="t1">01:00:00</span><span class="pt-ends">STARTS IN</span></div>
+          <div class="pt-left"><span class="pt-badge badge-soon">SOON</span><span class="pt-name">WL — UP TO 5</span></div>
+          <div class="pt-right"><span class="pt-timer" id="t1">--:--:--</span><span class="pt-ends">STARTS IN</span></div>
         </div>
         <div class="pt-row" id="pt2">
-          <div class="pt-left"><span class="pt-badge badge-soon">SOON</span><span class="pt-name">PUBLIC — ONLY 5</span></div>
+          <div class="pt-left"><span class="pt-badge badge-soon">SOON</span><span class="pt-name">PUBLIC — UP TO 3</span></div>
           <div class="pt-right"><span class="pt-timer" id="t2">02:00:00</span><span class="pt-ends">STARTS IN</span></div>
         </div>
       </div>
@@ -1749,6 +1749,8 @@ function _getDopamilioAbi(sdk){
     {name:'activateTeam',       type:B.Function,payable:false, inputs:[],                                  outputs:[{name:'success',type:A.BOOL}]},
     {name:'activateWL',         type:B.Function,payable:false, inputs:[],                                  outputs:[{name:'success',type:A.BOOL}]},
     {name:'activatePublic',     type:B.Function,payable:false, inputs:[],                                  outputs:[{name:'success',type:A.BOOL}]},
+    {name:'getWlStartTime',     type:B.Function,payable:false, inputs:[],                                  outputs:[{name:'startTime',type:A.UINT64}]},
+    {name:'getWlDuration',      type:B.Function,payable:false, inputs:[],                                  outputs:[{name:'durationSecs',type:A.UINT64}]},
   ];
   return _DOPAMILIO_ABI;
 }
@@ -1820,25 +1822,27 @@ async function _loadContractInfo(){
     // Read-only: no sender needed (getMintPrice/totalSupply don't check caller)
     const contract = getContract(CONTRACT_ADDR,_getDopamilioAbi(sdk),provider,NETWORK_OBJ);
 
-    // Fetch supply + price + phase in parallel
-    const [totalRes, priceRes, phaseRes, isTestRes] = await Promise.all([
+    // Fetch supply + price + phase + WL timing in parallel
+    const [totalRes, priceRes, phaseRes, isTestRes, wlStartRes, wlDurRes] = await Promise.all([
       contract.totalSupply(),
       contract.getMintPrice(),
       contract.getPhase().catch(()=>null),
       contract.getIsTestnet().catch(()=>null),
+      contract.getWlStartTime().catch(()=>null),
+      contract.getWlDuration().catch(()=>null),
     ]);
 
-    const totalMinted = Number(totalRes?.properties?.total ?? 0n);
-    onChainPrice      = priceRes?.properties?.price ?? FALLBACK_SATS;
+    const totalMinted    = Number(totalRes?.properties?.total ?? 0n);
+    onChainPrice         = priceRes?.properties?.price ?? FALLBACK_SATS;
+    const phase          = Number(phaseRes?.properties?.phase ?? 0n);
+    const isTestnet      = isTestRes?.properties?.isTestnet ?? false;
+    const wlStartTime    = Number(wlStartRes?.properties?.startTime ?? 0n);
+    const wlDuration     = Number(wlDurRes?.properties?.durationSecs ?? 5400n);
 
     mintedC = totalMinted;
     updateProg(totalMinted);
     _updatePriceDisplay(onChainPrice);
-
-    // Update phase display from onchain data (v5 manual phases — no startTime/wlDuration)
-    const phase     = Number(phaseRes?.properties?.phase ?? 0n);
-    const isTestnet = isTestRes?.properties?.isTestnet ?? false;
-    _updatePhaseDisplay(phase, 0, isTestnet);
+    _updatePhaseDisplay(phase, wlStartTime, wlDuration, isTestnet);
   }catch(e){ console.warn('[dopamilio] loadContractInfo:', e?.message); }
 }
 
@@ -2519,31 +2523,35 @@ function goNft(i,rst){
 /* ── PHASES ── */
 let curPhase=0,connected=false,mintedC=0,_rawChainPhase=0;
 const SUPPLY=MAX_SUPPLY;
-let phaseTimers=[0,0,0];
-let _chainStartTime=0,_isTestnet=false,_teamDur=0,_wlDur=604800000; // _wlDur updated from chain
-function fmt(s){s=Math.floor(s);const d=Math.floor(s/86400),h=Math.floor((s%86400)/3600),m=Math.floor((s%3600)/60),ss=s%60;return d>0?`${d}d ${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(ss).padStart(2,'0')}`:`${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(ss).padStart(2,'0')}`;}
+let _wlStartTimeSecs=0,_wlDurationSecs=5400,_wlEndMs=0,_isTestnet=false;
+function fmt(s){s=Math.floor(s);const h=Math.floor(s/3600),m=Math.floor((s%3600)/60),ss=s%60;return`${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(ss).padStart(2,'0')}`;}
 function tickTimers(){
-  if(_isTestnet){['t0','t1','t2'].forEach(function(id){var e=document.getElementById(id);if(e)e.textContent='TESTNET';});return;}
-  if(_chainStartTime===0){['t0','t1','t2'].forEach(function(id){var e=document.getElementById(id);if(e)e.textContent='SOON';});return;}
-  for(let i=0;i<3;i++){if(phaseTimers[i]>0)phaseTimers[i]--;var e=document.getElementById('t'+i);if(e)e.textContent=fmt(phaseTimers[i]);}
+  // Real-time WL countdown (phase 2 = WL active with stored timestamp)
+  if(_rawChainPhase===2&&_wlEndMs>0){
+    var t1=document.getElementById('t1');
+    if(t1){
+      var remSec=Math.max(0,Math.floor((_wlEndMs-Date.now())/1000));
+      t1.textContent=remSec>0?fmt(remSec):'PUBLIC SOON';
+    }
+  }
 }
 setInterval(tickTimers,1000);
-function _updatePhaseDisplay(phase,startTime,isTestnet){
-  _isTestnet=isTestnet;_chainStartTime=startTime;_rawChainPhase=phase;
-  if(isTestnet){setPhase(2);['t0','t1','t2'].forEach(function(id){var e=document.getElementById(id);if(e)e.textContent='TESTNET';});return;}
-  if(phase===0){return;} // not started — keep default "SOON" display
-  // Contract: 1=TEAM, 2=WL, 3=PUBLIC → Frontend: 0=TEAM, 1=WL, 2=PUBLIC
+function _updatePhaseDisplay(phase,wlStartTimeSecs,wlDurationSecs,isTestnet){
+  _isTestnet=isTestnet;_rawChainPhase=phase;
+  _wlStartTimeSecs=wlStartTimeSecs||0;
+  _wlDurationSecs=wlDurationSecs||5400;
+  // Compute WL end timestamp for countdown
+  _wlEndMs=_wlStartTimeSecs>0?(_wlStartTimeSecs*1000)+(_wlDurationSecs*1000):0;
+  if(phase===0){
+    // Contract not started — timers show SOON
+    ['t0','t1','t2'].forEach(function(id){var e=document.getElementById(id);if(e)e.textContent='SOON';});
+    return;
+  }
+  // Contract: 1=TEAM, 2=WL, 3=PUBLIC → Frontend phase index: 0=TEAM, 1=WL, 2=PUBLIC
   const frontendPhase=Math.min(phase-1,2);
-  if(startTime===0){setPhase(frontendPhase);return;} // manual phase mode — no timers
-  // startTime and _wlDur are in ms (medianTimestamp units); convert elapsed to seconds for timers
-  const nowMs=Date.now();
-  const elapsedSec=Math.max(0,(nowMs-startTime)/1000);
-  const wlDurSec=Math.max(1,_wlDur/1000);
-  const teamDurSec=Math.max(0,_teamDur/1000);
-  if(phase===1){phaseTimers[0]=Math.max(0,teamDurSec-elapsedSec);phaseTimers[1]=wlDurSec;phaseTimers[2]=0;}
-  else if(phase===2){phaseTimers[0]=0;phaseTimers[1]=Math.max(0,wlDurSec-elapsedSec);phaseTimers[2]=0;}
-  else{phaseTimers=[0,0,0];}
   setPhase(frontendPhase);
+  // Trigger immediate countdown tick for WL
+  if(phase===2) tickTimers();
 }
 function setPhase(i){curPhase=i;
   // Clamp mintQty to new phase max
@@ -2748,6 +2756,7 @@ async function doMint(){
     const msg=e?.message??String(e);
     const isInsufficientSats=(msg&&(msg.toLowerCase().includes('insufficient')||msg.toLowerCase().includes('not enough')||msg.toLowerCase().includes('balance')||msg.toLowerCase().includes('funds')));
     if(isInsufficientSats){showRektModal();}
+    else if(msg.includes('cap exceeded')||msg.includes('team cap')){walletToast('err','Already minted enough for this phase.');}
     else if(!msg.includes('User rejected')) walletToast('err','Mint error: '+msg.slice(0,120));
     console.error('doMint:',e?.message??e);
   }finally{

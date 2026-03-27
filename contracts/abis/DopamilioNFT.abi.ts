@@ -91,6 +91,20 @@ export const DopamilioNFTAbi = [
         outputs: [{ name: 'count', type: ABIDataTypes.UINT256 }],
         type: BitcoinAbiTypes.Function,
     },
+    {
+        name: 'getWlStartTime',
+        constant: true,
+        inputs: [],
+        outputs: [{ name: 'startTime', type: ABIDataTypes.UINT64 }],
+        type: BitcoinAbiTypes.Function,
+    },
+    {
+        name: 'getWlDuration',
+        constant: true,
+        inputs: [],
+        outputs: [{ name: 'durationSecs', type: ABIDataTypes.UINT64 }],
+        type: BitcoinAbiTypes.Function,
+    },
     ...DopamilioNFTEvents,
     ...OP_NET_ABI,
 ];

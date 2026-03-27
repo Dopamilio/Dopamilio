@@ -21,19 +21,18 @@ OPNET_MNEMONIC="..." npx tsx deploy.ts
 # DEPLOY_BLOCK  = 0x...      (block number from receipt)
 ```
 
-## 2. WL Setup
+## 2. WL Setup (v8 — no Merkle tree, fully open)
 
 ```bash
-# Before init-wl: collect MLDSA identity hex from all WL holders
-# Each holder runs in their OP_Wallet: window.opnet.requestAccounts() → copy the 0x hex
-
-# Edit wl.txt — replace opt1p... entries with real MLDSA hex (64 chars)
-# Then regenerate Merkle tree:
+# WL phase is open to ALL wallets — no whitelist needed
+# Just activate phases in order after verifying TEAM mints:
 cd contracts
-npx tsx generate-merkle.ts
 
-# Initialize WL on-chain:
+# Step 1: Activate TEAM + WL phases (stores on-chain timestamp for 1.5h countdown):
 OPNET_MNEMONIC="..." npx tsx init-wl.ts <CONTRACT_ADDR>
+
+# Step 2: After 1.5h WL window, activate PUBLIC:
+OPNET_MNEMONIC="..." npx tsx activate-public.ts <CONTRACT_ADDR>
 ```
 
 ## 3. Frontend Constants (index.html — auto-applied by switch-to-mainnet.sh)

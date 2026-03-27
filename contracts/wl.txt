@@ -1,8 +1,0 @@
-# Whitelist addresses — one per line
-# Format: opt1p... (bech32m P2TR) OR 64-char hex (x-only pubkey)
-# Get deployer address: OPNET_MNEMONIC="..." npx tsx get-sender-address.ts
-
-opt1pgepwd4rt64t8z3qf3v8xywt37wu0p09ul98nnhr4p3ml0kssaxxs50d4t8
-opt1pa6h4h7hljed5medazjr7tnah7fr4900s9wxs9g8xtd2l8xdyrnwqvt30q3
-opt1pfmhfv2mhkt822s4tr5qsyflndvw9yhxejjvfy5kxga9zyx9dqd5sfweffz
-opt1pvjag0nll9e9dz48yyt6frgs3nzct2jleh3g8snqzsja6e8mq6jlq62ufps

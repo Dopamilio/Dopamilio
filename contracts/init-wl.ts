@@ -1,15 +1,13 @@
 /**
- * init-wl.ts — Initialize WL phase on deployed DopamilioNFT v6 (manual phases)
+ * init-wl.ts — Initialize WL phase on deployed DopamilioNFT v8+
  *
  * Usage (from contracts/ folder):
  *   OPNET_MNEMONIC="..." npx tsx init-wl.ts <contractAddress>
  *
  * Calls:
  *   1. activateTeam()   — phase 0 → 1 (TEAM)
- *   2. activateWL()     — phase 1 → 2 (WL)
- * Two separate transactions. Verifies getPhase() == 2 (WL) at end.
- *
- * Note: v6 has no on-chain WL proof — WL gating is frontend-only.
+ *   2. activateWL()     — phase 1 → 2 (WL) — stores on-chain timestamp for countdown
+ * Two separate transactions. Verifies getPhase() == 2 and getWlStartTime() > 0.
  *
  * SECURITY: mnemonic only via env var — NEVER hardcoded.
  */
@@ -73,6 +71,12 @@ const ABI: BitcoinInterfaceAbi = [
         name: 'getPhase',
         inputs:  [],
         outputs: [{ name: 'phase', type: ABIDataTypes.UINT8 }],
+        type: BitcoinAbiTypes.Function,
+    },
+    {
+        name: 'getWlStartTime',
+        inputs:  [],
+        outputs: [{ name: 'startTime', type: ABIDataTypes.UINT64 }],
         type: BitcoinAbiTypes.Function,
     },
 ];
@@ -150,10 +154,16 @@ async function main(): Promise<void> {
 
     await waitForConfirmation(wlTxId, 'activateWL');
 
-    // Verify final phase
+    // Verify final phase and WL start time
     const phaseAfterSim = await (contract as any).getPhase();
     const phaseAfter = Number(phaseAfterSim.properties?.phase ?? phaseAfterSim);
     console.log('\nPhase after activateWL:', phaseAfter, '(expected 2 = WL)');
+
+    const wlStartSim = await (contract as any).getWlStartTime();
+    const wlStartTime = Number(wlStartSim.properties?.startTime ?? 0n);
+    const wlEndTime   = wlStartTime + 5400;
+    console.log('WL start time (secs)  :', wlStartTime, wlStartTime > 0 ? '✓' : '⚠ WARNING: 0');
+    console.log('WL end time (secs)    :', wlEndTime, '→', new Date(wlEndTime * 1000).toISOString());
 
     if (phaseAfter !== 2) {
         console.warn('WARNING: Expected phase 2 (WL) but got', phaseAfter);
@@ -161,10 +171,11 @@ async function main(): Promise<void> {
 
     console.log('\n=================================================================');
     console.log(' init-wl complete!');
-    console.log(' Contract :', CONTRACT_ADDR);
-    console.log(' Phase    :', phaseAfter, '(2=WL — WL wallets can mint)');
-    console.log(' Note     : WL gating is frontend-only (no on-chain proof)');
-    console.log(' Next     : run activatePublic() when WL window is over');
+    console.log(' Contract    :', CONTRACT_ADDR);
+    console.log(' Phase       :', phaseAfter, '(2=WL — open to all wallets, max 5)');
+    console.log(' WL starts   :', wlStartTime > 0 ? new Date(wlStartTime * 1000).toISOString() : 'N/A');
+    console.log(' WL ends     :', wlStartTime > 0 ? new Date(wlEndTime * 1000).toISOString() : 'N/A (1.5h from WL activation)');
+    console.log(' Next        : run activate-public.ts when 1.5h WL window is over');
     console.log('=================================================================');
 }
 

@@ -197,6 +197,32 @@
                     "type": "UINT256"
                 }
             ]
+        },
+        {
+            "name": "getWlStartTime",
+            "type": "View",
+            "payable": false,
+            "onlyOwner": false,
+            "inputs": [],
+            "outputs": [
+                {
+                    "name": "startTime",
+                    "type": "UINT64"
+                }
+            ]
+        },
+        {
+            "name": "getWlDuration",
+            "type": "View",
+            "payable": false,
+            "onlyOwner": false,
+            "inputs": [],
+            "outputs": [
+                {
+                    "name": "durationSecs",
+                    "type": "UINT64"
+                }
+            ]
         }
     ],
     "events": []

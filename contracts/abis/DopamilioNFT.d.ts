@@ -139,6 +139,26 @@ export type GetMintedCount = CallResult<
     OPNetEvent<never>[]
 >;
 
+/**
+ * @description Represents the result of the getWlStartTime function call.
+ */
+export type GetWlStartTime = CallResult<
+    {
+        startTime: bigint;
+    },
+    OPNetEvent<never>[]
+>;
+
+/**
+ * @description Represents the result of the getWlDuration function call.
+ */
+export type GetWlDuration = CallResult<
+    {
+        durationSecs: bigint;
+    },
+    OPNetEvent<never>[]
+>;
+
 // ------------------------------------------------------------------
 // IDopamilioNFT
 // ------------------------------------------------------------------
@@ -156,4 +176,6 @@ export interface IDopamilioNFT extends IOP_NETContract {
     getTreasuryAddress(): Promise<GetTreasuryAddress>;
     getTeamMintedTotal(): Promise<GetTeamMintedTotal>;
     getMintedCount(addr: Address, phase: number): Promise<GetMintedCount>;
+    getWlStartTime(): Promise<GetWlStartTime>;
+    getWlDuration(): Promise<GetWlDuration>;
 }
