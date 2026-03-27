@@ -1954,27 +1954,19 @@ async function _scanMintsForTxids(fromBlock, toBlock){
         }
         var _txh = tx.hash || tx.id || tx.txid || '';
         for(const ev of _evList){
-          if(ev.type === 'Mint' || ev.type === 'mint'){
-            // MintEvent: to(32) + firstTokenId(32) + amount(8) + totalPaid(8) = 80 bytes
+          if(ev.type === 'Transferred'){
+            // OP721TransferredEvent: operator(32)+from(32)+to(32)+tokenId(32) = 128 bytes
+            // Mint = from field is all zeros
             try{
               var bin = atob(ev.data);
-              if(bin.length >= 64){
-                var tokenIdHex = '';
-                for(var bi = 32; bi < 64; bi++){
-                  var byt = bin.charCodeAt(bi)&0xff;
-                  tokenIdHex += (byt<16?'0':'')+byt.toString(16);
-                }
-                var firstId = parseInt(tokenIdHex,16);
-                // Read amount (8 bytes at offset 64) — maps every token in batch to same txid
-                var mintAmt = 1;
-                if(bin.length >= 72){
-                  var amtHex='';
-                  for(var ai=64;ai<72;ai++){amtHex+=(bin.charCodeAt(ai)&0xff).toString(16).padStart(2,'0');}
-                  mintAmt = parseInt(amtHex,16)||1;
-                }
-                for(var ki=0;ki<mintAmt;ki++){
-                  var tid = String(firstId+ki);
-                  if(!_mintTxCache[tid] && _txh){ _mintTxCache[tid]=_txh; changed=true; }
+              if(bin.length >= 128){
+                var isFromZero = true;
+                for(var zi=32;zi<64;zi++){if((bin.charCodeAt(zi)&0xff)!==0){isFromZero=false;break;}}
+                if(isFromZero){
+                  var tokenIdHex='';
+                  for(var bi=96;bi<128;bi++){var byt=bin.charCodeAt(bi)&0xff;tokenIdHex+=(byt<16?'0':'')+byt.toString(16);}
+                  var tid=String(parseInt(tokenIdHex,16));
+                  if(!_mintTxCache[tid]&&_txh){_mintTxCache[tid]=_txh;changed=true;}
                 }
               }
             }catch(err){}
@@ -2564,7 +2556,7 @@ function goNft(i,rst){
 /* ── ACTIVITY (real on-chain data via _fetchRecentMints) ── */
 
 /* ── PHASES ── */
-let curPhase=0,connected=false,mintedC=0,_rawChainPhase=0,_mintPending=false;
+let curPhase=0,connected=false,mintedC=0,_rawChainPhase=0,_mintPending=false,_walletCapReached=false;
 const SUPPLY=MAX_SUPPLY;
 let _wlStartTimeSecs=0,_wlDurationSecs=5400,_wlEndMs=0,_isTestnet=false;
 function fmt(s){s=Math.floor(s);const h=Math.floor(s/3600),m=Math.floor((s%3600)/60),ss=s%60;return`${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(ss).padStart(2,'0')}`;}
@@ -2599,7 +2591,7 @@ function _updatePhaseDisplay(phase,wlStartTimeSecs,wlDurationSecs,isTestnet){
   }
   if(phase===2) tickTimers();
 }
-function setPhase(i){curPhase=i;
+function setPhase(i){if(i!==curPhase)_walletCapReached=false;curPhase=i;
   // Clamp mintQty to new phase max
   const mx=PHASE_MAX_MINT[i]??MAX_MINT;
   const qel=document.getElementById('mintQty');
@@ -2706,7 +2698,7 @@ async function doConnect(){
   }
 }
 function doDisconnect(){
-  walletAddr=null;walletPubKey=null;connected=false;
+  walletAddr=null;walletPubKey=null;connected=false;_walletCapReached=false;
   const btn=document.getElementById('walletBtn');
   btn.textContent='\u26A1 CONNECT WALLET';btn.classList.remove('on');btn.disabled=false;
   const ws=document.getElementById('wSt');
@@ -2786,17 +2778,19 @@ async function doMint(){
     if(currentTotal + quantity > MAX_SUPPLY) throw new Error('Not enough tokens remaining!');
 
     // 3b. Check per-wallet cap on-chain before simulating (prevents fee loss on reverts)
+    let _capAlreadyMinted = 0;
     if(_rawChainPhase===2||_rawChainPhase===3){
       const phaseForCap = _rawChainPhase;
       const capRes = await contract.getMintedCount(toAddr, phaseForCap);
-      const alreadyMinted = Number(capRes?.properties?.count ?? 0n);
+      _capAlreadyMinted = Number(capRes?.properties?.count ?? 0n);
       const phaseMax = PHASE_MAX_MINT[curPhase] ?? MAX_MINT;
-      const remaining = phaseMax - alreadyMinted;
+      const remaining = phaseMax - _capAlreadyMinted;
       if(remaining <= 0){
+        _walletCapReached=true;
         throw new Error('You have reached the mint limit for this phase ('+phaseMax+'/'+phaseMax+').');
       }
-      if(alreadyMinted + quantity > phaseMax){
-        throw new Error('Exceeds your limit: you minted '+alreadyMinted+', cap is '+phaseMax+'. Max '+remaining+' more.');
+      if(_capAlreadyMinted + quantity > phaseMax){
+        throw new Error('Exceeds your limit: you minted '+_capAlreadyMinted+', cap is '+phaseMax+'. Max '+remaining+' more.');
       }
     }
 
@@ -2825,8 +2819,8 @@ async function doMint(){
       mldsaSigner:null,
       refundTo:walletAddr,
       network:NETWORK_OBJ,
-      feeRate:5,
-      maximumAllowedSatToSpend:totalCost+5000n,
+      feeRate:3,
+      maximumAllowedSatToSpend:totalCost+2000n,
       extraOutputs:[{address:CONTRACT_P2TR,value:mintCost}],
     });
     const txid = receipt?.transactionId || receipt?.hash || receipt?.txid || '';
@@ -2834,6 +2828,9 @@ async function doMint(){
     // 7. Optimistic UI update
     mintedC = currentTotal + quantity;
     updateProg(mintedC);
+    // Track wallet cap optimistically — if minted >= phase cap, lock button until chain confirms
+    const _phaseMaxNow = PHASE_MAX_MINT[curPhase] ?? MAX_MINT;
+    if(_capAlreadyMinted + quantity >= _phaseMaxNow) _walletCapReached=true;
     _addActivityRow(_firstId, walletAddr, txid, onChainPrice, 'just now');
 
     // 8a. Visual feedback
@@ -2861,7 +2858,11 @@ async function doMint(){
     console.error('doMint:',e?.message??e);
   }finally{
     _mintPending=false;
-    btn.textContent='\uD83D\uDD25 MINT NOW \uD83D\uDD25';btn.disabled=false;
+    if(_walletCapReached){
+      btn.textContent='\u2713 LIMIT REACHED';btn.disabled=true;
+    }else{
+      btn.textContent='\uD83D\uDD25 MINT NOW \uD83D\uDD25';btn.disabled=false;
+    }
   }
 }
 
