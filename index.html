@@ -1850,6 +1850,10 @@ async function _loadContractInfo(){
     if(onChainTreasury && onChainTreasury.toLowerCase() !== CONTRACT_P2TR.toLowerCase()){
       console.error('[dopamilio] TREASURY MISMATCH — on-chain:',onChainTreasury,'frontend:',CONTRACT_P2TR,
         '— mints will fail. Update CONTRACT_P2TR in index.html to match.');
+      // Block mint button to prevent lost funds
+      var _mb=document.getElementById('mintBtn');
+      if(_mb){_mb.disabled=true;_mb.textContent='⚠ CONFIG ERROR';}
+      walletToast('err','Treasury mismatch — minting disabled. Contact support.');
     }
 
     mintedC = totalMinted;
@@ -3788,11 +3792,11 @@ function mktGetRarityColor(rarity) {
 function mktMakePlaceholder(nft, h, showLabel) {
   var rc = MKT_RARITY[nft.rarity] || MKT_RARITY.COMMON;
   var col = mktGetRarityColor(nft.rarity);
-  var label = showLabel ? '<div style="position:absolute;bottom:8px;left:8px;color:#4a6a4a;font-size:10px;font-family:monospace">DOPAMILIO #'+nft.id+'</div>' : '';
+  var label = showLabel ? '<div style="position:absolute;bottom:8px;left:8px;color:#4a6a4a;font-size:10px;font-family:monospace">DOPAMILIO #'+_safeText(String(nft.id))+'</div>' : '';
   return '<div style="width:100%;height:'+h+'px;background:'+rc.bg+';position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center">'
     +'<span style="color:'+col+';font-size:'+(h/4)+'px;font-family:monospace;font-weight:bold;opacity:0.8;z-index:1">D</span>'
     +'<div style="position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.15) 2px,rgba(0,0,0,0.15) 4px);pointer-events:none;z-index:2"></div>'
-    +'<div style="position:absolute;top:8px;right:8px;background:'+col+';color:#060d06;font-family:monospace;font-size:9px;font-weight:bold;padding:2px 6px;border-radius:2px;z-index:3">'+nft.rarity+'</div>'
+    +'<div style="position:absolute;top:8px;right:8px;background:'+col+';color:#060d06;font-family:monospace;font-size:9px;font-weight:bold;padding:2px 6px;border-radius:2px;z-index:3">'+_safeText(String(nft.rarity))+'</div>'
     +label
     +'</div>';
 }
@@ -3994,10 +3998,10 @@ function mktRenderDetailView(nft) {
     +'<div class="mkt-meta-row"><span class="mkt-meta-label">Contract</span><span class="mkt-meta-val" style="font-size:10px"><a href="'+OPSCAN_ADDR+CONTRACT_ADDR+OPSCAN_QUERY+'" target="_blank" style="color:#3b9eff;text-decoration:none">'+CONTRACT_ADDR.slice(0,10)+'…'+CONTRACT_ADDR.slice(-8)+'</a><button class="mkt-copy-btn" onclick="navigator.clipboard?.writeText(\''+CONTRACT_ADDR+'\')">&#9014;</button></span></div>'
     +'<div class="mkt-meta-row"><span class="mkt-meta-label">Token ID</span><span class="mkt-meta-val">#'+nft.tokenId+'</span></div>'
     +'<div class="mkt-meta-row"><span class="mkt-meta-label">Standard</span><span class="mkt-meta-val" style="color:#00ff41">OP-721 · Bitcoin L1</span></div>'
-    +'<div class="mkt-meta-row"><span class="mkt-meta-label">Owner</span><span class="mkt-meta-val"><a href="'+OPSCAN_ADDR+nft.owner.replace(/…/,'')+OPSCAN_QUERY+'" target="_blank" style="color:#3b9eff;text-decoration:none">'+nft.owner+'</a><button class="mkt-copy-btn">&#9014;</button></span></div>'
-    +'<div class="mkt-meta-row"><span class="mkt-meta-label">Mint TX</span><span class="mkt-meta-val" style="font-size:10px"><a href="'+OPSCAN_BASE+nft.mintTx.slice(0,32)+'…'+OPSCAN_QUERY+'" target="_blank" style="color:#3b9eff;text-decoration:none">'+nft.mintTx.slice(0,12)+'…'+nft.mintTx.slice(-8)+'</a><button class="mkt-copy-btn">&#9014;</button></span></div>'
+    +'<div class="mkt-meta-row"><span class="mkt-meta-label">Owner</span><span class="mkt-meta-val"><a href="'+OPSCAN_ADDR+_safeText(nft.owner.replace(/…/,''))+OPSCAN_QUERY+'" target="_blank" style="color:#3b9eff;text-decoration:none">'+_safeText(nft.owner)+'</a><button class="mkt-copy-btn">&#9014;</button></span></div>'
+    +'<div class="mkt-meta-row"><span class="mkt-meta-label">Mint TX</span><span class="mkt-meta-val" style="font-size:10px"><a href="'+OPSCAN_BASE+_safeText(nft.mintTx.slice(0,32))+'…'+OPSCAN_QUERY+'" target="_blank" style="color:#3b9eff;text-decoration:none">'+_safeText(nft.mintTx.slice(0,12))+'…'+_safeText(nft.mintTx.slice(-8))+'</a><button class="mkt-copy-btn">&#9014;</button></span></div>'
     +'<div class="mkt-meta-row"><span class="mkt-meta-label">Network</span><span class="mkt-meta-val" style="color:#c8a84b">Bitcoin · OPNet Testnet</span></div>'
-    +'<div class="mkt-meta-row" style="border-bottom:none"><span class="mkt-meta-label">Metadata</span><span class="mkt-meta-val"><a href="https://nxltzqotauoar7va.public.blob.vercel-storage.com/metadata/'+nft.tokenId+'.json" target="_blank" style="color:#3b9eff;text-decoration:none;font-size:10px">View JSON ↗</a></span></div>'
+    +'<div class="mkt-meta-row" style="border-bottom:none"><span class="mkt-meta-label">Metadata</span><span class="mkt-meta-val"><a href="/api/metadata/'+_safeText(String(nft.tokenId))+'" target="_blank" style="color:#3b9eff;text-decoration:none;font-size:10px">View JSON ↗</a></span></div>'
     +'<div class="mkt-tabs">'
     +'<button class="mkt-tab'+(isOffersActive?' active':'')+'" data-tab="offers" onclick="mktSetTab(\'offers\')">Offers 0</button>'
     +'<button class="mkt-tab'+(isActivityActive?' active':'')+'" data-tab="activity" onclick="mktSetTab(\'activity\')">Activity</button>'
