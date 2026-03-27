@@ -3428,11 +3428,13 @@ function startLoreTyping(){
       if(ch==='\x00'){
         // inject scramble span in-line
         var scr=document.createElement('span');
-        scr.style.cssText='color:#0cf;letter-spacing:0;';
+        scr.style.cssText='color:#0f0;letter-spacing:0;';
         scr.textContent='????????????????????????????????????????????????';
         el.insertBefore(scr,cursor);
         _scrSpan=scr;
         _startScramble(scr);
+        tNode=document.createTextNode('');
+        el.insertBefore(tNode,cursor);
         cIdx++;
       } else {
         tNode.textContent+=ch;cIdx++;
