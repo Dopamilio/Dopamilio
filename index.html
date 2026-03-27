@@ -1909,8 +1909,8 @@ function _buildActivityFromChain(mints){
 // ── MINT TXID CACHE (localStorage) ─────────────────────────────────────────
 // Cache: { tokenId(string): txHash(string) }
 // ScanBlock: last block fully scanned
-const _CACHE_KEY   = 'dopa_mint_txids_v2_'+CONTRACT_ADDR.slice(-8);
-const _SCAN_KEY    = 'dopa_scan_block_v2_'+CONTRACT_ADDR.slice(-8);
+const _CACHE_KEY   = 'dopa_mint_txids_v3_'+CONTRACT_ADDR.slice(-8);
+const _SCAN_KEY    = 'dopa_scan_block_v3_'+CONTRACT_ADDR.slice(-8);
 const _DEPLOY_BLOCK = 0xE6189; // block #942,473 — mainnet deploy TX
 var _mintTxCache = {};
 var _scanRunning = false;
