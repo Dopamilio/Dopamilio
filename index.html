@@ -1909,8 +1909,8 @@ function _buildActivityFromChain(mints){
 // ── MINT TXID CACHE (localStorage) ─────────────────────────────────────────
 // Cache: { tokenId(string): txHash(string) }
 // ScanBlock: last block fully scanned
-const _CACHE_KEY   = 'dopa_mint_txids_v3_'+CONTRACT_ADDR.slice(-8);
-const _SCAN_KEY    = 'dopa_scan_block_v3_'+CONTRACT_ADDR.slice(-8);
+const _CACHE_KEY   = 'dopa_mint_txids_v4_'+CONTRACT_ADDR.slice(-8);
+const _SCAN_KEY    = 'dopa_scan_block_v4_'+CONTRACT_ADDR.slice(-8);
 const _DEPLOY_BLOCK = 0xE6189; // block #942,473 — mainnet deploy TX
 var _mintTxCache = {};
 var _scanRunning = false;
@@ -1955,20 +1955,15 @@ async function _scanMintsForTxids(fromBlock, toBlock){
         }
         var _txh = tx.hash || tx.id || tx.txid || '';
         for(const ev of _evList){
-          if(ev.type === 'Transferred'){
-            // OP721TransferredEvent: operator(32)+from(32)+to(32)+tokenId(32) = 128 bytes
-            // Mint = from field is all zeros
+          if(ev.type === 'Minted'){
+            // OP721MintedEvent: to(32)+tokenId(32) = 64 bytes
             try{
               var bin = atob(ev.data);
-              if(bin.length >= 128){
-                var isFromZero = true;
-                for(var zi=32;zi<64;zi++){if((bin.charCodeAt(zi)&0xff)!==0){isFromZero=false;break;}}
-                if(isFromZero){
-                  var tokenIdHex='';
-                  for(var bi=96;bi<128;bi++){var byt=bin.charCodeAt(bi)&0xff;tokenIdHex+=(byt<16?'0':'')+byt.toString(16);}
-                  var tid=String(parseInt(tokenIdHex,16));
-                  if(!_mintTxCache[tid]&&_txh){_mintTxCache[tid]=_txh;changed=true;}
-                }
+              if(bin.length >= 64){
+                var tokenIdHex='';
+                for(var bi=32;bi<64;bi++){var byt=bin.charCodeAt(bi)&0xff;tokenIdHex+=(byt<16?'0':'')+byt.toString(16);}
+                var tid=String(parseInt(tokenIdHex,16));
+                if(!_mintTxCache[tid]&&_txh){_mintTxCache[tid]=_txh;changed=true;}
               }
             }catch(err){}
           }
