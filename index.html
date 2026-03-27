@@ -2540,10 +2540,17 @@ function goNft(i,rst){
 let curPhase=0,connected=false,mintedC=0,_rawChainPhase=0;
 const SUPPLY=MAX_SUPPLY;
 let _wlStartTimeSecs=0,_wlDurationSecs=5400,_wlEndMs=0,_isTestnet=false;
+const _WL_DURATION_MS = 5400*1000; // 1h30m in ms
+const _WL_LS_KEY = 'dopa_wl_client_start_'+CONTRACT_ADDR.slice(-8);
 function fmt(s){s=Math.floor(s);const h=Math.floor(s/3600),m=Math.floor((s%3600)/60),ss=s%60;return`${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(ss).padStart(2,'0')}`;}
+function _initWlClientTimer(){
+  // Use wall-clock start stored in localStorage — immune to MTP lag
+  var saved=localStorage.getItem(_WL_LS_KEY);
+  if(!saved){saved=String(Date.now());localStorage.setItem(_WL_LS_KEY,saved);}
+  _wlEndMs=parseInt(saved)+_WL_DURATION_MS;
+}
 function tickTimers(){
-  // Real-time WL countdown (phase 2 = WL active with stored timestamp)
-  // t1 = "ENDS IN X:XX:XX", t2 = "STARTS IN X:XX:XX" — same value
+  // Real-time WL countdown — t1 "ENDS IN", t2 "STARTS IN" — same value
   if(_rawChainPhase===2&&_wlEndMs>0){
     var remSec=Math.max(0,Math.floor((_wlEndMs-Date.now())/1000));
     var t1=document.getElementById('t1');
@@ -2558,23 +2565,24 @@ function _updatePhaseDisplay(phase,wlStartTimeSecs,wlDurationSecs,isTestnet){
   _isTestnet=isTestnet;_rawChainPhase=phase;
   _wlStartTimeSecs=wlStartTimeSecs||0;
   _wlDurationSecs=wlDurationSecs||5400;
-  // Compute WL end timestamp for countdown
-  _wlEndMs=_wlStartTimeSecs>0?(_wlStartTimeSecs*1000)+(_wlDurationSecs*1000):0;
   if(phase===0){
-    // Contract not started — timers show SOON
+    // Contract not started — clear any saved WL timer
+    localStorage.removeItem(_WL_LS_KEY);
     ['t0','t1','t2'].forEach(function(id){var e=document.getElementById(id);if(e)e.textContent='SOON';});
     return;
   }
+  // When phase transitions to PUBLIC, clear saved WL timer
+  if(phase===3) localStorage.removeItem(_WL_LS_KEY);
   // Contract: 1=TEAM, 2=WL, 3=PUBLIC → Frontend phase index: 0=TEAM, 1=WL, 2=PUBLIC
   const frontendPhase=Math.min(phase-1,2);
   setPhase(frontendPhase);
-  // TEAM: WL and PUBLIC timers not yet known
+  // TEAM: timers not yet known
   if(phase===1){
     var e1=document.getElementById('t1');var e2=document.getElementById('t2');
     if(e1)e1.textContent='--:--:--';if(e2)e2.textContent='--:--:--';
   }
-  // Trigger immediate countdown tick for WL
-  if(phase===2) tickTimers();
+  // WL: init client-side wall-clock timer (1:30:00 from first detection)
+  if(phase===2){_initWlClientTimer();tickTimers();}
 }
 function setPhase(i){curPhase=i;
   // Clamp mintQty to new phase max
