@@ -2707,16 +2707,6 @@ async function doMint(){
       ],
     });
 
-    // 5. WL phase — check frontend whitelist (no on-chain proof required)
-    if(_rawChainPhase===2){
-      const WL_ADDRS=['321736a35eaab38a204c587311cb8f9dc785e5e7ca79cee3a863bfbed0874c68','757adfd7fcb2da6f2de8a43f2e7dbf923a95ef815c68150732daaf9ccd20e6e0','7774b15bbd96752a1558e808113f9b58e292e6cca4c49296323a5110c5681b48','25d43e7ff972568aa72117a48d108cc585aa5fcde283c2601425dd64fb06a5f0'];
-      const isNonZero=mldsaBytes.some(function(b){return b!==0;});
-      const identityHex=isNonZero
-        ?Array.from(mldsaBytes).map(function(x){return x.toString(16).padStart(2,'0');}).join('')
-        :walletAddr.replace(/^0x/,'').toLowerCase();
-      if(!WL_ADDRS.includes(identityHex))throw new Error('NGMI anon — ur not on the list, go touch grass');
-    }
-
     // 6. Simulate
     btn.textContent='\u23F3 SIMULATING...';
     const sim = await contract.mint(BigInt(quantity));
