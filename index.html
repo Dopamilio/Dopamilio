@@ -1498,7 +1498,7 @@ input,textarea{-webkit-user-select:text;-moz-user-select:text;user-select:text;}
   </nav>
   <div class="nav-rgb-line"></div>
   <div class="nav-right">
-    <button class="nav-pill sound nav-btn-apple" id="soundBtn">🔊</button>
+    <button class="nav-pill sound muted nav-btn-apple" id="soundBtn">🔇</button>
     <a class="nav-pill nav-btn-apple" href="https://x.com/dopamilio" target="_blank" rel="noopener">&#120143; TWITTER</a>
     <button class="nav-pill wallet nav-btn-apple" id="walletBtn" onclick="connected?doDisconnect():doConnect()">&#9889; CONNECT WALLET</button>
   </div>
@@ -3663,6 +3663,7 @@ document.addEventListener('copy',function(e){
     if(_started||!audio.paused||(e&&e.target===btn))return;
     _started=true;
     audio.play().catch(function(){});
+    btn.classList.remove('muted');btn.textContent='🔊';
   }
   document.addEventListener('click',_autoStart);
   document.addEventListener('touchend',_autoStart,{passive:true});
@@ -3671,8 +3672,8 @@ document.addEventListener('copy',function(e){
   function _toggle(e){
     e.stopPropagation();
     if(e.cancelable)e.preventDefault();
-    if(audio.paused){audio.play().catch(function(){});btn.textContent='🔊';}
-    else{audio.pause();btn.textContent='🔇';}
+    if(audio.paused){audio.play().catch(function(){});btn.classList.remove('muted');btn.textContent='🔊';}
+    else{audio.pause();btn.classList.add('muted');btn.textContent='🔇';}
   }
   btn.addEventListener('click',_toggle);
   btn.addEventListener('touchend',_toggle,{passive:false});
