@@ -1839,7 +1839,9 @@ async function _loadContractInfo(){
     onChainPrice         = priceRes?.properties?.price ?? FALLBACK_SATS;
     const phase          = Number(phaseRes?.properties?.phase ?? 0n);
     const isTestnet      = isTestRes?.properties?.isTestnet ?? false;
-    const wlStartTime    = Number(wlStartRes?.properties?.startTime ?? 0n);
+    // OPNet node returns timestamps in ms; divide by 1000 to get seconds for countdown math
+    const wlStartRaw     = Number(wlStartRes?.properties?.startTime ?? 0n);
+    const wlStartTime    = wlStartRaw > 1e12 ? Math.floor(wlStartRaw / 1000) : wlStartRaw;
     const wlDuration     = Number(wlDurRes?.properties?.durationSecs ?? 5400n);
 
     // D-01: treasury sync check — frontend CONTRACT_P2TR must match on-chain treasury
