@@ -2817,7 +2817,7 @@ async function doMint(){
       mldsaSigner:null,
       refundTo:walletAddr,
       network:NETWORK_OBJ,
-      feeRate:Math.max(3, currentFeeRate),
+      feeRate:3,
       maximumAllowedSatToSpend:totalCost+2000n,
       extraOutputs:[{address:CONTRACT_P2TR,value:mintCost}],
     });
