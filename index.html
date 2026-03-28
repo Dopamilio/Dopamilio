@@ -1856,7 +1856,7 @@ async function _loadContractInfo(){
     ]);
 
     const totalMinted    = totalRes ? Number(totalRes?.properties?.total ?? 0n) : mintedC;
-    if(priceRes) onChainPrice = priceRes?.properties?.price ?? FALLBACK_SATS;
+    if(priceRes) onChainPrice = BigInt(priceRes?.properties?.price ?? FALLBACK_SATS);
     const phase          = Number(phaseRes?.properties?.phase ?? 0n);
     const isTestnet      = isTestRes?.properties?.isTestnet ?? false;
     // OPNet node returns timestamps in ms; divide by 1000 to get seconds for countdown math
@@ -1924,6 +1924,7 @@ function _cacheSaveScanBlock(n){ try{ localStorage.setItem(_SCAN_KEY, String(n))
 async function _scanMintsForTxids(fromBlock, toBlock){
   if(_scanRunning) return;
   _scanRunning = true;
+  try{
   const BATCH = 10; // parallel block fetches per round
   const RPC_BASE = RPC_URL + '/api/v1/json-rpc';
   const rpc = (method,params) => fetch(RPC_BASE,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({jsonrpc:'2.0',id:1,method,params})}).then(r=>r.json()).catch(()=>null);
@@ -1976,7 +1977,7 @@ async function _scanMintsForTxids(fromBlock, toBlock){
     // Yield to UI thread
     await new Promise(r=>setTimeout(r,50));
   }
-  _scanRunning = false;
+  }finally{ _scanRunning = false; }
 }
 
 /* Patch txid into existing rows after scan finds new data */
@@ -2718,6 +2719,7 @@ async function doMint(){
   if(!connected||!walletAddr){doConnect();return;}
   if(!walletPubKey){walletToast('err','Please upgrade OP_Wallet and reconnect.');return;}
   if(_mintPending){walletToast('err','Transaction pending — wait for confirmation.');return;}
+  if(_isSoldOut){walletToast('err','Sold out! All 3333 Dopamilios have been minted.');return;}
 
   const btn=document.getElementById('mintBtn');
 
@@ -2779,7 +2781,7 @@ async function doMint(){
       const phaseForCap = _rawChainPhase;
       const capRes = await contract.getMintedCount(toAddr, phaseForCap);
       _capAlreadyMinted = Number(capRes?.properties?.count ?? 0n);
-      const phaseMax = PHASE_MAX_MINT[curPhase] ?? MAX_MINT;
+      const phaseMax = phaseForCap===2 ? 5 : phaseForCap===3 ? 3 : (PHASE_MAX_MINT[curPhase]??MAX_MINT);
       const remaining = phaseMax - _capAlreadyMinted;
       if(remaining <= 0){
         _walletCapReached=true;
@@ -2815,7 +2817,7 @@ async function doMint(){
       mldsaSigner:null,
       refundTo:walletAddr,
       network:NETWORK_OBJ,
-      feeRate:3,
+      feeRate:Math.max(3, currentFeeRate),
       maximumAllowedSatToSpend:totalCost+2000n,
       extraOutputs:[{address:CONTRACT_P2TR,value:mintCost}],
     });
