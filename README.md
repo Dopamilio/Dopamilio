@@ -77,9 +77,9 @@ Pinata IPFS             ← images. immutable. forever.
 
 ```
 Standard  : OP-721
-Phases    : TEAM (1d) → WL (1.5h) → PUBLIC (∞ until sold out)
-WL        : Merkle tree — 3 per wallet
-Public    : 5 per wallet
+Phases    : TEAM (1h) → WL (2h) → PUBLIC (∞ until sold out)
+WL        : Merkle tree — 5 per wallet
+Public    : 3 per wallet
 ```
 
 ---
