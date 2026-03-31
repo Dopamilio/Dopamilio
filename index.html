@@ -1382,8 +1382,8 @@ input,textarea{-webkit-user-select:text;-moz-user-select:text;user-select:text;}
 .mkt-nft-area{flex:1;overflow-y:auto;padding:16px 24px;}
 .mkt-activity-feed{width:280px;border-left:1px solid #1a2a1a;overflow-y:auto;padding:16px;flex-shrink:0;}
 .mkt-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px;}
-.mkt-list-header{display:grid;grid-template-columns:24px 1fr 130px 80px 90px minmax(120px,1fr) 60px;gap:8px;padding:8px 12px;color:#4a6a4a;font-size:10px;letter-spacing:1px;border-bottom:1px solid #1a2a1a;}
-.mkt-list-row{display:grid;grid-template-columns:24px 1fr 130px 80px 90px minmax(120px,1fr) 60px;gap:8px;padding:8px 12px;border-bottom:1px solid #0f1f0f;cursor:pointer;align-items:center;}
+.mkt-list-header{display:grid;grid-template-columns:24px 1fr 130px 80px 90px 80px 60px;gap:8px;padding:8px 12px;color:#4a6a4a;font-size:10px;letter-spacing:1px;border-bottom:1px solid #1a2a1a;}
+.mkt-list-row{display:grid;grid-template-columns:24px 1fr 130px 80px 90px 80px 60px;gap:8px;padding:8px 12px;border-bottom:1px solid #0f1f0f;cursor:pointer;align-items:center;}
 .mkt-list-row:hover{background:rgba(0,255,65,0.04);}
 .mkt-list-img{width:36px;height:36px;flex-shrink:0;border:1px solid #1a2a1a;display:flex;align-items:center;justify-content:center;font-family:monospace;font-size:14px;position:relative;overflow:hidden;}
 .mkt-card{background:#0a120a;border:1px solid #1a2a1a;border-radius:4px;cursor:pointer;transition:border-color 0.2s,box-shadow 0.2s;overflow:hidden;}
@@ -1395,22 +1395,12 @@ input,textarea{-webkit-user-select:text;-moz-user-select:text;user-select:text;}
 .mkt-btn-buy-sm{background:transparent;border:1px solid #00ff41;color:#00ff41;font-family:'Courier New',monospace;font-size:10px;padding:3px 8px;cursor:pointer;}
 .mkt-btn-buy-sm:hover{background:rgba(0,255,65,0.1);}
 .mkt-act-item{display:flex;gap:8px;padding:8px 0;border-bottom:1px solid #0f1f0f;}
-.mkt-bottom-bar{display:none;font-family:'Courier New',monospace;}
-.mkt-bottom-bar.mkt-bar-visible{display:block;}
-.mkt-sweep-bar{display:flex;align-items:center;gap:10px;background:#0a120a;border:1px solid #1a2a1a;border-radius:4px;padding:10px 16px;margin:12px 24px 0;font-family:'Courier New',monospace;}
-.mkt-sweep-stepper{display:flex;align-items:center;gap:0;border:1px solid #1a2a1a;border-radius:3px;overflow:hidden;}
-.mkt-sweep-stepper button{background:#0f1f0f;border:none;color:#4a6a4a;width:28px;height:28px;font-size:14px;cursor:pointer;font-family:'Courier New',monospace;}
-.mkt-sweep-stepper button:hover{color:#00ff41;background:#1a2a1a;}
-.mkt-sweep-stepper span{background:#060d06;color:#00ff41;min-width:44px;text-align:center;font-size:12px;font-weight:bold;height:28px;line-height:28px;padding:0 4px;}
-.mkt-sweep-slider{flex:1;-webkit-appearance:none;appearance:none;height:4px;background:#1a2a1a;border-radius:2px;outline:none;cursor:pointer;}
-.mkt-sweep-slider::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;border-radius:50%;background:#00ff41;cursor:pointer;border:2px solid #060d06;box-shadow:0 0 6px rgba(0,255,65,0.4);}
-.mkt-sweep-label{color:#4a6a4a;font-size:10px;letter-spacing:1px;white-space:nowrap;}
-.mkt-sweep-val{color:#c8a84b;font-size:12px;font-weight:bold;white-space:nowrap;}
-.mkt-sweep-total{color:#00ff41;font-size:14px;font-weight:bold;white-space:nowrap;}
-.mkt-sweep-btn{background:#00ff41;color:#060d06;font-weight:bold;border:none;padding:8px 20px;font-family:'Courier New',monospace;font-size:12px;cursor:pointer;border-radius:3px;letter-spacing:1px;white-space:nowrap;}
-.mkt-sweep-btn:hover{background:#00cc33;box-shadow:0 0 12px rgba(0,255,65,0.3);}
-.mkt-sweep-bid{border:1px solid #7a5aff;color:#7a5aff;background:transparent;padding:8px 16px;font-family:'Courier New',monospace;font-size:11px;cursor:pointer;border-radius:3px;white-space:nowrap;}
-.mkt-sweep-bid:hover{background:rgba(122,90,255,0.1);}
+.mkt-bottom-bar{position:fixed;bottom:var(--ticker-h,33px);left:0;right:0;height:56px;background:#060d06;border-top:1px solid #1a2a1a;z-index:200;display:none;align-items:center;justify-content:space-between;padding:0 24px;font-family:'Courier New',monospace;}
+.mkt-bottom-bar.mkt-bar-visible{display:flex;}
+.mkt-btn-colbid{background:#00ff41;color:#060d06;font-weight:bold;border:none;padding:8px 16px;font-family:'Courier New',monospace;font-size:12px;cursor:pointer;}
+.mkt-btn-colbid:hover{background:#00cc33;}
+.mkt-btn-buyfloor{border:1px solid #c8a84b;color:#c8a84b;background:transparent;padding:8px 16px;font-family:'Courier New',monospace;font-size:12px;cursor:pointer;}
+.mkt-btn-buyfloor:hover{background:rgba(200,168,75,0.1);}
 .mkt-detail-wrap{display:flex;gap:32px;padding:0 24px 80px;}
 .mkt-detail-left{flex:0 0 480px;max-width:480px;}
 .mkt-detail-right{flex:1;min-width:0;}
@@ -1446,9 +1436,6 @@ input,textarea{-webkit-user-select:text;-moz-user-select:text;user-select:text;}
   .mkt-list-header,.mkt-list-row{grid-template-columns:1fr 100px 60px;}
   .mkt-detail-img{height:280px;}
   .mkt-nft-area{padding:12px 16px;}
-  .mkt-sweep-bar{flex-wrap:wrap;padding:8px 12px;margin:8px 12px 0;}
-  .mkt-sweep-slider{min-width:100px;}
-  .mkt-sweep-bid{display:none;}
 }
 @media(max-width:480px){
   .mkt-list-header,.mkt-list-row{grid-template-columns:1fr 80px 56px;font-size:9px;padding:6px 10px;gap:6px;}
@@ -1458,8 +1445,6 @@ input,textarea{-webkit-user-select:text;-moz-user-select:text;user-select:text;}
   .mkt-filter-input{width:120px;}
   .mkt-detail-img{height:220px;}
   .mkt-btn-buynow,.mkt-btn-bid{font-size:12px;padding:12px;}
-  .mkt-sweep-bar{gap:6px;font-size:10px;}
-  .mkt-sweep-btn{padding:6px 12px;font-size:11px;}
 }
 </style>
 </head>
@@ -3774,105 +3759,111 @@ document.addEventListener('copy',function(e){
   if(rg) rg.addEventListener('error',function(){rg.src='https://media.giphy.com/media/l0MYt5jPR6QX5pnqM/giphy.gif';},{once:true});
 })();
 </script>
-<div id="mktBottomBar" class="mkt-bottom-bar"></div>
+<div id="mktBottomBar" class="mkt-bottom-bar">
+  <span style="color:#4a6a4a;font-family:'Courier New',monospace;font-size:12px">FLOOR &#8383;<span style="color:#00ff41">0.00042</span> &nbsp;|&nbsp; 23 LISTED &nbsp;|&nbsp; 24H VOL &#8383;<span style="color:#c8a84b">0.4200</span></span>
+  <div style="display:flex;gap:8px">
+    <button class="mkt-btn-colbid">💎 Collection Bid</button>
+    <button class="mkt-btn-buyfloor">Buy Floor &#8383;0.00042 →</button>
+  </div>
+</div>
 <script>
 // Floor: 0.00042 BTC (42,000 sats ≈ 6x mint) — lowest ask defines the market
 var MKT_NFTS = [
   { id:"0042", price:"0.00042", lastSale:"0.00038", rarity:"RARE",
     traits:{Background:"void black",Body:"chrome suit",Eyes:"laser red",Headgear:"antenna",Artifacts:"glitch orb"},
     scores:{Background:{c:"531",p:"15.9%"},Body:{c:"190",p:"5.7%"},Eyes:{c:"748",p:"22.4%"},Headgear:{c:"261",p:"7.8%"},Artifacts:{c:"232",p:"7%"}},
-    owner:"bc1pr5a8kqg4n2fzxjm7v0wce3yd6tqhln9s2kfd0p4",mintTx:"7a3e9f1c4b82d650e12f8a94b3c17e6d29a0b5f8c4d3e2a1b0c9d8e7f6a5b4",tokenId:"42",floorDiff:"0.00%",topBid:"0.00038",seller:"opt1qr5a8kqg4n2fzxjm7v0wce3yd6tqhln9s2kfd0p4",lastSeen:"2m"},
+    owner:"bc1p…d0p4",mintTx:"7a3e9f1c4b82d650e12f8a94b3c17e6d29a0b5f8c4d3e2a1b0c9d8e7f6a5b4",tokenId:"42",floorDiff:"0.00%",topBid:"0.00038",seller:"opt1…d0p4",lastSeen:"2m"},
   { id:"0187", price:"0.00044", lastSale:"0.00042", rarity:"COMMON",
     traits:{Background:"acid green",Body:"hoodie torn",Eyes:"white glow",Headgear:"none",Artifacts:"cigarette"},
     scores:{Background:{c:"700",p:"21%"},Body:{c:"400",p:"12%"},Eyes:{c:"1.03K",p:"31%"},Headgear:{c:"1.5K",p:"45%"},Artifacts:{c:"297",p:"8.9%"}},
-    owner:"bc1pw8t3qm5gxeh7rd4cnz62pfk9y0avjl4s7nfrem3",mintTx:"2b5d8e1f4a7c0b3d6f9e2a5c8b1d4f7a0b3e6c9f2a5d8b1e4f7c0a3b6d9e2f5",tokenId:"187",floorDiff:"+4.76%",topBid:"0.00039",seller:"opt1qw8t3qm5gxeh7rd4cnz62pfk9y0avjl4s7nfrem3",lastSeen:"14m"},
+    owner:"bc1p…rem3",mintTx:"2b5d8e1f4a7c0b3d6f9e2a5c8b1d4f7a0b3e6c9f2a5d8b1e4f7c0a3b6d9e2f5",tokenId:"187",floorDiff:"+4.76%",topBid:"0.00039",seller:"opt1…rem3",lastSeen:"14m"},
   { id:"0321", price:"0.00055", lastSale:"0.00048", rarity:"UNCOMMON",
     traits:{Background:"neon pink",Body:"trench coat",Eyes:"matrix green",Headgear:"cap backwards",Artifacts:"mountain dew"},
     scores:{Background:{c:"327",p:"9.8%"},Body:{c:"248",p:"7.4%"},Eyes:{c:"204",p:"6.1%"},Headgear:{c:"367",p:"11%"},Artifacts:{c:"148",p:"4.4%"}},
-    owner:"bc1pf6v2xak9m4w0jrqdy5hc8ez3tnl7sg0qa2nrd9",mintTx:"9c2f5a8e1b4d7f0c3e6a9b2d5f8a1e4b7c0d3f6a9b2e5c8f1d4a7b0c3e6f9a2",tokenId:"321",floorDiff:"+30.95%",topBid:"0.00048",seller:"opt1qf6v2xak9m4w0jrqdy5hc8ez3tnl7sg0qa2nrd9",lastSeen:"31m"},
+    owner:"bc1p…nrd9",mintTx:"9c2f5a8e1b4d7f0c3e6a9b2d5f8a1e4b7c0d3f6a9b2e5c8f1d4a7b0c3e6f9a2",tokenId:"321",floorDiff:"+30.95%",topBid:"0.00048",seller:"opt1…nrd9",lastSeen:"31m"},
   { id:"0509", price:"0.00044", lastSale:"0.00041", rarity:"COMMON",
     traits:{Background:"blood orange",Body:"bare chest",Eyes:"sunglasses",Headgear:"bandana",Artifacts:"dorito bag"},
     scores:{Background:{c:"601",p:"18%"},Body:{c:"767",p:"23%"},Eyes:{c:"501",p:"15%"},Headgear:{c:"307",p:"9.2%"},Artifacts:{c:"187",p:"5.6%"}},
-    owner:"bc1pk3j7dw8yh5rqa0t9xnz4vcf6e2lgp8m5s4m4tr",mintTx:"e4b7d0f3a6c9e2b5d8f1a4c7e0b3d6f9a2b5c8e1f4a7d0b3e6c9f2a5b8d1e4f7",tokenId:"509",floorDiff:"+4.76%",topBid:"0.00040",seller:"opt1qk3j7dw8yh5rqa0t9xnz4vcf6e2lgp8m5s4m4tr",lastSeen:"58m"},
+    owner:"bc1p…m4tr",mintTx:"e4b7d0f3a6c9e2b5d8f1a4c7e0b3d6f9a2b5c8e1f4a7d0b3e6c9f2a5b8d1e4f7",tokenId:"509",floorDiff:"+4.76%",topBid:"0.00040",seller:"opt1…m4tr",lastSeen:"58m"},
   { id:"0613", price:"0.00350", lastSale:"0.00280", rarity:"LEGENDARY",
     traits:{Background:"deep void",Body:"golden robe",Eyes:"all seeing",Headgear:"crown glitch",Artifacts:"illuminati eye"},
     scores:{Background:{c:"30",p:"0.9%"},Body:{c:"14",p:"0.4%"},Eyes:{c:"23",p:"0.7%"},Headgear:{c:"17",p:"0.5%"},Artifacts:{c:"13",p:"0.4%"}},
-    owner:"bc1pq9w2a5md7xhv0gk4rfc8ynj3et6zp0s7d8l3g3",mintTx:"f5c8e1a4b7d0c3f6a9b2e5c8f1d4a7b0e3f6c9a2b5d8e1f4c7a0b3d6f9e2a5b8",tokenId:"613",floorDiff:"+733.33%",topBid:"0.00310",seller:"opt1qq9w2a5md7xhv0gk4rfc8ynj3et6zp0s7d8l3g3",lastSeen:"2h"},
+    owner:"bc1p…l3g3",mintTx:"f5c8e1a4b7d0c3f6a9b2e5c8f1d4a7b0e3f6c9a2b5d8e1f4c7a0b3d6f9e2a5b8",tokenId:"613",floorDiff:"+733.33%",topBid:"0.00310",seller:"opt1…l3g3",lastSeen:"2h"},
   { id:"0742", price:"0.00046", lastSale:"0.00043", rarity:"COMMON",
     traits:{Background:"grey static",Body:"varsity jacket",Eyes:"lazy",Headgear:"beanie",Artifacts:"energy drink"},
     scores:{Background:{c:"668",p:"20%"},Body:{c:"467",p:"14%"},Eyes:{c:"934",p:"28%"},Headgear:{c:"434",p:"13%"},Artifacts:{c:"237",p:"7.1%"}},
-    owner:"bc1pm7c4xe2v9kfwn3a5jdq0r8ht6ygzl2p4k9gr3y",mintTx:"a6d9f2c5e8b1d4f7a0c3e6b9d2f5a8c1e4b7d0f3a6c9e2b5d8f1a4c7e0b3d6f9",tokenId:"742",floorDiff:"+9.52%",topBid:"0.00041",seller:"opt1qm7c4xe2v9kfwn3a5jdq0r8ht6ygzl2p4k9gr3y",lastSeen:"3h"},
+    owner:"bc1p…gr3y",mintTx:"a6d9f2c5e8b1d4f7a0c3e6b9d2f5a8c1e4b7d0f3a6c9e2b5d8f1a4c7e0b3d6f9",tokenId:"742",floorDiff:"+9.52%",topBid:"0.00041",seller:"opt1…gr3y",lastSeen:"3h"},
   { id:"0891", price:"0.00110", lastSale:"0.00095", rarity:"RARE",
     traits:{Background:"blue static",Body:"lab coat",Eyes:"cybernetic",Headgear:"goggles",Artifacts:"syringe"},
     scores:{Background:{c:"240",p:"7.2%"},Body:{c:"163",p:"4.9%"},Eyes:{c:"127",p:"3.8%"},Headgear:{c:"204",p:"6.1%"},Artifacts:{c:"97",p:"2.9%"}},
-    owner:"bc1pt6n8zqdwf3xkv2rja0m5ychg9e7lp4s8kw4j07",mintTx:"b7e0c3f6a9b2d5e8c1f4a7b0d3e6f9a2c5b8e1f4d7a0c3f6b9d2e5a8c1f4b7d0",tokenId:"891",floorDiff:"+161.90%",topBid:"0.00098",seller:"opt1qt6n8zqdwf3xkv2rja0m5ychg9e7lp4s8kw4j07",lastSeen:"4h"},
+    owner:"bc1p…4j07",mintTx:"b7e0c3f6a9b2d5e8c1f4a7b0d3e6f9a2c5b8e1f4d7a0c3f6b9d2e5a8c1f4b7d0",tokenId:"891",floorDiff:"+161.90%",topBid:"0.00098",seller:"opt1…4j07",lastSeen:"4h"},
   { id:"1024", price:"0.00059", lastSale:"0.00051", rarity:"UNCOMMON",
     traits:{Background:"purple haze",Body:"sleeveless",Eyes:"red pupils",Headgear:"chain",Artifacts:"lighter"},
     scores:{Background:{c:"284",p:"8.5%"},Body:{c:"367",p:"11%"},Eyes:{c:"310",p:"9.3%"},Headgear:{c:"254",p:"7.6%"},Artifacts:{c:"207",p:"6.2%"}},
-    owner:"bc1pv2f5xaw3q8jdrn7ck0m9g4hez6tlsp0d3nyk3r",mintTx:"c8f1d4a7b0e3f6c9a2b5d8e1f4a7b0c3d6f9a2e5b8c1f4d7a0b3e6f9c2a5d8b1",tokenId:"1024",floorDiff:"+40.47%",topBid:"0.00052",seller:"opt1qv2f5xaw3q8jdrn7ck0m9g4hez6tlsp0d3nyk3r",lastSeen:"5h"},
+    owner:"bc1p…yk3r",mintTx:"c8f1d4a7b0e3f6c9a2b5d8e1f4a7b0c3d6f9a2e5b8c1f4d7a0b3e6f9c2a5d8b1",tokenId:"1024",floorDiff:"+40.47%",topBid:"0.00052",seller:"opt1…yk3r",lastSeen:"5h"},
   { id:"1138", price:"0.00046", lastSale:"0.00044", rarity:"COMMON",
     traits:{Background:"tan noise",Body:"oversized tee",Eyes:"half closed",Headgear:"snapback",Artifacts:"phone cracked"},
     scores:{Background:{c:"634",p:"19%"},Body:{c:"700",p:"21%"},Eyes:{c:"567",p:"17%"},Headgear:{c:"334",p:"10%"},Artifacts:{c:"280",p:"8.4%"}},
-    owner:"bc1px8j3kqm5dw2gvf7ra0n4chz9e6tlp5ys0r8c96",mintTx:"d9a2e5b8c1f4d7a0b3e6c9f2a5b8d1e4a7c0f3b6d9e2a5c8f1b4d7a0c3e6f9b2",tokenId:"1138",floorDiff:"+9.52%",topBid:"0.00041",seller:"opt1qx8j3kqm5dw2gvf7ra0n4chz9e6tlp5ys0r8c96",lastSeen:"6h"},
+    owner:"bc1p…8c96",mintTx:"d9a2e5b8c1f4d7a0b3e6c9f2a5b8d1e4a7c0f3b6d9e2a5c8f1b4d7a0c3e6f9b2",tokenId:"1138",floorDiff:"+9.52%",topBid:"0.00041",seller:"opt1…8c96",lastSeen:"6h"},
   { id:"1247", price:"0.00210", lastSale:"0.00180", rarity:"EPIC",
     traits:{Background:"fire gradient",Body:"flame jacket",Eyes:"burning",Headgear:"mohawk fire",Artifacts:"molotov"},
     scores:{Background:{c:"70",p:"2.1%"},Body:{c:"58",p:"1.75%"},Eyes:{c:"63",p:"1.9%"},Headgear:{c:"52",p:"1.55%"},Artifacts:{c:"43",p:"1.3%"}},
-    owner:"bc1pn4g7xv2w0q3jfr8dk5m9ayc6z8etlp0h3wzarc",mintTx:"e0b3f6c9a2d5e8b1f4a7c0d3f6a9b2e5c8f1d4a7b0c3e6f9a2b5d8c1f4a7d0b3",tokenId:"1247",floorDiff:"+400.00%",topBid:"0.00185",seller:"opt1qn4g7xv2w0q3jfr8dk5m9ayc6z8etlp0h3wzarc",lastSeen:"9h"},
+    owner:"bc1p…zarc",mintTx:"e0b3f6c9a2d5e8b1f4a7c0d3f6a9b2e5c8f1d4a7b0c3e6f9a2b5d8c1f4a7d0b3",tokenId:"1247",floorDiff:"+400.00%",topBid:"0.00185",seller:"opt1…zarc",lastSeen:"9h"},
   { id:"1356", price:"0.00048", lastSale:"0.00045", rarity:"COMMON",
     traits:{Background:"white glitch",Body:"tank top",Eyes:"bored",Headgear:"none",Artifacts:"wallet chain"},
     scores:{Background:{c:"467",p:"14%"},Body:{c:"601",p:"18%"},Eyes:{c:"801",p:"24%"},Headgear:{c:"1.5K",p:"45%"},Artifacts:{c:"324",p:"9.7%"}},
-    owner:"bc1ph2w5xvq3r8jm0k4d9af7n6ycg0e3tlps2kzt5t",mintTx:"f1c4a7b0d3e6f9a2b5c8e1f4a7d0b3e6c9f2a5b8d1e4c7f0a3b6d9e2f5a8b1c4",tokenId:"1356",floorDiff:"+14.28%",topBid:"0.00042",seller:"opt1qh2w5xvq3r8jm0k4d9af7n6ycg0e3tlps2kzt5t",lastSeen:"11h"},
+    owner:"bc1p…zt5t",mintTx:"f1c4a7b0d3e6f9a2b5c8e1f4a7d0b3e6c9f2a5b8d1e4c7f0a3b6d9e2f5a8b1c4",tokenId:"1356",floorDiff:"+14.28%",topBid:"0.00042",seller:"opt1…zt5t",lastSeen:"11h"},
   { id:"1489", price:"0.00063", lastSale:"0.00055", rarity:"UNCOMMON",
     traits:{Background:"teal static",Body:"windbreaker",Eyes:"squinting",Headgear:"bucket hat",Artifacts:"vape pen"},
     scores:{Background:{c:"260",p:"7.8%"},Body:{c:"214",p:"6.4%"},Eyes:{c:"367",p:"11%"},Headgear:{c:"290",p:"8.7%"},Artifacts:{c:"170",p:"5.1%"}},
-    owner:"bc1pj9r4xk8m5w2q3va0gdn7f6ychz0e3tlp4sp2yv",mintTx:"a2d5c8e1f4b7a0c3e6f9b2d5a8e1c4f7b0d3a6e9c2f5b8d1a4c7e0f3b6d9a2e5",tokenId:"1489",floorDiff:"+50.00%",topBid:"0.00055",seller:"opt1qj9r4xk8m5w2q3va0gdn7f6ychz0e3tlp4sp2yv",lastSeen:"1d"},
+    owner:"bc1p…p2yv",mintTx:"a2d5c8e1f4b7a0c3e6f9b2d5a8e1c4f7b0d3a6e9c2f5b8d1a4c7e0f3b6d9a2e5",tokenId:"1489",floorDiff:"+50.00%",topBid:"0.00055",seller:"opt1…p2yv",lastSeen:"1d"},
   { id:"1502", price:"0.00115", lastSale:"0.00099", rarity:"RARE",
     traits:{Background:"midnight blue",Body:"denim jacket",Eyes:"glowing teal",Headgear:"flat brim",Artifacts:"usb drive"},
     scores:{Background:{c:"197",p:"5.9%"},Body:{c:"240",p:"7.2%"},Eyes:{c:"143",p:"4.3%"},Headgear:{c:"270",p:"8.1%"},Artifacts:{c:"127",p:"3.8%"}},
-    owner:"bc1pa5v8xwq2m3jrn0k7d4fg9ychz6e0tlp8w3sj8v",mintTx:"b3e6d9f2c5a8b1e4d7f0c3a6e9b2d5f8c1a4b7d0e3f6c9a2b5e8d1f4c7a0b3e6",tokenId:"1502",floorDiff:"+173.80%",topBid:"0.00103",seller:"opt1qa5v8xwq2m3jrn0k7d4fg9ychz6e0tlp8w3sj8v",lastSeen:"1d"},
+    owner:"bc1p…sj8v",mintTx:"b3e6d9f2c5a8b1e4d7f0c3a6e9b2d5f8c1a4b7d0e3f6c9a2b5e8d1f4c7a0b3e6",tokenId:"1502",floorDiff:"+173.80%",topBid:"0.00103",seller:"opt1…sj8v",lastSeen:"1d"},
   { id:"1631", price:"0.00050", lastSale:"0.00046", rarity:"COMMON",
     traits:{Background:"olive drab",Body:"cargo vest",Eyes:"tired",Headgear:"do-rag",Artifacts:"burner phone"},
     scores:{Background:{c:"534",p:"16%"},Body:{c:"434",p:"13%"},Eyes:{c:"668",p:"20%"},Headgear:{c:"250",p:"7.5%"},Artifacts:{c:"274",p:"8.2%"}},
-    owner:"bc1pd3k7xrq0w5m2vn8ja4fg9ychz6e0tlp3s7gap1",mintTx:"c4f7a0b3e6c9f2a5d8b1e4a7c0b3d6f9e2a5c8b1d4f7a0c3e6b9d2f5a8e1c4b7",tokenId:"1631",floorDiff:"+19.04%",topBid:"0.00044",seller:"opt1qd3k7xrq0w5m2vn8ja4fg9ychz6e0tlp3s7gap1",lastSeen:"1d"},
+    owner:"bc1p…gap1",mintTx:"c4f7a0b3e6c9f2a5d8b1e4a7c0b3d6f9e2a5c8b1d4f7a0c3e6b9d2f5a8e1c4b7",tokenId:"1631",floorDiff:"+19.04%",topBid:"0.00044",seller:"opt1…gap1",lastSeen:"1d"},
   { id:"1744", price:"0.00420", lastSale:"0.00350", rarity:"LEGENDARY",
     traits:{Background:"cosmic black",Body:"astral robe",Eyes:"galaxy",Headgear:"halo broken",Artifacts:"black hole"},
     scores:{Background:{c:"24",p:"0.72%"},Body:{c:"18",p:"0.55%"},Eyes:{c:"16",p:"0.48%"},Headgear:{c:"20",p:"0.61%"},Artifacts:{c:"13",p:"0.39%"}},
-    owner:"bc1pz6r3xwq8m5k2vn0ja4dg7f9ychze0tlp2nhwg9",mintTx:"d5a8e1b4c7f0a3d6e9b2c5f8a1d4b7e0c3f6a9d2b5e8c1f4a7b0d3e6f9c2a5d8",tokenId:"1744",floorDiff:"+900.00%",topBid:"0.00380",seller:"opt1qz6r3xwq8m5k2vn0ja4dg7f9ychze0tlp2nhwg9",lastSeen:"2d"},
+    owner:"bc1p…hwg9",mintTx:"d5a8e1b4c7f0a3d6e9b2c5f8a1d4b7e0c3f6a9d2b5e8c1f4a7b0d3e6f9c2a5d8",tokenId:"1744",floorDiff:"+900.00%",topBid:"0.00380",seller:"opt1…hwg9",lastSeen:"2d"},
   { id:"1823", price:"0.00050", lastSale:"0.00047", rarity:"COMMON",
     traits:{Background:"rust red",Body:"flannel shirt",Eyes:"red eyes",Headgear:"trucker hat",Artifacts:"scratch card"},
     scores:{Background:{c:"400",p:"12%"},Body:{c:"567",p:"17%"},Eyes:{c:"467",p:"14%"},Headgear:{c:"327",p:"9.8%"},Artifacts:{c:"220",p:"6.6%"}},
-    owner:"bc1pw4a8xkq3r5m2jn0v7dgf9ychz6e0tlpd3nju77",mintTx:"e6b9d2e5a8f1b4d7a0c3f6b9e2a5d8c1f4b7a0e3d6c9f2b5a8e1d4c7f0b3a6e9",tokenId:"1823",floorDiff:"+19.04%",topBid:"0.00044",seller:"opt1qw4a8xkq3r5m2jn0v7dgf9ychz6e0tlpd3nju77",lastSeen:"2d"},
+    owner:"bc1p…ju77",mintTx:"e6b9d2e5a8f1b4d7a0c3f6b9e2a5d8c1f4b7a0e3d6c9f2b5a8e1d4c7f0b3a6e9",tokenId:"1823",floorDiff:"+19.04%",topBid:"0.00044",seller:"opt1…ju77",lastSeen:"2d"},
   { id:"1956", price:"0.00220", lastSale:"0.00195", rarity:"EPIC",
     traits:{Background:"electric blue",Body:"neon jumpsuit",Eyes:"visor",Headgear:"punk spikes",Artifacts:"taser"},
     scores:{Background:{c:"65",p:"1.95%"},Body:{c:"56",p:"1.68%"},Eyes:{c:"67",p:"2.01%"},Headgear:{c:"48",p:"1.43%"},Artifacts:{c:"59",p:"1.77%"}},
-    owner:"bc1pk9r3xwq5m7j2vn0a4dgf8ychz6e0tlps2kpav2",mintTx:"f7c0a3f6b9e2d5a8c1f4b7d0e3a6c9b2f5a8d1e4b7c0f3a6d9b2e5c8f1a4d7b0",tokenId:"1956",floorDiff:"+423.80%",topBid:"0.00198",seller:"opt1qk9r3xwq5m7j2vn0a4dgf8ychz6e0tlps2kpav2",lastSeen:"3d"},
+    owner:"bc1p…pav2",mintTx:"f7c0a3f6b9e2d5a8c1f4b7d0e3a6c9b2f5a8d1e4b7c0f3a6d9b2e5c8f1a4d7b0",tokenId:"1956",floorDiff:"+423.80%",topBid:"0.00198",seller:"opt1…pav2",lastSeen:"3d"},
   { id:"2041", price:"0.00066", lastSale:"0.00059", rarity:"UNCOMMON",
     traits:{Background:"sand storm",Body:"desert jacket",Eyes:"goggles sand",Headgear:"keffiyeh",Artifacts:"compass"},
     scores:{Background:{c:"277",p:"8.3%"},Body:{c:"224",p:"6.7%"},Eyes:{c:"197",p:"5.9%"},Headgear:{c:"237",p:"7.1%"},Artifacts:{c:"160",p:"4.8%"}},
-    owner:"bc1pn7r4xwq0m3k5vj2a8dgf6ychz9e0tlp4s7ps77",mintTx:"a8e1d4b7c0f3a6e9d2b5f8a1c4b7d0f3e6a9c2b5e8d1f4a7b0c3f6d9a2e5b8c1",tokenId:"2041",floorDiff:"+57.14%",topBid:"0.00059",seller:"opt1qn7r4xwq0m3k5vj2a8dgf6ychz9e0tlp4s7ps77",lastSeen:"3d"},
+    owner:"bc1p…ps77",mintTx:"a8e1d4b7c0f3a6e9d2b5f8a1c4b7d0f3e6a9c2b5e8d1f4a7b0c3f6d9a2e5b8c1",tokenId:"2041",floorDiff:"+57.14%",topBid:"0.00059",seller:"opt1…ps77",lastSeen:"3d"},
   { id:"2178", price:"0.00054", lastSale:"0.00049", rarity:"COMMON",
     traits:{Background:"moss green",Body:"puffer jacket",Eyes:"suspicious",Headgear:"beanie low",Artifacts:"disposable camera"},
     scores:{Background:{c:"501",p:"15%"},Body:{c:"634",p:"19%"},Eyes:{c:"534",p:"16%"},Headgear:{c:"367",p:"11%"},Artifacts:{c:"244",p:"7.3%"}},
-    owner:"bc1pa2r5xwq7m3k0vj8n4dgf6ychz9e0tlps3wdcn1",mintTx:"b9f2e5a8d1c4f7b0e3a6d9c2f5b8a1e4d7b0c3f6a9e2b5d8c1f4a7b0d3e6c9f2",tokenId:"2178",floorDiff:"+28.57%",topBid:"0.00047",seller:"opt1qa2r5xwq7m3k0vj8n4dgf6ychz9e0tlps3wdcn1",lastSeen:"4d"},
+    owner:"bc1p…dcn1",mintTx:"b9f2e5a8d1c4f7b0e3a6d9c2f5b8a1e4d7b0c3f6a9e2b5d8c1f4a7b0d3e6c9f2",tokenId:"2178",floorDiff:"+28.57%",topBid:"0.00047",seller:"opt1…dcn1",lastSeen:"4d"},
   { id:"2299", price:"0.00115", lastSale:"0.00102", rarity:"RARE",
     traits:{Background:"chrome silver",Body:"bomber jacket",Eyes:"silver shine",Headgear:"pilot helmet",Artifacts:"flight ticket"},
     scores:{Background:{c:"180",p:"5.4%"},Body:{c:"220",p:"6.6%"},Eyes:{c:"160",p:"4.8%"},Headgear:{c:"130",p:"3.9%"},Artifacts:{c:"140",p:"4.2%"}},
-    owner:"bc1pf8r3xwq2m5k7vn0ja4dgychz6e9tlp0s4wjxa9",mintTx:"c0a3f6d9b2e5c8a1f4d7b0e3f6a9c2b5d8e1f4a7c0b3d6f9a2e5b8c1f4d7a0b3",tokenId:"2299",floorDiff:"+173.80%",topBid:"0.00105",seller:"opt1qf8r3xwq2m5k7vn0ja4dgychz6e9tlp0s4wjxa9",lastSeen:"4d"}
+    owner:"bc1p…jxa9",mintTx:"c0a3f6d9b2e5c8a1f4d7b0e3f6a9c2b5d8e1f4a7c0b3d6f9a2e5b8c1f4d7a0b3",tokenId:"2299",floorDiff:"+173.80%",topBid:"0.00105",seller:"opt1…jxa9",lastSeen:"4d"}
 ];
 
 var MKT_ACTIVITY = [
-  {id:"0509",from:"opt1qr7v3xaw5m2k8jn0d4gf6ychze9tlpk4d9",to:"opt1q8t5xwq3r7m2jn0k4dgf6ychze9tlpr3m1",price:"0.00044",ago:"2m"},
-  {id:"1138",from:"opt1qm4a8xkq3r5w2jn0v7dgf9ychz6e0tlz7x2",to:"opt1qn6r3xwq8m5k2vn0ja4dgf9ychze0tlb8k4",price:"0.00046",ago:"11m"},
-  {id:"0321",from:"opt1qv9r4xwq0m3k5jn2a8dgf6ychz9e0tln5q8",to:"opt1qw2a5xkq7m3r8jn0v4dgf6ychze9tlf2j6",price:"0.00049",ago:"28m"},
-  {id:"2041",from:"opt1qk3j7dw8yh5rqa0t9xnz4vcf6e2lgp8y9w3",to:"opt1qa8r5xwq2m3k7vn0j4dgf6ychze9tlm1p7",price:"0.00061",ago:"47m"},
-  {id:"1956",from:"opt1qf6v2xak9m4w0jrqdy5hc8ez3tnl7sgd4c1",to:"opt1qp7r3xwq5m8k2vn0ja4dgf6ychze9tlh6s9",price:"0.00195",ago:"1h"},
-  {id:"0042",from:"opt1qz9r4xwq0m3k5jn2a8dgf6ychz9e0tlv8t5",to:"opt1qt6n8zqdwf3xkv2rja0m5ychg9e7lp4q2n0",price:"0.00038",ago:"1h"},
-  {id:"0891",from:"opt1qd3k7xrq0w5m2vn8ja4fg9ychz6e0tle3a7",to:"opt1qh2w5xvq3r8jm0k4d9af7n6ycg0e3tlw5x2",price:"0.00090",ago:"2h"},
-  {id:"1247",from:"opt1qx8j3kqm5dw2gvf7ra0n4chz9e6tlp5j0g4",to:"opt1qj9r4xk8m5w2q3va0gdn7f6ychz0e3tll7d6",price:"0.00175",ago:"3h"},
-  {id:"2299",from:"opt1qn4g7xv2w0q3jfr8dk5m9ayc6z8etlpu1b8",to:"opt1qm7c4xe2v9kfwn3a5jdq0r8ht6ygzl2pc9e3",price:"0.00099",ago:"4h"},
-  {id:"1744",from:"opt1qk9r3xwq5m7j2vn0a4dgf8ychz6e0tlk6f2",to:"opt1qa5v8xwq2m3jrn0k7d4fg9ychz6e0tlr0p5",price:"0.00340",ago:"6h"},
-  {id:"0613",from:"opt1qw4a8xkq3r5m2jn0v7dgf9ychz6e0tla4h9",to:"opt1qv2f5xaw3q8jdrn7ck0m9g4hez6tlsp0t7m1",price:"0.00270",ago:"9h"},
-  {id:"1502",from:"opt1qf8r3xwq2m5k7vn0ja4dgychz6e9tlx2s6",to:"opt1qn7r4xwq0m3k5vj2a8dgf6ychz9e0tlg5q8",price:"0.00094",ago:"12h"}
+  {id:"0509",from:"opt1…k4d9",to:"opt1…r3m1",price:"0.00044",ago:"2m"},
+  {id:"1138",from:"opt1…z7x2",to:"opt1…b8k4",price:"0.00046",ago:"11m"},
+  {id:"0321",from:"opt1…n5q8",to:"opt1…f2j6",price:"0.00049",ago:"28m"},
+  {id:"2041",from:"opt1…y9w3",to:"opt1…m1p7",price:"0.00061",ago:"47m"},
+  {id:"1956",from:"opt1…d4c1",to:"opt1…h6s9",price:"0.00195",ago:"1h"},
+  {id:"0042",from:"opt1…v8t5",to:"opt1…q2n0",price:"0.00038",ago:"1h"},
+  {id:"0891",from:"opt1…e3a7",to:"opt1…w5x2",price:"0.00090",ago:"2h"},
+  {id:"1247",from:"opt1…j0g4",to:"opt1…l7d6",price:"0.00175",ago:"3h"},
+  {id:"2299",from:"opt1…u1b8",to:"opt1…c9e3",price:"0.00099",ago:"4h"},
+  {id:"1744",from:"opt1…k6f2",to:"opt1…r0p5",price:"0.00340",ago:"6h"},
+  {id:"0613",from:"opt1…a4h9",to:"opt1…t7m1",price:"0.00270",ago:"9h"},
+  {id:"1502",from:"opt1…x2s6",to:"opt1…g5q8",price:"0.00094",ago:"12h"}
 ];
 
 var MKT_RARITY = {
@@ -3951,7 +3942,7 @@ function mktRenderList(nfts) {
       +'<span style="color:#00ff41;font-size:12px;font-weight:bold">&#8383;'+n.price+' <span style="color:#4a6a4a;font-size:10px">$'+Math.round(parseFloat(n.price)*96000).toLocaleString()+'</span></span>'
       +'<span style="color:'+floorColor+';font-size:12px;font-weight:bold">'+n.floorDiff+'</span>'
       +'<span style="color:#00ff41;font-size:11px">&#8383;'+n.topBid+'</span>'
-      +'<span style="color:#4a6a4a;font-size:9px;font-family:monospace;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="'+_safeText(n.seller)+'">'+_safeText(n.seller)+'</span>'
+      +'<span style="color:#4a6a4a;font-size:10px;font-family:monospace">'+n.seller+'</span>'
       +'<span style="color:#4a6a4a;font-size:11px">'+n.lastSeen+'</span>'
       +'</div>';
   }).join('');
@@ -4072,7 +4063,7 @@ function mktRenderDetailView(nft) {
     +'<span style="color:#c8a84b;font-size:22px;font-weight:bold;font-family:monospace">DOPAMILIO #'+_safeText(nft.id)+'</span>'
     +'<span style="background:'+col+';color:#060d06;font-family:monospace;font-size:10px;font-weight:bold;padding:3px 8px;border-radius:3px">'+_safeText(nft.rarity)+'</span>'
     +'</div>'
-    +'<div style="color:#4a6a4a;font-size:11px;font-family:monospace;margin-bottom:16px">Owner <a href="'+OPSCAN_ADDR+_safeText(nft.owner)+OPSCAN_QUERY+'" target="_blank" style="color:#00ff41;text-decoration:none">'+_safeText(nft.owner)+'</a></div>'
+    +'<div style="color:#4a6a4a;font-size:11px;font-family:monospace;margin-bottom:16px">Owner <a href="'+OPSCAN_ADDR+_safeText(nft.owner.replace(/…/,''))+OPSCAN_QUERY+'" target="_blank" style="color:#00ff41;text-decoration:none">'+_safeText(nft.owner)+'</a></div>'
     +'<div class="mkt-price-box">'
     +'<div style="display:flex;justify-content:space-between;margin-bottom:8px">'
     +'<div><div style="color:#4a6a4a;font-size:10px;letter-spacing:1px">PRICE</div><div style="color:#00ff41;font-size:22px;font-weight:bold;font-family:monospace">&#8383;'+_safeText(nft.price)+'</div><div style="color:#4a6a4a;font-size:11px">~$'+usd.toLocaleString()+' &bull; '+_safeText(nft.floorDiff)+' vs floor</div></div>'
@@ -4102,7 +4093,7 @@ function mktRenderDetailView(nft) {
     +'<div class="mkt-meta-row"><span class="mkt-meta-label">Contract</span><span class="mkt-meta-val" style="font-size:10px"><a href="'+OPSCAN_ADDR+CONTRACT_ADDR+OPSCAN_QUERY+'" target="_blank" style="color:#3b9eff;text-decoration:none">'+CONTRACT_ADDR.slice(0,10)+'…'+CONTRACT_ADDR.slice(-8)+'</a><button class="mkt-copy-btn" onclick="navigator.clipboard?.writeText(\''+CONTRACT_ADDR+'\')">&#9014;</button></span></div>'
     +'<div class="mkt-meta-row"><span class="mkt-meta-label">Token ID</span><span class="mkt-meta-val">#'+nft.tokenId+'</span></div>'
     +'<div class="mkt-meta-row"><span class="mkt-meta-label">Standard</span><span class="mkt-meta-val" style="color:#00ff41">OP-721 · Bitcoin L1</span></div>'
-    +'<div class="mkt-meta-row"><span class="mkt-meta-label">Owner</span><span class="mkt-meta-val"><a href="'+OPSCAN_ADDR+_safeText(nft.owner)+OPSCAN_QUERY+'" target="_blank" style="color:#3b9eff;text-decoration:none">'+_safeText(nft.owner)+'</a><button class="mkt-copy-btn">&#9014;</button></span></div>'
+    +'<div class="mkt-meta-row"><span class="mkt-meta-label">Owner</span><span class="mkt-meta-val"><a href="'+OPSCAN_ADDR+_safeText(nft.owner.replace(/…/,''))+OPSCAN_QUERY+'" target="_blank" style="color:#3b9eff;text-decoration:none">'+_safeText(nft.owner)+'</a><button class="mkt-copy-btn">&#9014;</button></span></div>'
     +'<div class="mkt-meta-row"><span class="mkt-meta-label">Mint TX</span><span class="mkt-meta-val" style="font-size:10px"><a href="'+OPSCAN_BASE+_safeText(nft.mintTx.slice(0,32))+'…'+OPSCAN_QUERY+'" target="_blank" style="color:#3b9eff;text-decoration:none">'+_safeText(nft.mintTx.slice(0,12))+'…'+_safeText(nft.mintTx.slice(-8))+'</a><button class="mkt-copy-btn">&#9014;</button></span></div>'
     +'<div class="mkt-meta-row"><span class="mkt-meta-label">Network</span><span class="mkt-meta-val" style="color:#c8a84b">Bitcoin · OPNet Mainnet</span></div>'
     +'<div class="mkt-meta-row" style="border-bottom:none"><span class="mkt-meta-label">Metadata</span><span class="mkt-meta-val"><a href="/api/metadata/'+_safeText(String(nft.tokenId))+'" target="_blank" style="color:#3b9eff;text-decoration:none;font-size:10px">View JSON ↗</a></span></div>'
@@ -4138,64 +4129,21 @@ function mktRenderCollectionView() {
     +'<div><span style="color:#4a6a4a;font-size:10px;font-family:monospace">MKT CAP</span><br><span style="color:#c8a84b;font-family:monospace;font-size:14px;font-weight:bold">&#8383;1.3998</span><br><span style="color:#4a6a4a;font-size:9px">~$134,381</span></div>'
     +'</div></div>'
     +'<div class="mkt-control-bar">'
-    +'<div style="display:flex;gap:8px;align-items:center;margin-left:-15px">'
     +'<button class="mkt-btn">&#9889; Filters &#9660;</button>'
     +'<button class="mkt-btn">&#128101; Holders</button>'
     +'<button class="mkt-btn">My Items</button>'
     +'<input class="mkt-filter-input" type="text" placeholder="Filter # or name">'
-    +'</div>'
     +'<div style="flex:1"></div>'
-    +'<div style="display:flex;gap:8px;align-items:center;margin-right:-15px">'
     +'<button class="mkt-btn'+gridGold+'" onclick="mktSetView(\'grid\')">&#8862;</button>'
     +'<button class="mkt-btn'+listGold+'" onclick="mktSetView(\'list\')">&#9776;</button>'
     +'<button class="mkt-btn">&#8597; Price low&#8594;high &#9660;</button>'
     +'<button class="mkt-btn">&#128200; Chart</button>'
     +'<button class="mkt-btn">&#128202; Activity</button>'
     +'</div>'
-    +'</div>'
     +'<div class="mkt-main-layout" style="height:'+mainH+'">'
     +'<div class="mkt-nft-area"><div class="'+nftAreaClass+'">'+nftsHtml+'</div></div>'
     +'<div class="mkt-activity-feed">'+mktRenderActivityFeed()+'</div>'
-    +'</div>'
-    +'<div class="mkt-sweep-bar">'
-    +'<div class="mkt-sweep-stepper"><button onclick="mktSweepAdj(-1)">&#8722;</button><span id="mktSweepCount">1</span><button onclick="mktSweepAdj(1)">+</button></div>'
-    +'<span class="mkt-sweep-label">NFT</span>'
-    +'<span style="color:#1a2a1a">|</span>'
-    +'<span class="mkt-sweep-label">FLOOR</span><span class="mkt-sweep-val">&#8383;0.00042</span>'
-    +'<input type="range" class="mkt-sweep-slider" min="1" max="23" value="1" oninput="mktSweepSlide(this.value)">'
-    +'<span class="mkt-sweep-label">TOTAL</span><span class="mkt-sweep-total" id="mktSweepTotal">&#8383;0.00042</span>'
-    +'<span style="color:#4a6a4a;font-size:10px">(~$40)</span>'
-    +'<span style="flex:1"></span>'
-    +'<button class="mkt-sweep-bid">&#9672; Collection Bid</button>'
-    +'<button class="mkt-sweep-btn" onclick="mktSweepBuy()">SWEEP &#9654;</button>'
     +'</div>';
-}
-
-var _mktSweepCount = 1;
-var _mktSortedPrices = MKT_NFTS.slice().sort(function(a,b){return parseFloat(a.price)-parseFloat(b.price);}).map(function(n){return parseFloat(n.price);});
-function mktSweepAdj(d) {
-  _mktSweepCount = Math.max(1, Math.min(MKT_NFTS.length, _mktSweepCount + d));
-  _mktUpdateSweep();
-}
-function mktSweepSlide(v) {
-  _mktSweepCount = parseInt(v, 10);
-  _mktUpdateSweep();
-}
-function _mktUpdateSweep() {
-  var countEl = document.getElementById('mktSweepCount');
-  var totalEl = document.getElementById('mktSweepTotal');
-  var slider = document.querySelector('.mkt-sweep-slider');
-  if (countEl) countEl.textContent = _mktSweepCount + ' NFT';
-  if (slider) slider.value = _mktSweepCount;
-  var total = 0;
-  for (var i = 0; i < _mktSweepCount && i < _mktSortedPrices.length; i++) total += _mktSortedPrices[i];
-  var usd = Math.round(total * 96000);
-  if (totalEl) totalEl.innerHTML = '\u20BF' + total.toFixed(5);
-  var usdEl = totalEl ? totalEl.nextElementSibling : null;
-  if (usdEl) usdEl.textContent = '(~$' + usd.toLocaleString() + ')';
-}
-function mktSweepBuy() {
-  alert('Sweep ' + _mktSweepCount + ' NFT(s) — marketplace on-chain integration coming soon');
 }
 
 function mktRenderPage() {
