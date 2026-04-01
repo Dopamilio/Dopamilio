@@ -1158,6 +1158,160 @@ input,textarea{-webkit-user-select:text;-moz-user-select:text;user-select:text;}
   box-shadow:0 2px 12px rgba(0,0,0,.4);
 }
 #scroll-toast.show{opacity:1;}
+
+/* ═══ $DOPAMINE LOCKED NAV ITEM — desktop + mobile ═══ */
+.nav-locked{
+  position:relative;pointer-events:none;cursor:default;
+  display:inline-flex;align-items:center;justify-content:center;
+  min-width:90px;
+}
+.nav-locked-text{
+  color:#ff9900;
+  font-size:inherit;letter-spacing:inherit;font-weight:700;
+  filter:blur(1.5px);
+  animation:dopamine-blink 1.4s ease-in-out infinite;
+}
+.nav-locked-icon{
+  position:absolute;left:50%;top:50%;
+  transform:translate(-50%,-50%);
+  font-size:16px;z-index:1;
+  filter:drop-shadow(0 0 4px rgba(255,153,0,.5));
+}
+@keyframes dopamine-blink{
+  0%,100%{opacity:.45;}
+  50%{opacity:1;}
+}
+
+/* ═══ MOBILE OVERHAUL — surgical, desktop untouched ═══ */
+@media(max-width:768px){
+  /* -- Topbar: hidden -- */
+  #mac-topbar{display:none !important;}
+  :root{--mac-bar-h:0px !important;}
+  body{padding-top:0 !important;}
+
+  /* -- Visual noise: killed for perf -- */
+  #fallers,#emoji-rain,.scanlines,.crt-overlay,#bg-canvas,
+  #scroll-toast,#vhs-overlay,#vhs-bg-img{display:none !important;}
+
+  /* -- VHS phosphor glow background -- */
+  body{
+    background:
+      radial-gradient(ellipse at 50% 40%,rgba(0,40,0,.35) 0%,rgba(0,15,0,.18) 40%,transparent 70%),
+      radial-gradient(ellipse at 50% 100%,rgba(0,20,10,.2) 0%,transparent 60%),
+      #000 !important;
+  }
+
+  /* -- Nav: 3-row vertical stack -- */
+  #nav{
+    position:fixed;top:0;left:0;right:0;
+    flex-direction:column !important;
+    flex-wrap:nowrap !important;
+    height:auto !important;
+    padding:10px 12px 0 !important;
+    gap:8px;
+    align-items:center;
+    justify-content:center;
+    z-index:550;
+  }
+  :root{--nav-h:130px !important;}
+
+  /* Row 1: Logo — centered, static, no glow */
+  .nav-logo{
+    order:1;
+    height:36px !important;
+    margin:0 auto !important;
+    animation:none !important;
+    filter:none !important;
+    flex-shrink:0;
+  }
+
+  /* Row 2: Buttons — 3 equal width */
+  .nav-right{
+    order:2;
+    margin-left:0 !important;
+    display:flex !important;
+    gap:6px;
+    justify-content:center;
+    width:100%;
+  }
+  .nav-right .nav-pill{
+    flex:1 1 0 !important;
+    max-width:33.33%;
+    height:32px !important;
+    font-size:7px !important;
+    letter-spacing:.5px !important;
+    padding:0 6px !important;
+    justify-content:center;
+    backdrop-filter:none !important;
+    -webkit-backdrop-filter:none !important;
+  }
+  .nav-pill.sound{width:auto !important;font-size:14px !important;padding:0 !important;}
+
+  /* Row 3: Nav bar — full width, evenly spaced */
+  .center-nav{
+    order:3;
+    position:static !important;
+    transform:none !important;
+    flex-basis:100% !important;
+    display:flex !important;
+    justify-content:space-evenly !important;
+    align-items:center;
+    width:100%;
+    gap:0 !important;
+    background:rgba(255,255,255,.04);
+    border-radius:6px;
+    padding:5px 4px !important;
+    overflow-x:visible !important;
+    scrollbar-width:none;
+  }
+  .center-nav .nav-link{
+    flex:1;
+    text-align:center;
+    font-size:8px !important;
+    letter-spacing:.8px !important;
+    padding:5px 2px !important;
+    white-space:nowrap;
+    border-bottom:2px solid transparent;
+  }
+
+  /* RGB line: under nav bar */
+  .nav-rgb-line{
+    order:4;
+    width:100%;
+    position:static !important;
+    top:auto !important;
+    height:2px;
+    margin-top:0;
+  }
+
+  /* $DOPAMINE locked: compact on mobile */
+  .nav-locked{min-width:auto;}
+  .nav-locked-text{font-size:7px !important;letter-spacing:.5px !important;}
+  .nav-locked-icon{font-size:12px;}
+
+  /* -- Fix page section padding with new nav height -- */
+  #page{padding-top:calc(var(--nav-h) + 6px) !important;}
+  #galleryPage{padding-top:calc(var(--nav-h) + 6px) !important;}
+  #lorePage{padding-top:calc(var(--nav-h) + 6px) !important;}
+  #marketplacePage{padding-top:calc(var(--nav-h) + 6px) !important;}
+}
+
+/* ═══ MOBILE ≤480 — extra compact ═══ */
+@media(max-width:480px){
+  :root{--nav-h:126px !important;}
+  .center-nav .nav-link{font-size:7px !important;letter-spacing:.5px !important;padding:4px 1px !important;}
+  .nav-locked-text{font-size:6px !important;}
+  .nav-locked-icon{font-size:10px;}
+  .nav-right .nav-pill{height:30px !important;font-size:6px !important;}
+  .nav-pill.sound{font-size:12px !important;}
+}
+
+/* ═══ MOBILE ≤360 — tiny screens ═══ */
+@media(max-width:360px){
+  :root{--nav-h:122px !important;}
+  .center-nav .nav-link{font-size:6px !important;letter-spacing:.3px !important;}
+  .nav-right .nav-pill{height:28px !important;font-size:5.5px !important;}
+}
 </style>
 <style>
 /* ═══════════════════════════════════════════════════════
@@ -1497,6 +1651,7 @@ input,textarea{-webkit-user-select:text;-moz-user-select:text;user-select:text;}
     <a href="/gallery" class="nav-link" id="galNavLink" data-page="gallery">GALLERY</a>
     <a href="/lore" class="nav-link" data-page="lore">LORE</a>
     <a href="/marketplace" class="nav-link" data-page="marketplace">MARKETPLACE<span class="soon-tag blink-soon">SOON</span></a>
+    <span class="nav-link nav-locked" aria-disabled="true"><span class="nav-locked-text">$DOPAMINE</span><span class="nav-locked-icon">&#x1F512;</span></span>
   </nav>
   <div class="nav-rgb-line"></div>
   <div class="nav-right">
@@ -2403,8 +2558,9 @@ setTimeout(()=>document.getElementById('loader').classList.add('done'),3500);
 
 /* ── UNIFIED STICKER PHYSICS — all 21 MLG images, 11 R + 10 L ── */
 
-/* ── EMOJI FALLERS — deferred to after load ── */
+/* ── EMOJI FALLERS — deferred to after load (desktop only) ── */
 window.addEventListener('load',function(){(window.requestIdleCallback||function(cb){setTimeout(cb,1)})(function(){
+  if(window.innerWidth<=768) return; // skip on mobile — perf
   const items=['🤑','💎','🪙','💲','💊','😹','👁️','💥','🤑','💎','💊','👁️','💥','🤑'];
   const wrap=document.getElementById('fallers');
   const NAV_H=parseInt(getComputedStyle(document.documentElement).getPropertyValue('--nav-h'))||68;
@@ -2900,8 +3056,9 @@ function showMintFeedback(tokenId){
   setTimeout(function(){if(text.parentNode)text.parentNode.removeChild(text);},1500);
 }
 
-/* DOPA-2: EMOJI RAIN — deferred to after load */
+/* DOPA-2: EMOJI RAIN — deferred to after load (desktop only) */
 window.addEventListener('load',function(){(window.requestIdleCallback||function(cb){setTimeout(cb,1)})(function(){
+  if(window.innerWidth<=768) return; // skip on mobile — perf
   var EMOJIS=['💊','🧬','⚡','🔥','💎','🚀','💉','🧪'];
   var container=document.createElement('div');
   container.id='emoji-rain';
@@ -2924,6 +3081,7 @@ function showPage(page,pushState){
   var mainContent=document.getElementById('page');
   var actDiv=document.getElementById('activity');
   document.querySelectorAll('.page-section').forEach(function(s){s.style.display='none';});
+  if(typeof stopLoreTyping==='function') stopLoreTyping();  // cancel lore animation when leaving
   document.querySelectorAll('.nav-link').forEach(function(l){l.classList.remove('active');});
   var activeLink=document.querySelector('[data-page="'+page+'"]');
   if(activeLink) activeLink.classList.add('active');
@@ -2958,7 +3116,7 @@ function showPage(page,pushState){
 document.querySelectorAll('.nav-link').forEach(function(l){
   l.addEventListener('click',function(e){
     e.preventDefault();
-    showPage(l.dataset.page);
+    if(l.dataset.page) showPage(l.dataset.page);
   });
 });
 /* Handle browser back/forward */
@@ -3415,10 +3573,11 @@ function loadGalleryPage(){
 
 
 /* DOPA-2: LORE TYPING */
-var _loreStarted=false;
+var _loreRafId=0,_loreDone=false;
+function stopLoreTyping(){if(_loreRafId){cancelAnimationFrame(_loreRafId);_loreRafId=0;}}
 function startLoreTyping(){
-  if(_loreStarted) return;
-  _loreStarted=true;
+  stopLoreTyping();
+  if(_loreDone) return;           // already fully typed — show as-is
   var el=document.getElementById('loreTerminal');
   if(!el) return;
   el.innerHTML='';
@@ -3468,51 +3627,50 @@ function startLoreTyping(){
     '  Follow @dopamilio for the next drop.',
     '',
   ];
-  var lIdx=0,cIdx=0;
+  var lIdx=0,cIdx=0,lastTs=0,delay=200;
   var cursor=document.createElement('span');
   cursor.className='lore-cursor';cursor.textContent='_';
   var tNode=document.createTextNode('');
   el.appendChild(tNode);el.appendChild(cursor);
-  var _scrSpan=null;
-  function _startScramble(span){
-    var chars='0123456789abcdef';
-    var len=42;
-    setInterval(function(){
-      var s='';for(var i=0;i<len;i++)s+=chars[Math.floor(Math.random()*chars.length)];
-      span.textContent=s;
-    },60);
-  }
-  function typeChar(){
-    if(lIdx>=LORE.length){cursor.style.display='inline';return;}
-    var line=LORE[lIdx];
-    if(cIdx<line.length){
-      var ch=line[cIdx];
-      if(ch==='\x00'){
-        // inject static contract address + copy button
-        var scr=document.createElement('span');
-        scr.style.cssText='color:#0f0;letter-spacing:0;user-select:text;';
-        scr.textContent=CONTRACT_ADDR;
-        el.insertBefore(scr,cursor);
-        var cpyBtn=document.createElement('button');
-        cpyBtn.textContent=' ⧉';
-        cpyBtn.title='Copy contract address';
-        cpyBtn.style.cssText='background:none;border:none;color:#0f0;cursor:pointer;font-size:inherit;padding:0 0 0 4px;opacity:.7;';
-        cpyBtn.onclick=function(){navigator.clipboard?.writeText(CONTRACT_ADDR);cpyBtn.textContent=' ✓';setTimeout(function(){cpyBtn.textContent=' ⧉';},1500);};
-        el.insertBefore(cpyBtn,cursor);
-        tNode=document.createTextNode('');
-        el.insertBefore(tNode,cursor);
-        cIdx++;
+  function typeFrame(ts){
+    if(!el.isConnected){_loreRafId=0;return;}    // element removed — bail
+    if(ts-lastTs<delay){_loreRafId=requestAnimationFrame(typeFrame);return;}
+    lastTs=ts;
+    // type up to 5 chars per frame to avoid per-char reflow stutter
+    var batch=5;
+    while(batch-->0){
+      if(lIdx>=LORE.length){cursor.style.display='inline';_loreRafId=0;_loreDone=true;return;}
+      var line=LORE[lIdx];
+      if(cIdx<line.length){
+        var ch=line[cIdx];
+        if(ch==='\x00'){
+          var scr=document.createElement('span');
+          scr.style.cssText='color:#0f0;letter-spacing:0;user-select:text;';
+          scr.textContent=CONTRACT_ADDR;
+          el.insertBefore(scr,cursor);
+          var cpyBtn=document.createElement('button');
+          cpyBtn.textContent=' ⧉';
+          cpyBtn.title='Copy contract address';
+          cpyBtn.style.cssText='background:none;border:none;color:#0f0;cursor:pointer;font-size:inherit;padding:0 0 0 4px;opacity:.7;';
+          cpyBtn.onclick=function(){navigator.clipboard?.writeText(CONTRACT_ADDR);cpyBtn.textContent=' ✓';setTimeout(function(){cpyBtn.textContent=' ⧉';},1500);};
+          el.insertBefore(cpyBtn,cursor);
+          tNode=document.createTextNode('');
+          el.insertBefore(tNode,cursor);
+          cIdx++;
+        } else {
+          tNode.textContent+=ch;cIdx++;
+        }
+        delay=4;
       } else {
-        tNode.textContent+=ch;cIdx++;
+        tNode.textContent+='\n';lIdx++;cIdx=0;
+        var isBlank=line.trim()===''||line.trim()==='>',isSep=line.indexOf('─')>=0||line.indexOf('═')>=0;
+        delay=isSep?40:isBlank?20:10;
+        break;  // pause frame after line break for pacing
       }
-      setTimeout(typeChar,4);
-    } else {
-      tNode.textContent+='\n';lIdx++;cIdx=0;
-      var isBlank=line.trim()===''||line.trim()==='>',isSep=line.indexOf('─')>=0||line.indexOf('═')>=0;
-      setTimeout(typeChar,isSep?40:isBlank?20:10);
     }
+    _loreRafId=requestAnimationFrame(typeFrame);
   }
-  setTimeout(typeChar,200);
+  _loreRafId=requestAnimationFrame(typeFrame);
 }
 
 /* DOPA-2: LIVE TICKER */
@@ -3722,8 +3880,9 @@ document.addEventListener('dragstart',function(e){e.preventDefault();});
   },true);
 })();
 
-/* ── SCROLL TOAST ── */
+/* ── SCROLL TOAST (desktop only) ── */
 (function(){
+  if(window.innerWidth<=768) return; // skip on mobile
   var toast=document.getElementById('scroll-toast');
   if(!toast)return;
   var t=null;

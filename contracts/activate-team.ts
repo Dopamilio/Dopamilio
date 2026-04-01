@@ -110,7 +110,8 @@ async function main(): Promise<void> {
         mldsaSigner: wallet.mldsaKeypair,
         refundTo:    wallet.p2tr,
         network:     NETWORK,
-        maximumAllowedSatToSpend: 100_000n,
+        feeRate:     3,
+        maximumAllowedSatToSpend: 20_000n,
     });
     if (!receipt) throw new Error('activateTeam: no receipt');
     const txId = receipt.transactionId ?? '';
