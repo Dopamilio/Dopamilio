@@ -135,18 +135,17 @@ function buildCardDetail(nft, lore) {
   imgWrap.appendChild(img);
   wrap.appendChild(imgWrap);
 
-  // Title + Stars
+  // Title
   var title = document.createElement('div');
   title.className = 'cd-title';
-  var titleText = document.createElement('span');
-  titleText.textContent = 'DOPAMILIO #' + nft.id;
-  title.appendChild(titleText);
-  /* Star rating: 0–5 lit stars based on rarity tier */
+  title.textContent = 'DOPAMILIO #' + nft.id;
+  wrap.appendChild(title);
+
+  // Stars — below title
   var _STAR_MAP = {Common:0, Uncommon:1, Rare:2, Epic:3, Legendary:4, Mythic:5};
   var litCount = _STAR_MAP[nft.tier] || 0;
-  var stars = document.createElement('span');
-  stars.className = 'cd-stars';
-  stars.style.cssText = 'position:absolute;right:0;font-size:0.7em;letter-spacing:2px;';
+  var starsDiv = document.createElement('div');
+  starsDiv.style.cssText = 'text-align:center;font-size:12px;letter-spacing:3px;margin-top:2px;margin-bottom:4px;';
   var starHtml = '';
   for (var si = 0; si < 5; si++) {
     if (si < litCount) {
@@ -155,9 +154,8 @@ function buildCardDetail(nft, lore) {
       starHtml += '<span style="color:rgba(255,255,255,0.15)">★</span>';
     }
   }
-  stars.innerHTML = starHtml;
-  title.appendChild(stars);
-  wrap.appendChild(title);
+  starsDiv.innerHTML = starHtml;
+  wrap.appendChild(starsDiv);
 
   // Phrase
   var phrase = document.createElement('div');

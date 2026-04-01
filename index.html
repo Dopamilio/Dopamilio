@@ -1260,9 +1260,7 @@ input,textarea{-webkit-user-select:text;-moz-user-select:text;user-select:text;}
   letter-spacing: 0.5px;
   position: relative;
   z-index: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  text-align: center;
   text-align: center;
 }
 .card-detail .cd-phrase {
@@ -3232,7 +3230,10 @@ function _openNftDetailFallback(id){
   var traits=data?data.traits:{};
   var traitPct=data?data.traitPct:{};
 
-  /* Title + stars */
+  /* Title */
+  idEl.textContent='Dopamilio #'+id;
+
+  /* Stars — insert below title */
   var _FSTAR_MAP={Common:0,Uncommon:1,Rare:2,Epic:3,Legendary:4,Mythic:5};
   var _fLit=_FSTAR_MAP[tier]||0;
   var _fStarColors={Common:'#9CA3AF',Uncommon:'#4ADE80',Rare:'#60A5FA',Epic:'#A78BFA',Legendary:'#F59E0B',Mythic:'#F43F5E'};
@@ -3241,7 +3242,10 @@ function _openNftDetailFallback(id){
   for(var _si=0;_si<5;_si++){
     _fStars+=_si<_fLit?'<span style="color:'+_fStarColor+';text-shadow:0 0 6px '+_fStarColor+'">★</span>':'<span style="color:rgba(255,255,255,0.15)">★</span>';
   }
-  idEl.innerHTML=_safeText('Dopamilio #'+id)+'<span style="position:absolute;right:0;font-size:0.7em;letter-spacing:2px">'+_fStars+'</span>';
+  var _starsRow=document.createElement('div');
+  _starsRow.style.cssText='text-align:center;font-size:12px;letter-spacing:3px;margin-top:2px;margin-bottom:4px;';
+  _starsRow.innerHTML=_fStars;
+  idEl.parentNode.insertBefore(_starsRow,idEl.nextSibling);
 
   /* Tier badge */
   var tierClasses={Common:'badge-common',Uncommon:'badge-uncommon',Rare:'badge-rare',Epic:'badge-epic',Legendary:'badge-legendary',Mythic:'badge-mythic'};
@@ -3809,7 +3813,7 @@ document.addEventListener('copy',function(e){
 })();
 </script>
 <script src="gallery-lore.js"></script>
-<script src="gallery-card.js?v=2"></script>
+<script src="gallery-card.js?v=3"></script>
 <script>
 (function(){
   var rg=document.getElementById('rektGif');
