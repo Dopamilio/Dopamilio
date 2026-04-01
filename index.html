@@ -1412,63 +1412,108 @@ input,textarea{-webkit-user-select:text;-moz-user-select:text;user-select:text;}
   .nft-detail-card::before{animation:none !important;}
   .nft-detail-img{max-width:100% !important;}
 
-  /* -- CardModal (gallery-card.js): kill heavy effects, add flip -- */
+  /* -- CardModal (gallery-card.js): kill heavy effects -- */
   .card-detail{
     animation:none !important;
     will-change:auto !important;
     backdrop-filter:blur(10px) !important;
     -webkit-backdrop-filter:blur(10px) !important;
-    cursor:pointer;
   }
   .card-detail::before{display:none !important;}
-  #cardTerminalFloat{display:none !important;}  /* terminal hidden on mobile */
+  #cardTerminalFloat{display:none !important;}
 
-  /* Card flip: front/back toggle */
-  .cd-flip-back{
-    display:none;
-    flex-direction:column;align-items:center;justify-content:center;gap:12px;
-    padding:20px 12px;width:100%;
+  /* ═══ 3D CARD FLIP — Awwwards-grade ═══ */
+  /* Perspective wrapper around the card */
+  #cardDetailWrap{
+    perspective:1200px;
+    -webkit-perspective:1200px;
   }
-  .card-detail.cd-flipped .cd-img,
-  .card-detail.cd-flipped .cd-title,
-  .card-detail.cd-flipped .cd-phrase,
-  .card-detail.cd-flipped .cd-badges,
-  .card-detail.cd-flipped .cd-front-hint,
-  .card-detail.cd-flipped>div[style*="letter-spacing"]{
-    display:none !important;
+  /* The card itself becomes the flip container */
+  .card-detail{
+    position:relative;
+    transform-style:preserve-3d !important;
+    -webkit-transform-style:preserve-3d !important;
+    transition:transform 0.6s cubic-bezier(0.4,0.0,0.2,1) !important;
+    cursor:pointer;
+    overflow:visible !important;
   }
-  .card-detail.cd-flipped .cd-flip-back{
-    display:flex;
+  .card-detail.cd-flipped{
+    transform:rotateY(180deg) !important;
   }
-  .cd-flip-title{
-    font-family:'JetBrains Mono',monospace;font-size:12px;
-    color:#22c55e;letter-spacing:3px;font-weight:700;
+  /* Front face */
+  .cd-front-face{
+    backface-visibility:hidden;
+    -webkit-backface-visibility:hidden;
+    display:flex;flex-direction:column;align-items:center;gap:12px;
+    width:100%;
   }
-  .cd-flip-phrase{
+  /* Back face — absolute, same size, pre-rotated */
+  .cd-back-face{
+    position:absolute;inset:0;
+    backface-visibility:hidden;
+    -webkit-backface-visibility:hidden;
+    transform:rotateY(180deg);
+    display:flex;flex-direction:column;
+    padding:14px 12px;
+    overflow-y:auto;
+    scrollbar-width:none;
+    border-radius:inherit;
+    background:rgba(6,10,6,.95);
+    border:1px solid rgba(var(--rarity-rgb,160,160,160),.25);
+  }
+  .cd-back-face::-webkit-scrollbar{display:none;}
+  /* Terminal prompt styling */
+  .cdb-cmd{
     font-family:'JetBrains Mono',monospace;font-size:10px;
-    color:rgba(255,255,255,.75);text-align:center;
-    line-height:1.7;letter-spacing:.3px;padding:0 8px;
+    color:#22c55e;margin-bottom:6px;
   }
-  .cd-flip-role{
-    font-family:'Press Start 2P',monospace;font-size:6px;
-    color:rgba(255,255,255,.35);letter-spacing:1.5px;text-transform:uppercase;
+  .cdb-rank{
+    font-family:'JetBrains Mono',monospace;font-size:10px;
+    color:var(--rarity-color,#9ca3af);margin-bottom:8px;
+    text-shadow:0 0 6px rgba(var(--rarity-rgb,160,160,160),.4);
   }
-  .cd-flip-sats{
-    font-family:'Bangers',cursive;font-size:22px;
-    color:#ff9900;text-shadow:0 0 10px rgba(255,153,0,.4);
+  .cdb-phrase{
+    font-family:'JetBrains Mono',monospace;font-size:9px;
+    color:rgba(255,255,255,.7);text-align:center;
+    line-height:1.65;font-style:italic;
+    padding:0 4px;margin-bottom:8px;
   }
-  .cd-flip-personality{
+  .cdb-sep{
     font-family:'JetBrains Mono',monospace;font-size:8px;
-    color:rgba(255,255,255,.4);letter-spacing:1px;
+    color:rgba(255,255,255,.12);margin:4px 0;text-align:center;
+    letter-spacing:1px;
   }
-  .cd-flip-hint{
+  .cdb-trait{
+    display:flex;justify-content:space-between;align-items:baseline;
+    font-family:'JetBrains Mono',monospace;font-size:8px;
+    padding:1px 0;
+  }
+  .cdb-trait-label{color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:.5px;}
+  .cdb-trait-val{color:rgba(255,255,255,.65);text-align:right;}
+  .cdb-trait-pct{color:var(--rarity-color,#9ca3af);font-size:7px;margin-left:4px;}
+  .cdb-trait-none .cdb-trait-val{color:rgba(255,255,255,.2);font-style:italic;}
+  .cdb-meta{
+    display:flex;justify-content:space-between;align-items:baseline;
+    font-family:'JetBrains Mono',monospace;font-size:8px;
+    padding:1px 0;
+  }
+  .cdb-meta-label{color:#22c55e;letter-spacing:.5px;}
+  .cdb-meta-val{color:rgba(255,255,255,.65);}
+  .cdb-sats{
+    text-align:center;margin:8px 0 4px;
+    font-family:'Bangers',cursive;font-size:20px;
+    color:#ff9900;text-shadow:0 0 8px rgba(255,153,0,.35);
+  }
+  .cdb-hint{
     font-family:'Press Start 2P',monospace;font-size:5px;
-    color:rgba(255,255,255,.2);letter-spacing:1px;text-align:center;
+    color:rgba(255,255,255,.18);letter-spacing:1px;
+    text-align:center;margin-top:auto;padding-top:6px;
   }
   .cd-front-hint{
     font-family:'Press Start 2P',monospace;font-size:5px;
-    color:rgba(255,255,255,.2);letter-spacing:1px;text-align:center;
-    margin-top:4px;
+    color:rgba(255,255,255,.18);letter-spacing:1px;
+    text-align:center;margin-top:4px;
+    backface-visibility:hidden;-webkit-backface-visibility:hidden;
   }
 
   /* Front content: visible by default, hidden when flipped */
@@ -3583,20 +3628,60 @@ function _setupMobileCardFlip(id){
   var data=_dopaGet(id);if(!data) return;
   data.id=id;
   var lore=window.DopamilioLore?window.DopamilioLore.generateCharacterLore(data):null;
-  var flipBack=document.createElement('div');
-  flipBack.className='cd-flip-back';
-  var _fb=function(c,t){var d=document.createElement('div');d.className=c;d.textContent=t;return d;};
-  flipBack.appendChild(_fb('cd-flip-title','LORE'));
-  flipBack.appendChild(_fb('cd-flip-phrase',lore?lore.phrase:'...'));
-  flipBack.appendChild(_fb('cd-flip-role',lore?lore.role:''));
-  flipBack.appendChild(_fb('cd-flip-sats',lore?lore.satsWallet.toLocaleString()+' SATS':''));
-  flipBack.appendChild(_fb('cd-flip-personality',lore?lore.personality:''));
-  flipBack.appendChild(_fb('cd-flip-hint','TAP TO FLIP BACK'));
-  cardEl.appendChild(flipBack);
-  var hint=document.createElement('div');
-  hint.className='cd-front-hint';
-  hint.textContent='TAP CARD TO SEE LORE';
-  cardEl.appendChild(hint);
+  if(!lore) return;
+  var traits=data.traits||{};
+  var traitPct=data.traitPct||{};
+
+  /* Wrap existing children in front face */
+  var front=document.createElement('div');
+  front.className='cd-front-face';
+  while(cardEl.firstChild) front.appendChild(cardEl.firstChild);
+  /* Add tap hint to front */
+  var fhint=document.createElement('div');
+  fhint.className='cd-front-hint';
+  fhint.textContent='TAP TO SEE LORE';
+  front.appendChild(fhint);
+  cardEl.appendChild(front);
+
+  /* Build back face — terminal-style prompt */
+  var back=document.createElement('div');
+  back.className='cd-back-face';
+  var _el=function(cls,txt){var d=document.createElement('div');d.className=cls;d.textContent=txt;return d;};
+
+  back.appendChild(_el('cdb-cmd','> seek --nft '+id));
+  back.appendChild(_el('cdb-rank','rank: #'+data.rank+' / 3333  \u2502  '+data.tier.toUpperCase()));
+  back.appendChild(_el('cdb-sep','\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500'));
+  back.appendChild(_el('cdb-phrase','\u201c'+lore.phrase+'\u201d'));
+  back.appendChild(_el('cdb-sep','\u2500\u2500 traits \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500'));
+
+  var SHOW=['Background','Classes','Eyes','Eye Brows','Cloths','Hair','Mouths','Head gear','Weapons','Specials','Acessories'];
+  SHOW.forEach(function(k){
+    var v=traits[k];var isNone=!v||v==='None';
+    var pct=(!isNone&&traitPct[k]!=null)?traitPct[k].toFixed(1)+'%':'';
+    var row=document.createElement('div');
+    row.className='cdb-trait'+(isNone?' cdb-trait-none':'');
+    var lbl=document.createElement('span');lbl.className='cdb-trait-label';lbl.textContent=k;
+    var val=document.createElement('span');val.className='cdb-trait-val';
+    val.textContent=isNone?'none':v;
+    if(pct){var pc=document.createElement('span');pc.className='cdb-trait-pct';pc.textContent=pct;val.appendChild(pc);}
+    row.appendChild(lbl);row.appendChild(val);
+    back.appendChild(row);
+  });
+
+  back.appendChild(_el('cdb-sep','\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500'));
+  back.appendChild(_el('cdb-sats',lore.satsWallet.toLocaleString()+' SATS'));
+
+  var mRole=document.createElement('div');mRole.className='cdb-meta';
+  mRole.innerHTML='<span class="cdb-meta-label">role:</span><span class="cdb-meta-val">'+_safeText(lore.role)+'</span>';
+  back.appendChild(mRole);
+  var mMood=document.createElement('div');mMood.className='cdb-meta';
+  mMood.innerHTML='<span class="cdb-meta-label">mood:</span><span class="cdb-meta-val">'+_safeText(lore.personality)+'</span>';
+  back.appendChild(mMood);
+
+  back.appendChild(_el('cdb-hint','TAP TO FLIP BACK'));
+  cardEl.appendChild(back);
+
+  /* Tap to flip — 3D rotation */
   cardEl.addEventListener('click',function(e){
     e.stopPropagation();
     cardEl.classList.toggle('cd-flipped');
