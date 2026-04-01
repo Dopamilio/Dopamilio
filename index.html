@@ -1365,16 +1365,41 @@ input,textarea{-webkit-user-select:text;-moz-user-select:text;user-select:text;}
   .tot-btc{font-size:16px !important;}
   .btn-mint{padding:12px !important;font-size:11px !important;}
 
-  /* -- Activity table: TX hash truncated -- */
-  #activity{margin-bottom:16px !important;}
-  .act-col-header,.act-row{font-size:7px !important;}
-  .act-txid,.act-txid a{
-    max-width:60px !important;
+  /* -- Activity table: mobile-optimized layout -- */
+  #activity{margin-bottom:16px !important;overflow-x:hidden !important;}
+  .act-col-header,.act-row{
+    grid-template-columns:28px 40px minmax(0,1fr) minmax(0,70px) auto 46px !important;
+    gap:4px !important;padding:4px 8px !important;font-size:7px !important;
+    min-height:32px !important;
+  }
+  /* TX hash: truncated to e92e...8ace */
+  .act-txid-link{
     overflow:hidden !important;
     text-overflow:ellipsis !important;
     white-space:nowrap !important;
-    display:inline-block !important;
+    max-width:100% !important;
+    font-size:7px !important;
+    word-break:normal !important;
   }
+  /* Status: inline, no wrap */
+  .act-status{
+    white-space:nowrap !important;
+    gap:2px !important;
+    padding:1px 4px !important;
+    height:auto !important;
+    font-size:6px !important;
+  }
+  /* Wallet address: compact */
+  .act-addr{font-size:7px !important;}
+  /* Time: compact */
+  .act-time{font-size:7px !important;}
+  /* ID: compact */
+  .act-id{font-size:9px !important;}
+  /* Thumb: smaller */
+  .act-thumb{width:24px !important;height:24px !important;border-radius:4px !important;}
+  /* Header labels */
+  .act-title{font-size:8px !important;letter-spacing:1px !important;}
+  .act-col-header span{font-size:6px !important;letter-spacing:1px !important;}
 
   /* -- Gallery card detail: kill heavy effects -- */
   .nft-detail-card{
