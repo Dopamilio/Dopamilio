@@ -1189,10 +1189,11 @@ input,textarea{-webkit-user-select:text;-moz-user-select:text;user-select:text;}
   :root{--mac-bar-h:0px !important;}
   body{padding-top:0 !important;}
 
-  /* -- Visual noise + livebar: killed for perf -- */
+  /* -- Visual noise + livebar + audio: killed for perf -- */
   #fallers,#emoji-rain,.scanlines,.crt-overlay,#bg-canvas,
   #scroll-toast,#vhs-overlay,#vhs-bg-img,#stickers,.illum-bg,
   #ticker{display:none !important;}
+  #click-snd{display:none;}  /* prevent preload */
   :root{--ticker-h:0px !important;}
 
   /* -- VHS phosphor glow background -- */
@@ -1304,16 +1305,24 @@ input,textarea{-webkit-user-select:text;-moz-user-select:text;user-select:text;}
     gap:12px !important;
   }
 
-  /* -- NFT card: fixed height carousel -- */
-  #nft-card{max-height:280px;}
+  /* -- NFT card: explicit height so flex:1 viewport works -- */
+  #nft-card{height:280px;max-height:280px;animation:none !important;box-shadow:0 0 0 2px #0f4,0 8px 20px rgba(0,0,0,.5) !important;}
+  .nft-viewport{min-height:180px !important;}
+  .nft-inner{transform:none !important;transition:none !important;transform-style:flat !important;}
+  .nft-glare,.nft-scan,.nc,.ns{display:none !important;}  /* kill overlays on mobile */
 
-  /* -- Mint card: no min-height, clean stack -- */
+  /* -- Mint card: no min-height, clean stack, no tilt -- */
   #mint-card{
     min-height:0 !important;
     padding:12px !important;
     gap:8px !important;
     overflow-y:auto !important;
+    transform:none !important;
+    will-change:auto !important;
+    transition:none !important;
   }
+  /* Kill ALL card tilt/movement on mobile */
+  .card{transform:none !important;will-change:auto !important;transition:none !important;backdrop-filter:none !important;-webkit-backdrop-filter:none !important;}
 
   /* -- Phases: single row compressed -- */
   .phases{grid-template-columns:1fr 1fr 1fr !important;gap:4px !important;}
@@ -1367,16 +1376,74 @@ input,textarea{-webkit-user-select:text;-moz-user-select:text;user-select:text;}
     display:inline-block !important;
   }
 
-  /* -- Gallery card detail: mobile flip support -- */
+  /* -- Gallery card detail: kill heavy effects -- */
   .nft-detail-card{
     width:92vw !important;max-width:92vw !important;
     padding:14px 10px !important;
     animation:none !important;
-    transition:transform .4s ease;
-    cursor:pointer;
+    backdrop-filter:blur(10px) !important;
+    -webkit-backdrop-filter:blur(10px) !important;
   }
   .nft-detail-card::before{animation:none !important;}
   .nft-detail-img{max-width:100% !important;}
+
+  /* -- CardModal (gallery-card.js): kill heavy effects, add flip -- */
+  .card-detail{
+    animation:none !important;
+    will-change:auto !important;
+    backdrop-filter:blur(10px) !important;
+    -webkit-backdrop-filter:blur(10px) !important;
+    cursor:pointer;
+  }
+  .card-detail::before{display:none !important;}
+  #cardTerminalFloat{display:none !important;}  /* terminal hidden on mobile */
+
+  /* Card flip: front/back toggle */
+  .cd-flip-back{
+    display:none;
+    flex-direction:column;align-items:center;justify-content:center;gap:12px;
+    padding:20px 12px;width:100%;
+  }
+  .card-detail.cd-flipped .cd-img,
+  .card-detail.cd-flipped .cd-title,
+  .card-detail.cd-flipped .cd-phrase,
+  .card-detail.cd-flipped .cd-badges,
+  .card-detail.cd-flipped>div[style*="letter-spacing"]{
+    display:none !important;
+  }
+  .card-detail.cd-flipped .cd-flip-back{
+    display:flex;
+  }
+  .cd-flip-title{
+    font-family:'JetBrains Mono',monospace;font-size:12px;
+    color:#22c55e;letter-spacing:3px;font-weight:700;
+  }
+  .cd-flip-phrase{
+    font-family:'JetBrains Mono',monospace;font-size:10px;
+    color:rgba(255,255,255,.75);text-align:center;
+    line-height:1.7;letter-spacing:.3px;padding:0 8px;
+  }
+  .cd-flip-role{
+    font-family:'Press Start 2P',monospace;font-size:6px;
+    color:rgba(255,255,255,.35);letter-spacing:1.5px;text-transform:uppercase;
+  }
+  .cd-flip-sats{
+    font-family:'Bangers',cursive;font-size:22px;
+    color:#ff9900;text-shadow:0 0 10px rgba(255,153,0,.4);
+  }
+  .cd-flip-personality{
+    font-family:'JetBrains Mono',monospace;font-size:8px;
+    color:rgba(255,255,255,.4);letter-spacing:1px;
+  }
+  .cd-flip-hint{
+    font-family:'Press Start 2P',monospace;font-size:5px;
+    color:rgba(255,255,255,.2);letter-spacing:1px;text-align:center;
+  }
+  .cd-front-hint{
+    font-family:'Press Start 2P',monospace;font-size:5px;
+    color:rgba(255,255,255,.2);letter-spacing:1px;text-align:center;
+    margin-top:4px;
+  }
 
   /* Front content: visible by default, hidden when flipped */
   .nft-detail-card>*:not(.nft-detail-back):not(.nft-detail-close):not(.nft-detail-flip-hint){
@@ -2682,8 +2749,8 @@ window.addEventListener('load',function(){(window.requestIdleCallback||function(
   },55);
 });});
 
-/* ── LOADER DISMISS after 3.5s ── */
-setTimeout(()=>{var l=document.getElementById('loader');if(l){l.classList.add('done');if(window.innerWidth<=768)setTimeout(()=>{if(l.parentNode)l.parentNode.removeChild(l);},800);}},3500);
+/* ── LOADER DISMISS after 3.5s — removed from DOM after fade ── */
+setTimeout(()=>{var l=document.getElementById('loader');if(l){l.classList.add('done');setTimeout(()=>{if(l.parentNode)l.parentNode.removeChild(l);},800);}},3500);
 
 /* ── UNIFIED STICKER PHYSICS — all 21 MLG images, 11 R + 10 L ── */
 
@@ -2826,8 +2893,8 @@ function goNft(i,rst){
   curNft=i;if(rst){clearInterval(nftTimer);nftTimer=setInterval(()=>goNft((curNft+1)%NFT_IMGS.length,false),2800);}
 }
 
-/* ── 3D TILT NFT ── */
-(()=>{
+/* ── 3D TILT NFT (desktop only) ── */
+if(window.innerWidth>768)(()=>{
   const card=document.getElementById('nft-card'),inner=document.getElementById('nftInner'),glare=document.getElementById('nftGlare');
   let idle=0,hov=false;
   card.style.willChange='transform';
@@ -2848,8 +2915,8 @@ function goNft(i,rst){
   })(0);
 })();
 
-/* ── 3D TILT MINT ── */
-(()=>{
+/* ── 3D TILT MINT (desktop only) ── */
+if(window.innerWidth>768)(()=>{
   const card=document.getElementById('mint-card');let idle2=0,hov2=false;
   card.style.willChange='transform';
   let _r2=null;
@@ -4016,8 +4083,9 @@ document.addEventListener('selectstart',function(e){
 });
 document.addEventListener('dragstart',function(e){e.preventDefault();});
 
-/* ── CLICK SOUND ── */
+/* ── CLICK SOUND (desktop only) ── */
 (function(){
+  if(window.innerWidth<=768) return; // skip on mobile
   var src=document.getElementById('click-snd');
   if(!src)return;
   var _ctx=null,_buf=null,_loaded=false;
