@@ -746,7 +746,7 @@ body{font-family:'JetBrains Mono','SF Mono','Menlo','Courier New',monospace;}
   font-family:'JetBrains Mono','SF Mono',monospace;
   font-size:14px;line-height:1.65;
   color:#22c55e;min-height:300px;
-  position:relative;white-space:pre-wrap;
+  position:relative;white-space:pre-wrap;overflow-wrap:break-word;
   max-width:800px;width:100%;margin:0 auto;
   box-shadow:0 0 40px rgba(34,197,94,0.08);
 }
@@ -4023,7 +4023,7 @@ function startLoreTyping(){
         var ch=line[cIdx];
         if(ch==='\x00'){
           var scr=document.createElement('span');
-          scr.style.cssText='color:#0f0;letter-spacing:0;user-select:text;';
+          scr.style.cssText='color:#0f0;letter-spacing:0;user-select:text;word-break:break-all;display:inline;';
           scr.textContent=CONTRACT_ADDR;
           el.insertBefore(scr,cursor);
           var cpyBtn=document.createElement('button');
