@@ -2064,7 +2064,9 @@ async function _fetchRecentMints(){
         .then(r=>r.json()).then(d=>{
           if(!d||!d.result) return;
           const latestBlock = parseInt(d.result,16);
-          const startBlock = _cacheGetScanStart();
+          const cachedStart = _cacheGetScanStart();
+          /* Only scan recent blocks (~7 days) for the last 10 mints, not from deploy */
+          const startBlock = Math.max(cachedStart, latestBlock - 1000);
           if(startBlock < latestBlock){
             _scanMintsForTxids(startBlock, latestBlock);
           }
