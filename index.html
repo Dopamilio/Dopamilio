@@ -1416,8 +1416,11 @@ input,textarea{-webkit-user-select:text;-moz-user-select:text;user-select:text;}
   .card-detail{
     animation:none !important;
     will-change:auto !important;
-    backdrop-filter:blur(10px) !important;
-    -webkit-backdrop-filter:blur(10px) !important;
+    /* backdrop-filter MUST be none — it flattens 3D context and kills backface-visibility */
+    backdrop-filter:none !important;
+    -webkit-backdrop-filter:none !important;
+    /* Solid bg to replace the frosted glass */
+    background:rgba(8,10,18,.96) !important;
   }
   .card-detail::before{display:none !important;}
   #cardTerminalFloat{display:none !important;}
