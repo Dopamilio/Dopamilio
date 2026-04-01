@@ -1289,7 +1289,7 @@ input,textarea{-webkit-user-select:text;-moz-user-select:text;user-select:text;}
 
   /* $DOPAMINE locked: compact on mobile */
   .nav-locked{min-width:auto;}
-  .nav-locked-text{font-size:7px !important;letter-spacing:.5px !important;}
+  .nav-locked-text{font-size:7px !important;letter-spacing:.5px !important;filter:blur(0.6px) !important;}
   .nav-locked-icon{font-size:12px;}
 
   /* -- Fix page section padding with new nav height (no ticker) -- */
@@ -4710,43 +4710,113 @@ function mktRenderDetailView(nft) {
 }
 
 function mktRenderCollectionView() {
-  var _sorted = MKT_NFTS.slice().sort(function(a,b){return parseFloat(a.price)-parseFloat(b.price);});
-  var nftsHtml = _mktViewMode === 'grid' ? mktRenderGrid(_sorted) : mktRenderList(_sorted);
-  var nftAreaClass = _mktViewMode === 'grid' ? 'mkt-grid' : '';
-  var mainH = 'calc(100vh - 280px)';
-  var gridGold = _mktViewMode==='grid' ? ' gold' : '';
-  var listGold = _mktViewMode==='list' ? ' gold' : '';
+  /* ═══ PURE MOCKUP — zero contract logic ═══ */
+  var _mockNfts=[
+    {id:1,rank:42,tier:'Legendary',price:210000,listed:true},
+    {id:2,rank:156,tier:'Epic',price:89000,listed:true},
+    {id:3,rank:1200,tier:'Uncommon',price:42000,listed:true},
+    {id:4,rank:2800,tier:'Common',price:0,listed:false},
+    {id:5,rank:8,tier:'Mythic',price:690000,listed:true},
+    {id:6,rank:450,tier:'Rare',price:55000,listed:true},
+    {id:14,rank:680,tier:'Rare',price:48000,listed:true},
+    {id:57,rank:3100,tier:'Common',price:0,listed:false},
+  ];
+  var _rc={'Common':'#9CA3AF','Uncommon':'#4ADE80','Rare':'#60A5FA','Epic':'#A78BFA','Legendary':'#F59E0B','Mythic':'#FF2400'};
+  var _rb={'Common':'rgba(156,163,175,.12)','Uncommon':'rgba(74,222,128,.12)','Rare':'rgba(96,165,250,.12)','Epic':'rgba(167,139,250,.12)','Legendary':'rgba(245,158,11,.12)','Mythic':'rgba(255,36,0,.12)'};
 
-  return '<div class="mkt-collection-header">'
-    +'<div style="display:flex;align-items:center;gap:16px;margin-bottom:12px">'
-    +'<div class="mkt-d-logo">D</div>'
-    +'<div><div style="color:#c8a84b;font-size:20px;font-weight:bold;font-family:monospace;letter-spacing:2px">DOPAMILIO</div>'
-    +'<div style="color:#4a6a4a;font-size:10px;font-family:monospace;letter-spacing:3px;margin-top:2px">OP-721 &#183; BITCOIN L1 &#183; 3333 SUPPLY</div></div>'
-    +'</div>'
-    +'<div style="display:flex;flex-wrap:wrap;gap:20px">'
-    +'<div><span style="color:#4a6a4a;font-size:10px;font-family:monospace">FLOOR</span><br><span style="color:#00ff41;font-family:monospace;font-size:14px;font-weight:bold">&#8383;0.00042</span><br><span style="color:#4a6a4a;font-size:9px">~$40</span></div>'
-    +'<div><span style="color:#4a6a4a;font-size:10px;font-family:monospace">24H CHANGE</span><br><span style="color:#00ff41;font-family:monospace;font-size:14px;font-weight:bold">+69.4%</span><br><span style="color:#4a6a4a;font-size:9px">since yesterday</span></div>'
-    +'<div><span style="color:#4a6a4a;font-size:10px;font-family:monospace">24H VOL</span><br><span style="color:#c8a84b;font-family:monospace;font-size:14px;font-weight:bold">&#8383;0.4200</span><br><span style="color:#4a6a4a;font-size:9px">~$40,320</span></div>'
-    +'<div><span style="color:#4a6a4a;font-size:10px;font-family:monospace">7D VOL</span><br><span style="color:#c8a84b;font-family:monospace;font-size:14px;font-weight:bold">&#8383;2.1840</span><br><span style="color:#4a6a4a;font-size:9px">~$209,664</span></div>'
-    +'<div><span style="color:#4a6a4a;font-size:10px;font-family:monospace">SUPPLY</span><br><span style="color:#c8a84b;font-family:monospace;font-size:14px;font-weight:bold">3,333</span><br><span style="color:#4a6a4a;font-size:9px">100% on-chain</span></div>'
-    +'<div><span style="color:#4a6a4a;font-size:10px;font-family:monospace">LISTED</span><br><span style="color:#c8a84b;font-family:monospace;font-size:14px;font-weight:bold">23 <span style="color:#00ff41;font-size:10px">(0.7%)</span></span><br><span style="color:#4a6a4a;font-size:9px">diamond hands</span></div>'
-    +'<div><span style="color:#4a6a4a;font-size:10px;font-family:monospace">MKT CAP</span><br><span style="color:#c8a84b;font-family:monospace;font-size:14px;font-weight:bold">&#8383;1.3998</span><br><span style="color:#4a6a4a;font-size:9px">~$134,381</span></div>'
-    +'</div></div>'
-    +'<div class="mkt-control-bar">'
-    +'<button class="mkt-btn">&#9889; Filters &#9660;</button>'
-    +'<button class="mkt-btn">&#128101; Holders</button>'
-    +'<button class="mkt-btn">My Items</button>'
-    +'<input class="mkt-filter-input" type="text" placeholder="Filter # or name">'
+  function _mockCard(n){
+    var col=_rc[n.tier]||'#888';var bg=_rb[n.tier]||'rgba(0,0,0,.2)';
+    var imgUrl='nft_preview/'+n.id+'.webp';
+    var idFmt='#'+String(n.id).padStart(4,'0');
+    var priceFmt=n.listed?'<span style="color:#ff9900">\u20bf</span> '+(n.price/1e8).toFixed(5).replace(/0+$/,'').replace(/\.$/,''):'';
+    return '<div class="mkt-card">'
+      +'<div class="mkt-card-img" style="aspect-ratio:1;position:relative;overflow:hidden;background:'+bg+'">'
+      +'<img src="'+imgUrl+'" style="width:100%;height:100%;object-fit:cover;display:block" loading="lazy">'
+      +'<span style="position:absolute;top:8px;right:8px;background:'+col+';color:#000;font-family:monospace;font-size:11px;font-weight:900;padding:2px 8px;border-radius:3px;letter-spacing:1px">'+n.tier.toUpperCase()+'</span>'
+      +'</div>'
+      +'<div style="padding:9px 11px 10px">'
+      +'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:2px">'
+      +'<span style="color:#3a5a3a;font-size:10px;letter-spacing:1.5px">DOPAMILIO</span>'
+      +'<span style="color:#3a5a3a;font-size:10px;font-family:monospace">RANK #'+n.rank+'</span></div>'
+      +'<div style="color:#c8a84b;font-size:13px;font-weight:bold;font-family:monospace;letter-spacing:1px">'+idFmt+'</div>'
+      +(n.listed
+        ?'<div style="margin-top:8px;padding-top:7px;border-top:1px solid #1a2a1a;display:flex;justify-content:space-between;align-items:center">'
+        +'<span style="color:#e0e0e0;font-size:13px;font-weight:bold;font-family:monospace">'+priceFmt+'</span>'
+        +'<span class="mkt-btn-buy-sm" style="font-size:11px;padding:4px 10px;opacity:.5;cursor:default">BUY \u25b6</span></div>'
+        :'<div style="margin-top:6px;padding-top:6px;border-top:1px solid #1a2a1a"><span style="color:#2a4a2a;font-size:11px;letter-spacing:.5px">Not listed</span></div>')
+      +'</div></div>';
+  }
+
+  var cardsHtml='';_mockNfts.forEach(function(n){cardsHtml+=_mockCard(n);});
+
+  /* Banner */
+  var bannerHtml='<div style="position:relative;height:200px;overflow:hidden;background:linear-gradient(160deg,#010501 0%,#050d05 40%,#081408 100%)">'
+    +'<img src="/banner.png" style="width:100%;height:100%;object-fit:cover;opacity:.7" onerror="this.style.display=\'none\'">'
+    +'</div>';
+
+  /* Info */
+  var badgeS='background:rgba(10,18,10,.6);border:1px solid rgba(0,255,65,.08);border-radius:6px;padding:4px 13px;font-size:13px;color:#4a6a4a;letter-spacing:1px;font-family:monospace';
+  var infoHtml='<div style="padding:0 24px;margin-top:-60px;position:relative;z-index:2;display:flex;gap:16px;align-items:flex-end;flex-wrap:wrap">'
+    +'<img src="/icon.png" style="width:120px;height:120px;border-radius:13px;border:3px solid #00ff41;object-fit:cover;box-shadow:0 8px 34px rgba(0,0,0,.8);background:#0a120a;flex-shrink:0" onerror="this.outerHTML=\'<div class=mkt-d-logo>D</div>\'">'
+    +'<div style="flex:1;min-width:200px">'
+    +'<div style="font-size:32px;color:#c8a84b;font-weight:900;letter-spacing:5px;font-family:monospace;text-transform:uppercase">DOPAMILIO</div>'
+    +'<div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-top:6px">'
+    +'<span style="'+badgeS+'">BITCOIN</span>'
+    +'<span style="'+badgeS+'">OP-721</span>'
+    +'<span style="'+badgeS+'">IPFS</span>'
+    +'<span style="'+badgeS+'">3,333 UNIQUE</span>'
+    +'</div></div></div>';
+
+  /* Stats */
+  function _sc(l,v,c){return '<div style="padding:0 20px;flex-shrink:0"><div style="color:#4a6a4a;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:3px">'+l+'</div><div style="color:'+(c||'#c8a84b')+';font-size:14px;font-weight:bold;font-family:monospace;letter-spacing:1px">'+v+'</div></div>';}
+  function _sd(){return '<div style="width:1px;height:30px;background:#1a2a1a;flex-shrink:0;align-self:center"></div>';}
+  var statsHtml='<div style="display:flex;align-items:stretch;padding:12px 24px;border-bottom:1px solid #1a2a1a;border-top:1px solid #1a2a1a;margin-top:10px;gap:0;overflow-x:auto;scrollbar-width:none;background:rgba(0,0,0,.25)">'
+    +_sc('FLOOR','\u20bf0.00042','#00ff41')+_sd()
+    +_sc('TOTAL VOL','\u20bf2.18','#c8a84b')+_sd()
+    +_sc('SALES','47','#c8a84b')+_sd()
+    +_sc('SUPPLY','3,333','#00ff41')+_sd()
+    +_sc('LISTED','23 (0.7%)','#c8a84b')+_sd()
+    +_sc('MKT CAP','\u20bf1.39','#c8a84b')
+    +'</div>';
+
+  /* Controls */
+  var controlHtml='<div class="mkt-control-bar" style="position:sticky;top:calc(var(--mac-bar-h,32px) + var(--nav-h,68px));z-index:100">'
+    +'<button class="mkt-btn active">ALL <span style="color:#4a6a4a;font-size:10px">3333</span></button>'
+    +'<button class="mkt-btn">LISTED <span style="color:#4a6a4a;font-size:10px">23</span></button>'
+    +'<button class="mkt-btn">HOLDERS</button>'
+    +'<button class="mkt-btn">MY ITEMS</button>'
+    +'<input class="mkt-filter-input" style="width:120px" placeholder="Search #ID..." disabled>'
     +'<div style="flex:1"></div>'
-    +'<button class="mkt-btn'+gridGold+'" onclick="mktSetView(\'grid\')">&#8862;</button>'
-    +'<button class="mkt-btn'+listGold+'" onclick="mktSetView(\'list\')">&#9776;</button>'
-    +'<button class="mkt-btn">&#8597; Price low&#8594;high &#9660;</button>'
-    +'<button class="mkt-btn">&#128200; Chart</button>'
-    +'<button class="mkt-btn">&#128202; Activity</button>'
-    +'</div>'
-    +'<div class="mkt-main-layout" style="height:'+mainH+'">'
-    +'<div class="mkt-nft-area"><div class="'+nftAreaClass+'">'+nftsHtml+'</div></div>'
-    +'<div class="mkt-activity-feed">'+mktRenderActivityFeed()+'</div>'
+    +'<button class="mkt-btn active">GRID</button>'
+    +'<button class="mkt-btn">LIST</button>'
+    +'<select class="mkt-filter-input" style="width:auto" disabled>'
+    +'<option>Price Low-High</option></select>'
+    +'<button class="mkt-btn">ACTIVITY</button>'
+    +'</div>';
+
+  /* Activity feed mock */
+  var _acts=[
+    {id:'#0005',type:'LIST',ago:'2m',price:'\u20bf0.00690'},
+    {id:'#0001',type:'SALE',ago:'18m',price:'\u20bf0.00210'},
+    {id:'#0014',type:'LIST',ago:'1h',price:'\u20bf0.00048'},
+    {id:'#0006',type:'CANCEL',ago:'3h',price:'\u20bf0.00055'},
+    {id:'#0002',type:'SALE',ago:'6h',price:'\u20bf0.00089'},
+  ];
+  var actHtml='<div style="color:#4a6a4a;font-size:10px;letter-spacing:2px;padding-bottom:10px;border-bottom:1px solid #1a2a1a;margin-bottom:8px">ACTIVITY</div>';
+  _acts.forEach(function(a){
+    var tc=a.type==='SALE'?'#00ff41':a.type==='LIST'?'#c8a84b':'#f55';
+    actHtml+='<div class="mkt-act-item" style="display:flex;gap:8px;padding:6px 0;border-bottom:1px solid #0f1f0f;font-family:monospace;font-size:11px">'
+      +'<span style="color:'+tc+';width:50px">'+a.type+'</span>'
+      +'<span style="color:#c8a84b;flex:1">'+a.id+'</span>'
+      +'<span style="color:#e0e0e0">'+a.price+'</span>'
+      +'<span style="color:#4a6a4a;width:30px;text-align:right">'+a.ago+'</span>'
+      +'</div>';
+  });
+
+  return bannerHtml+infoHtml+statsHtml+controlHtml
+    +'<div class="mkt-main-layout" style="height:calc(100vh - 280px)">'
+    +'<div class="mkt-nft-area"><div class="mkt-grid">'+cardsHtml+'</div></div>'
+    +'<div class="mkt-activity-feed">'+actHtml+'</div>'
     +'</div>';
 }
 
