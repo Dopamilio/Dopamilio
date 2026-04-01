@@ -52,14 +52,14 @@ function _termPlay(lines, color, rgb) {
     if (charIndex < line.length) {
       currentSpan.textContent += line[charIndex];
       charIndex++;
-      // Speed: 12ms per char (fast, live terminal)
-      _termTimeouts.push(setTimeout(nextChar, 12));
+      // Speed: 6ms per char (fast, live terminal — 50% faster)
+      _termTimeouts.push(setTimeout(nextChar, 6));
     } else {
-      // End of line — 80ms pause before next
+      // End of line — 40ms pause before next
       charIndex = 0;
       currentSpan = null;
       lineIndex++;
-      _termTimeouts.push(setTimeout(nextChar, 80));
+      _termTimeouts.push(setTimeout(nextChar, 40));
     }
   }
 
@@ -135,10 +135,28 @@ function buildCardDetail(nft, lore) {
   imgWrap.appendChild(img);
   wrap.appendChild(imgWrap);
 
-  // Title
+  // Title + Stars
   var title = document.createElement('div');
   title.className = 'cd-title';
-  title.textContent = 'DOPAMILIO #' + nft.id;
+  var titleText = document.createElement('span');
+  titleText.textContent = 'DOPAMILIO #' + nft.id;
+  title.appendChild(titleText);
+  /* Star rating: 0–5 lit stars based on rarity tier */
+  var _STAR_MAP = {Common:0, Uncommon:1, Rare:2, Epic:3, Legendary:4, Mythic:5};
+  var litCount = _STAR_MAP[nft.tier] || 0;
+  var stars = document.createElement('span');
+  stars.className = 'cd-stars';
+  stars.style.cssText = 'position:absolute;right:0;font-size:0.7em;letter-spacing:2px;';
+  var starHtml = '';
+  for (var si = 0; si < 5; si++) {
+    if (si < litCount) {
+      starHtml += '<span style="color:' + color + ';text-shadow:0 0 6px ' + color + '">★</span>';
+    } else {
+      starHtml += '<span style="color:rgba(255,255,255,0.15)">★</span>';
+    }
+  }
+  stars.innerHTML = starHtml;
+  title.appendChild(stars);
   wrap.appendChild(title);
 
   // Phrase

@@ -2,7 +2,11 @@
   "version": 2,
   "name": "dopamilio",
   "rewrites": [
-    { "source": "/api/metadata/:id", "destination": "/api/nft?id=:id" }
+    { "source": "/api/metadata/:id", "destination": "/api/nft?id=:id" },
+    { "source": "/mint", "destination": "/index.html" },
+    { "source": "/gallery", "destination": "/index.html" },
+    { "source": "/lore", "destination": "/index.html" },
+    { "source": "/marketplace", "destination": "/index.html" }
   ],
   "headers": [
     {
