@@ -2750,8 +2750,8 @@ window.addEventListener('load',function(){(window.requestIdleCallback||function(
   },55);
 });});
 
-/* ── LOADER DISMISS after 3.5s — removed from DOM after fade ── */
-setTimeout(()=>{var l=document.getElementById('loader');if(l){l.classList.add('done');setTimeout(()=>{if(l.parentNode)l.parentNode.removeChild(l);},800);}},3500);
+/* ── LOADER DISMISS — instant on mobile, 3.5s on desktop ── */
+(function(){var _ld=window.innerWidth<=768?0:3500;setTimeout(()=>{var l=document.getElementById('loader');if(l){l.classList.add('done');setTimeout(()=>{if(l.parentNode)l.parentNode.removeChild(l);},800);}},_ld);})();
 
 /* ── UNIFIED STICKER PHYSICS — all 21 MLG images, 11 R + 10 L ── */
 
@@ -4090,11 +4090,16 @@ _setGalleryLocked(false);
 _fetchRecentMints();setInterval(_fetchRecentMints,15000);
 _fetchFeeRate();setInterval(_fetchFeeRate,5*60*1000);
 updateCost();
-/* Defer slide/thumb DOM construction — not needed before first paint */
-(window.requestIdleCallback||function(cb){setTimeout(cb,1)})(function(){
+/* Slide/thumb DOM construction — immediate on mobile, deferred on desktop */
+if(window.innerWidth<=768){
   buildSlides();buildThumbs();goNft(0,false);
   nftTimer=setInterval(()=>goNft((curNft+1)%NFT_IMGS.length,false),2800);
-});
+}else{
+  (window.requestIdleCallback||function(cb){setTimeout(cb,1)})(function(){
+    buildSlides();buildThumbs();goNft(0,false);
+    nftTimer=setInterval(()=>goNft((curNft+1)%NFT_IMGS.length,false),2800);
+  });
+}
 /* Start gallery guard from page load (covers bfcache, tab restore, etc.) */
 startGalleryGuard();
 
