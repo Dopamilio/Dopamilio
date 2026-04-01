@@ -1408,6 +1408,7 @@ input,textarea{-webkit-user-select:text;-moz-user-select:text;user-select:text;}
   .card-detail.cd-flipped .cd-title,
   .card-detail.cd-flipped .cd-phrase,
   .card-detail.cd-flipped .cd-badges,
+  .card-detail.cd-flipped .cd-front-hint,
   .card-detail.cd-flipped>div[style*="letter-spacing"]{
     display:none !important;
   }
@@ -3551,10 +3552,36 @@ function _dopaPhrase(id,tierIdx,traits){
   return pool[id%pool.length];
 }
 
+function _setupMobileCardFlip(id){
+  var cardEl=document.querySelector('#cardDetailWrap .card-detail');
+  if(!cardEl) return;
+  var data=_dopaGet(id);if(!data) return;
+  data.id=id;
+  var lore=window.DopamilioLore?window.DopamilioLore.generateCharacterLore(data):null;
+  var flipBack=document.createElement('div');
+  flipBack.className='cd-flip-back';
+  var _fb=function(c,t){var d=document.createElement('div');d.className=c;d.textContent=t;return d;};
+  flipBack.appendChild(_fb('cd-flip-title','LORE'));
+  flipBack.appendChild(_fb('cd-flip-phrase',lore?lore.phrase:'...'));
+  flipBack.appendChild(_fb('cd-flip-role',lore?lore.role:''));
+  flipBack.appendChild(_fb('cd-flip-sats',lore?lore.satsWallet.toLocaleString()+' SATS':''));
+  flipBack.appendChild(_fb('cd-flip-personality',lore?lore.personality:''));
+  flipBack.appendChild(_fb('cd-flip-hint','TAP TO FLIP BACK'));
+  cardEl.appendChild(flipBack);
+  var hint=document.createElement('div');
+  hint.className='cd-front-hint';
+  hint.textContent='TAP CARD TO SEE LORE';
+  cardEl.appendChild(hint);
+  cardEl.addEventListener('click',function(e){
+    e.stopPropagation();
+    cardEl.classList.toggle('cd-flipped');
+  });
+}
 function openNftDetail(id){
   _loadImgCids(function() {
     if (window.DopamilioCardModal) {
       window.DopamilioCardModal.open(id);
+      if(window.innerWidth<=768) _setupMobileCardFlip(id);
     } else {
       _openNftDetailFallback(id);
     }
@@ -4211,7 +4238,7 @@ document.addEventListener('copy',function(e){
 })();
 </script>
 <script src="gallery-lore.js"></script>
-<script src="gallery-card.js?v=3"></script>
+<script src="gallery-card.js?v=4"></script>
 <script>
 (function(){
   var rg=document.getElementById('rektGif');

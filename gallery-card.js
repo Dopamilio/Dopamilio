@@ -213,35 +213,11 @@ var CardModal = (function() {
     var overlay = document.getElementById('cardModal');
     overlay.style.display = 'flex';
 
-    // Mobile: add flip back panel + tap handler (skip terminal)
-    if (window.innerWidth <= 768) {
-      var flipBack = document.createElement('div');
-      flipBack.className = 'cd-flip-back';
-      var _fb = function(cls, txt) { var d = document.createElement('div'); d.className = cls; d.textContent = txt; return d; };
-      flipBack.appendChild(_fb('cd-flip-title', 'LORE'));
-      flipBack.appendChild(_fb('cd-flip-phrase', lore.phrase || '...'));
-      flipBack.appendChild(_fb('cd-flip-role', lore.role || ''));
-      flipBack.appendChild(_fb('cd-flip-sats', lore.satsWallet ? lore.satsWallet.toLocaleString() + ' SATS' : ''));
-      flipBack.appendChild(_fb('cd-flip-personality', lore.personality || ''));
-      flipBack.appendChild(_fb('cd-flip-hint', 'TAP TO FLIP BACK'));
-      cardEl.appendChild(flipBack);
-      // Front hint
-      var frontHint = document.createElement('div');
-      frontHint.className = 'cd-front-hint';
-      frontHint.textContent = 'TAP CARD TO SEE LORE';
-      cardEl.appendChild(frontHint);
-      // Tap to flip
-      cardEl.addEventListener('click', function(e) {
-        e.stopPropagation();
-        cardEl.classList.toggle('cd-flipped');
-      });
-    } else {
-      // Desktop: Terminal (150ms delay)
-      setTimeout(function() {
-        var lines = _buildTerminalLines(nftData, lore);
-        _termPlay(lines, lore.rarityColor, lore.rarityRgb);
-      }, 150);
-    }
+    // Terminal (150ms delay) — skipped on mobile via CSS #cardTerminalFloat{display:none}
+    setTimeout(function() {
+      var lines = _buildTerminalLines(nftData, lore);
+      _termPlay(lines, lore.rarityColor, lore.rarityRgb);
+    }, 150);
 
     // Escape
     if (_escHandler) document.removeEventListener('keydown', _escHandler);
