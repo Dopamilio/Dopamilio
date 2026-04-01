@@ -35,7 +35,7 @@ body{
 }
 #loader.done{opacity:0;pointer-events:none;}
 #loader-snoop{position:absolute;right:100px;bottom:0;height:min(82vh,82%);width:auto;z-index:1;pointer-events:none;object-fit:contain;object-position:bottom right;}
-@media(max-width:720px){#loader-snoop{right:0;height:min(55vh,55%);opacity:0.55;}}
+@media(max-width:768px){#loader-snoop{display:none !important;}}
 #code-canvas{position:absolute;inset:0;z-index:0;}
 .loader-center{
   position:relative;z-index:2;
@@ -2683,7 +2683,7 @@ window.addEventListener('load',function(){(window.requestIdleCallback||function(
 });});
 
 /* ── LOADER DISMISS after 3.5s ── */
-setTimeout(()=>document.getElementById('loader').classList.add('done'),3500);
+setTimeout(()=>{var l=document.getElementById('loader');if(l){l.classList.add('done');if(window.innerWidth<=768)setTimeout(()=>{if(l.parentNode)l.parentNode.removeChild(l);},800);}},3500);
 
 /* ── UNIFIED STICKER PHYSICS — all 21 MLG images, 11 R + 10 L ── */
 
