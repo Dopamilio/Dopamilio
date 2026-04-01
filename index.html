@@ -1913,8 +1913,8 @@ function _buildActivityFromChain(mints){
 // ── MINT TXID CACHE (localStorage) ─────────────────────────────────────────
 // Cache: { tokenId(string): txHash(string) }
 // ScanBlock: last block fully scanned
-const _CACHE_KEY   = 'dopa_mint_txids_v4_'+CONTRACT_ADDR.slice(-8);
-const _SCAN_KEY    = 'dopa_scan_block_v4_'+CONTRACT_ADDR.slice(-8);
+const _CACHE_KEY   = 'dopa_mint_txids_v5_'+CONTRACT_ADDR.slice(-8);
+const _SCAN_KEY    = 'dopa_scan_block_v5_'+CONTRACT_ADDR.slice(-8);
 const _DEPLOY_BLOCK = 0xE6189; // block #942,473 — mainnet deploy TX
 var _mintTxCache = {};
 var _scanRunning = false;
@@ -2117,7 +2117,7 @@ function _updateRecentMintsList(mints) {
     return;
   }
   mints.slice(0, 10).forEach(function(m) {
-    body.appendChild(_buildActRow(m.tokenId, m.minter, m.txid, m.time || 'on-chain'));
+    body.appendChild(_buildActRow(m.tokenId, m.minter, m.txid, m.time || ''));
   });
 }
 
@@ -3807,7 +3807,7 @@ document.addEventListener('copy',function(e){
 })();
 </script>
 <script src="gallery-lore.js"></script>
-<script src="gallery-card.js"></script>
+<script src="gallery-card.js?v=2"></script>
 <script>
 (function(){
   var rg=document.getElementById('rektGif');
