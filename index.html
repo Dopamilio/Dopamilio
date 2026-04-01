@@ -1189,9 +1189,11 @@ input,textarea{-webkit-user-select:text;-moz-user-select:text;user-select:text;}
   :root{--mac-bar-h:0px !important;}
   body{padding-top:0 !important;}
 
-  /* -- Visual noise: killed for perf -- */
+  /* -- Visual noise + livebar: killed for perf -- */
   #fallers,#emoji-rain,.scanlines,.crt-overlay,#bg-canvas,
-  #scroll-toast,#vhs-overlay,#vhs-bg-img{display:none !important;}
+  #scroll-toast,#vhs-overlay,#vhs-bg-img,#stickers,.illum-bg,
+  #ticker{display:none !important;}
+  :root{--ticker-h:0px !important;}
 
   /* -- VHS phosphor glow background -- */
   body{
@@ -1289,11 +1291,138 @@ input,textarea{-webkit-user-select:text;-moz-user-select:text;user-select:text;}
   .nav-locked-text{font-size:7px !important;letter-spacing:.5px !important;}
   .nav-locked-icon{font-size:12px;}
 
-  /* -- Fix page section padding with new nav height -- */
-  #page{padding-top:calc(var(--nav-h) + 6px) !important;}
-  #galleryPage{padding-top:calc(var(--nav-h) + 6px) !important;}
-  #lorePage{padding-top:calc(var(--nav-h) + 6px) !important;}
-  #marketplacePage{padding-top:calc(var(--nav-h) + 6px) !important;}
+  /* -- Fix page section padding with new nav height (no ticker) -- */
+  #page{padding:calc(var(--nav-h) + 6px) 10px 16px !important;gap:12px !important;}
+  #galleryPage{padding-top:calc(var(--nav-h) + 6px) !important;padding-bottom:16px !important;}
+  #lorePage{padding-top:calc(var(--nav-h) + 6px) !important;padding-bottom:16px !important;}
+  #marketplacePage{padding-top:calc(var(--nav-h) + 6px) !important;padding-bottom:16px !important;}
+
+  /* -- Cards row: single column, no overflow -- */
+  #cards-row{
+    grid-template-columns:1fr !important;
+    height:auto !important;
+    gap:12px !important;
+  }
+
+  /* -- NFT card: fixed height carousel -- */
+  #nft-card{max-height:280px;}
+
+  /* -- Mint card: no min-height, clean stack -- */
+  #mint-card{
+    min-height:0 !important;
+    padding:12px !important;
+    gap:8px !important;
+    overflow-y:auto !important;
+  }
+
+  /* -- Phases: single row compressed -- */
+  .phases{grid-template-columns:1fr 1fr 1fr !important;gap:4px !important;}
+  .ph{padding:5px 3px !important;}
+  .ph .phn{font-size:7px !important;letter-spacing:.5px !important;}
+  .ph .phs{font-size:6px !important;}
+
+  /* -- Stats: 3-col stays but compact -- */
+  .stats{gap:4px !important;}
+  .sv{font-size:18px !important;}
+  .sl{font-size:7px !important;}
+
+  /* -- Max per wallet warning: compact -- */
+  #mint-card>p{
+    font-size:7px !important;
+    line-height:1.3 !important;
+    margin:4px 0 0 !important;
+    padding:0 2px;
+  }
+
+  /* -- Wallet status -- */
+  .w-st{font-size:7px !important;}
+
+  /* -- Phase timeline compact -- */
+  .pt-name{font-size:7px !important;letter-spacing:.5px !important;}
+  .pt-timer{font-size:7px !important;}
+  .pt-ends{font-size:6px !important;}
+  .pt-badge{font-size:5px !important;padding:1px 4px !important;}
+  .pt-row{padding:5px 8px !important;}
+
+  /* -- Amount row compact -- */
+  .amt-lbl{font-size:7px !important;}
+  .amt-ctrl{gap:8px !important;}
+  .abt{width:28px !important;height:28px !important;font-size:14px !important;}
+  .anum{font-size:24px !important;min-width:28px !important;}
+
+  /* -- Total and mint btn -- */
+  .tot{padding-top:6px !important;}
+  .tot-l{font-size:7px !important;}
+  .tot-btc{font-size:16px !important;}
+  .btn-mint{padding:12px !important;font-size:11px !important;}
+
+  /* -- Activity table: TX hash truncated -- */
+  #activity{margin-bottom:16px !important;}
+  .act-col-header,.act-row{font-size:7px !important;}
+  .act-txid,.act-txid a{
+    max-width:60px !important;
+    overflow:hidden !important;
+    text-overflow:ellipsis !important;
+    white-space:nowrap !important;
+    display:inline-block !important;
+  }
+
+  /* -- Gallery card detail: mobile flip support -- */
+  .nft-detail-card{
+    width:92vw !important;max-width:92vw !important;
+    padding:14px 10px !important;
+    animation:none !important;
+    transition:transform .4s ease;
+    cursor:pointer;
+  }
+  .nft-detail-card::before{animation:none !important;}
+  .nft-detail-img{max-width:100% !important;}
+
+  /* Front content: visible by default, hidden when flipped */
+  .nft-detail-card>*:not(.nft-detail-back):not(.nft-detail-close):not(.nft-detail-flip-hint){
+    transition:opacity .25s ease;
+  }
+  .nft-detail-card.flipped>*:not(.nft-detail-back):not(.nft-detail-close):not(.nft-detail-flip-hint){
+    opacity:0;pointer-events:none;
+    height:0;overflow:hidden;margin:0 !important;padding:0 !important;gap:0 !important;
+  }
+
+  /* Back panel: hidden by default, shown on flip */
+  .nft-detail-back{
+    position:relative;
+    opacity:0;max-height:0;overflow:hidden;
+    transition:opacity .3s ease .15s,max-height .3s ease;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;
+    padding:0;
+  }
+  .nft-detail-card.flipped .nft-detail-back{
+    opacity:1;max-height:600px;
+    padding:20px 12px;
+  }
+  .nft-detail-back-title{
+    font-family:'JetBrains Mono',monospace;font-size:12px;
+    color:#22c55e;letter-spacing:3px;font-weight:700;
+  }
+  .nft-detail-back-phrase{
+    font-family:'JetBrains Mono',monospace;font-size:10px;
+    color:rgba(255,255,255,.75);text-align:center;
+    line-height:1.7;letter-spacing:.3px;
+    padding:0 8px;
+  }
+  .nft-detail-back-role{
+    font-family:'Press Start 2P',monospace;font-size:6px;
+    color:rgba(255,255,255,.35);letter-spacing:1.5px;
+    text-transform:uppercase;
+  }
+  .nft-detail-back-sats{
+    font-family:'Bangers',cursive;font-size:22px;
+    color:#ff9900;text-shadow:0 0 10px rgba(255,153,0,.4);
+  }
+  .nft-detail-flip-hint{
+    font-family:'Press Start 2P',monospace;font-size:5px;
+    color:rgba(255,255,255,.2);letter-spacing:1px;
+    text-align:center;margin-top:4px;
+  }
 }
 
 /* ═══ MOBILE ≤480 — extra compact ═══ */
@@ -2531,7 +2660,7 @@ const STICKERS=[
 
 /* ── PAGE BG: matrix rain — deferred to after load ── */
 window.addEventListener('load',function(){(window.requestIdleCallback||function(cb){setTimeout(cb,1)})(function(){
-  if(window.innerWidth<=720)return; // skip on mobile — too heavy
+  if(window.innerWidth<=768)return; // skip on mobile — too heavy
   const c=document.getElementById('bg-canvas'),ctx=c.getContext('2d');
   const chars='01アイウエオカキクケコサシスセ0123456789ABCDEF@#$%&#^&*';
   const MLG=['BTC','MOON','NGMI','DEGEN','HODL','GG','420','MLG','NPC','BASED','COPE','OPNET','SATS','YOLO','GM','WAGMI','NOOB','REKT','DOPE','WEN'];
@@ -3442,11 +3571,53 @@ function _openNftDetailFallback(id){
   }
   traitsEl.innerHTML=html;
 
+  /* ── Mobile card flip setup ── */
+  if(window.innerWidth<=768){
+    var oldBack=card.querySelector('.nft-detail-back');
+    if(oldBack) oldBack.remove();
+    card.classList.remove('flipped');
+    var backPanel=document.createElement('div');
+    backPanel.className='nft-detail-back';
+    var loreData=window.DopamilioLore?window.DopamilioLore.generateCharacterLore({id:id,rank:rank,tier:tier,traits:traits}):null;
+    backPanel.innerHTML='<div class="nft-detail-back-title">LORE</div>'
+      +(loreData?'<div class="nft-detail-back-phrase">'+_safeText(loreData.phrase)+'</div>'
+        +'<div class="nft-detail-back-role">'+_safeText(loreData.role)+'</div>'
+        +'<div class="nft-detail-back-sats">'+loreData.satsWallet.toLocaleString()+' SATS</div>'
+        :'<div class="nft-detail-back-phrase">no lore data</div>')
+      +'<div class="nft-detail-flip-hint">TAP TO FLIP BACK</div>';
+    card.appendChild(backPanel);
+    /* Add flip hint to front */
+    var oldHint=card.querySelector('.nft-detail-flip-hint:not(.nft-detail-back .nft-detail-flip-hint)');
+    if(!oldHint){
+      var hint=document.createElement('div');
+      hint.className='nft-detail-flip-hint';
+      hint.textContent='TAP CARD TO SEE LORE';
+      card.appendChild(hint);
+    }
+    /* Tap handler — remove old, add new */
+    if(card._flipHandler) card.removeEventListener('click',card._flipHandler);
+    card._flipHandler=function(e){
+      if(e.target.closest('.nft-detail-close')) return;
+      e.stopPropagation();
+      card.classList.toggle('flipped');
+    };
+    card.addEventListener('click',card._flipHandler);
+  }
+
   overlay.classList.add('show');
 }
 function closeNftDetail() {
   var overlay = document.getElementById('nft-detail-overlay');
   if (overlay) overlay.classList.remove('show');
+  /* Reset mobile flip */
+  var card=document.getElementById('nftDetailCard');
+  if(card){
+    card.classList.remove('flipped');
+    var backPanel=card.querySelector('.nft-detail-back');
+    if(backPanel) backPanel.remove();
+    var hint=card.querySelector('.nft-detail-flip-hint');
+    if(hint) hint.remove();
+  }
   /* Clear search field */
   var srch = document.getElementById('gallerySearch');
   if (srch) { srch.value = ''; }
