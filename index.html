@@ -3474,6 +3474,7 @@ _rebuildGalIds();
 
 /* NOT MINTED YET — opens card modal with pulsing placeholder */
 function _showNotMintedYet(id) {
+  if (typeof _termClear === 'function') _termClear();
   var wrap = document.getElementById('cardDetailWrap');
   var overlay = document.getElementById('cardModal');
   if (!wrap || !overlay) return;
