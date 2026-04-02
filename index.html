@@ -2302,10 +2302,17 @@ async function _loadContractInfo(){
       walletToast('err','Treasury mismatch — minting disabled. Contact support.');
     }
 
+    var _prevMinted = mintedC;
     mintedC = totalMinted;
     updateProg(totalMinted);
     _updatePriceDisplay(onChainPrice);
     _updatePhaseDisplay(phase, wlStartTime, wlDuration, isTestnet);
+    /* Refresh gallery when new NFTs are minted */
+    if (mintedC !== _prevMinted && typeof _rebuildGalIds === 'function') {
+      _rebuildGalIds();
+      var _gp = document.getElementById('galleryPage');
+      if (_gp && _gp.style.display !== 'none') galleryRender();
+    }
   }catch(e){ console.warn('[dopamilio] loadContractInfo:', e?.message); }
 }
 
@@ -3448,11 +3455,23 @@ var GAL_PER_PAGE = 96;
 // Preload image CIDs as early as possible
 _loadImgCids();
 
-(function buildGalIds() {
-  for (var i = 1; i <= 3333; i++) {
-    GAL_IDS.push(i);
-  }
-})();
+/* Rebuild GAL_IDS with only minted NFTs (1..mintedC), preserving current sort */
+function _rebuildGalIds() {
+  var limit = mintedC || 0;
+  GAL_IDS = [];
+  for (var i = 1; i <= limit; i++) { GAL_IDS.push(i); }
+  var sortEl = document.getElementById('gallerySort');
+  var s = sortEl ? sortEl.value : 'asc';
+  if (s === 'desc') GAL_IDS.sort(function(a,b){return b-a;});
+  else if (s === 'rar-asc') GAL_IDS.sort(function(a,b){var ra=(_dopaGet(a)||{rank:9999}).rank,rb=(_dopaGet(b)||{rank:9999}).rank;return rb-ra;});
+  else if (s === 'rar-desc') GAL_IDS.sort(function(a,b){var ra=(_dopaGet(a)||{rank:9999}).rank,rb=(_dopaGet(b)||{rank:9999}).rank;return ra-rb;});
+}
+_rebuildGalIds();
+
+/* NOT MINTED YET — shown when user searches for an unminted NFT */
+function _showNotMintedYet(id) {
+  walletToast('err', 'DOPAMILIO #' + id + '<br>NOT MINTED YET');
+}
 
 var _TINY_GIF = 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=';
 
@@ -3687,6 +3706,7 @@ function _setupMobileCardFlip(id){
   });
 }
 function openNftDetail(id){
+  if (mintedC > 0 && id > mintedC) { _showNotMintedYet(id); return; }
   _loadImgCids(function() {
     if (window.DopamilioCardModal) {
       window.DopamilioCardModal.open(id);
@@ -3826,7 +3846,7 @@ function closeNftDetail() {
   if (srch) { srch.value = ''; }
   /* Restore gallery list if it was cleared while modal was open */
   if (GAL_IDS.length === 0) {
-    for (var i = 1; i <= 3333; i++) { GAL_IDS.push(i); }
+    _rebuildGalIds();
     GAL_PAGE = 1;
     galleryRender();
   }
@@ -3914,16 +3934,18 @@ function loadGalleryPage(){
         var val = this.value.replace('#','').trim();
         updateSearchPill(this, val);
         if (!val) {
-          GAL_IDS = [];
           closeNftDetail();
-          for (var i = 1; i <= 3333; i++) { GAL_IDS.push(i); }
+          _rebuildGalIds();
           GAL_PAGE = 1;
           galleryRender();
         } else {
           var num = parseInt(val);
           if (!isNaN(num) && num >= 1 && num <= 3333) {
-            /* Show single-ID detail card */
-            openNftDetail(num);
+            if (mintedC > 0 && num > mintedC) {
+              _showNotMintedYet(num);
+            } else {
+              openNftDetail(num);
+            }
           }
         }
       });
