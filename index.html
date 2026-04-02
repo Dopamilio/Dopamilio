@@ -3395,15 +3395,11 @@ window.addEventListener('popstate',function(e){
   showPage(page,false);
 });
 function _getPageFromPath(){
-  var p=location.pathname.replace(/^\//,'').replace(/\/$/,'').toLowerCase();
-  if(p==='gallery'||p==='lore'||p==='marketplace') return p;
   return 'mint';
 }
-/* Init: navigate to correct page based on URL */
+/* Init: always start on mint — refresh resets to home */
 (function(){
-  var initPage=_getPageFromPath();
-  if(initPage!=='mint') showPage(initPage,false);
-  else history.replaceState({page:'mint'},document.title,location.pathname);
+  history.replaceState({page:'mint'},document.title,'/');
 })();
 
 /* DOPA-2: GALLERY */
