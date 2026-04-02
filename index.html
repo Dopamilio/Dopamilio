@@ -1601,6 +1601,10 @@ input,textarea{-webkit-user-select:text;-moz-user-select:text;user-select:text;}
   from { transform: scale(0.82) translateY(12px); opacity: 0; }
   to   { transform: scale(1) translateY(0); opacity: 1; }
 }
+@keyframes notMintedPulse {
+  0%,100% { opacity: 1; text-shadow: 0 0 20px rgba(255,153,0,0.6); }
+  50%     { opacity: 0.25; text-shadow: 0 0 4px rgba(255,153,0,0.2); }
+}
 @keyframes termFloat {
   0%,100% { opacity: 0; transform: translateX(-12px); }
   100%    { opacity: 1; transform: translateX(0); }
@@ -3468,9 +3472,28 @@ function _rebuildGalIds() {
 }
 _rebuildGalIds();
 
-/* NOT MINTED YET — shown when user searches for an unminted NFT */
+/* NOT MINTED YET — opens card modal with pulsing placeholder */
 function _showNotMintedYet(id) {
-  walletToast('err', 'DOPAMILIO #' + id + '<br>NOT MINTED YET');
+  var wrap = document.getElementById('cardDetailWrap');
+  var overlay = document.getElementById('cardModal');
+  if (!wrap || !overlay) return;
+  wrap.innerHTML = '';
+  var card = document.createElement('div');
+  card.className = 'card-detail';
+  card.style.setProperty('--rarity-color', '#ff9900');
+  card.style.setProperty('--dopa-glow', 'rgba(255,153,0,0.3)');
+  card.innerHTML = '<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:320px">'
+    + '<div style="font-family:\'Press Start 2P\',monospace;font-size:clamp(24px,5vw,36px);color:#ff9900;text-align:center;line-height:2.2;animation:notMintedPulse 1.2s ease-in-out infinite">NOT<br>MINTED<br>YET</div>'
+    + '<div style="margin-top:18px;font-family:\'JetBrains Mono\',monospace;font-size:11px;color:#555;letter-spacing:1px">#' + id + '</div>'
+    + '</div>';
+  wrap.appendChild(card);
+  overlay.style.display = 'flex';
+  var _nmClose = function() { overlay.style.display = 'none'; wrap.innerHTML = ''; document.removeEventListener('keydown', _nmEsc); if (typeof closeNftDetail === 'function') closeNftDetail(); };
+  var _nmEsc = function(e) { if (e.key === 'Escape') _nmClose(); };
+  var closeBtn = document.getElementById('cardModalClose');
+  if (closeBtn) closeBtn.onclick = _nmClose;
+  overlay.onclick = function(e) { if (e.target === overlay) _nmClose(); };
+  document.addEventListener('keydown', _nmEsc);
 }
 
 var _TINY_GIF = 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=';
@@ -3930,23 +3953,34 @@ function loadGalleryPage(){
       srch.addEventListener('focus', function() {
         updateSearchPill(this, this.value.replace('#','').trim());
       });
+      var _srchTimer = 0;
       srch.addEventListener('input', function() {
         var val = this.value.replace('#','').trim();
         updateSearchPill(this, val);
+        clearTimeout(_srchTimer);
         if (!val) {
           closeNftDetail();
+          var overlay = document.getElementById('cardModal');
+          if (overlay) overlay.style.display = 'none';
+          var wrap = document.getElementById('cardDetailWrap');
+          if (wrap) wrap.innerHTML = '';
           _rebuildGalIds();
           GAL_PAGE = 1;
           galleryRender();
         } else {
-          var num = parseInt(val);
-          if (!isNaN(num) && num >= 1 && num <= 3333) {
-            if (mintedC > 0 && num > mintedC) {
-              _showNotMintedYet(num);
-            } else {
-              openNftDetail(num);
+          var self = this;
+          _srchTimer = setTimeout(function() {
+            var cur = self.value.replace('#','').trim();
+            if (cur !== val) return;
+            var num = parseInt(val);
+            if (!isNaN(num) && num >= 1 && num <= 3333) {
+              if (mintedC > 0 && num > mintedC) {
+                _showNotMintedYet(num);
+              } else {
+                openNftDetail(num);
+              }
             }
-          }
+          }, 400);
         }
       });
     }
